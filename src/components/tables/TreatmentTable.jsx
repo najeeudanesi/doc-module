@@ -39,6 +39,7 @@ function TreatmentTable({ data, isloading, patientId, }) {
 
                                             <th>Nurse Note</th>
                                             <th>Diagnosis</th>
+                                            <th>Admission Status</th>
                                             <th>Medication/Prescription</th>
 
                                         </tr>
@@ -59,7 +60,9 @@ function TreatmentTable({ data, isloading, patientId, }) {
                                                     </div>
                                                 </td>
                                                 <td className="w-25">{row?.diagnosis}</td>
-                                                <td className="w-25 p-20"><div className="rounded-btn-yellow w-75 flex flex-v-center gap-2 flex-h-center" onClick={() => stageData(row)}><RiFilePaper2Line /> Prescription Details</div>
+                                                <td className="w-25">{row?.admissionStatus ? <><div className="mx-8 rounded-btn flex flex flex-v-center flex-h-center">admitted</div></> : <><div className=" mx-8 rounded-btn-yellow flex flex-v-center flex-h-center">not admitted</div></>}</td>
+
+                                                <td className="w-25 p-20"><div className="rounded-btn-yellow w-75 flex flex-v-center gap-2 flex-h-center pointer" onClick={() => stageData(row)}><RiFilePaper2Line /> Prescription Details</div>
 
                                                     <div className="text-start flex gap-4 m-t-10">
 
