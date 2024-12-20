@@ -84,7 +84,7 @@ function MedicalRecord({ data, next, patientId, fetchData }) {
     // console.log(payload);
     try {
       let response = await get(`/patients/${patientId}/patient_files`);
-      toast.success("Medical record added successfully");
+      // toast.success("Medical record added successfully");
       // await fetchData();
       setMedicalRecordsPic(response);
 
@@ -208,11 +208,11 @@ function MedicalRecord({ data, next, patientId, fetchData }) {
             </div>
           </div>
 
-          <div className="flex" style={{gap:'5px', alignItems:'center', width:'100%', flexWrap:'wrap'}}>
+          <div className="flex" style={{ gap: '5px', alignItems: 'center', width: '100%', flexWrap: 'wrap' }}>
             {medicalRecordsPic?.map((images) => (
-              <a style={{ width:'100%'}} href={images?.filePath} target="_blank">
-                <div className="flex" style={{gap:'5px', alignItems:'center'}}>
-                  <img style={{gap:'5px', alignItems:'center', width:'50px', height:'50px'}} src={doc} />
+              <a style={{ width: '100%' }} href={images?.filePath} target="_blank">
+                <div className="flex" style={{ gap: '5px', alignItems: 'center' }}>
+                  <img style={{ gap: '5px', alignItems: 'center', width: '50px', height: '50px' }} src={doc} />
                   <p>{images?.fileName}</p>
                 </div>
               </a>
