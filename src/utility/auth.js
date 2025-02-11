@@ -7,5 +7,10 @@ export const logout = async () => {
   localStorage.removeItem('homeLink');
  
 
-  window.location.assign(link || '/');
+  // window.location.assign(link || 'https://emr.heartlandcardiovascular.com.ng/home');
+  // window.location.assign(link || 'https://emr.heartlandcardiovascular.com.ng/home');
+
+    window.location.assign(link || 'https://emr.heartlandcardiovascular.com.ng/home');
+    // window.location.assign(link || 'https://emr-test.greenzonetechnologies.com.ng/home');
+
 };

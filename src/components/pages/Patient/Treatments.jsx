@@ -1,11 +1,9 @@
-
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { get } from "../../../utility/fetch";
 import AddTreatment from "../../modals/AddTreatment";
 import ReferPatient from "../../modals/ReferPatient";
 import TreatmentTable from "../../tables/TreatmentTable";
-
 
 function Treatments({ visit, id }) {
   const [showModal, setShowModal] = useState(false);
@@ -14,6 +12,7 @@ function Treatments({ visit, id }) {
   const [isLoading, setIsLoading] = useState(true);
   const [lastVisit, setLastVisit] = useState(null);
   const [vital, setVital] = useState(null);
+  const [repeatedDiagnosis, setRepeatedDiagnosis] = useState("");
 
   const toggleModal = () => {
     if (lastVisit === null) {
@@ -22,6 +21,10 @@ function Treatments({ visit, id }) {
     }
     setShowModal(!showModal);
   };
+
+  useEffect(() => {
+    console.log(repeatedDiagnosis);
+  }, [repeatedDiagnosis]);
 
   const toggleTreatmentModal = () => {
     if (lastVisit === null) {
@@ -36,6 +39,8 @@ function Treatments({ visit, id }) {
     try {
       const response = await get(`/patients/${id}/treatmentrecord`);
       setData(response.data);
+      console.log(response.data[0])
+      response.data && setRepeatedDiagnosis(response.data[0]?.diagnosis)
     } catch (e) {
       console.log(e);
     }
@@ -45,19 +50,22 @@ function Treatments({ visit, id }) {
   const fetchVital = async () => {
     setIsLoading(true);
     try {
-      const response = await get(`/patients/vital-by-patientId?patientId=${id}&pageIndex=${1}&pageSize=${1000}`);
+      const response = await get(
+        `/patients/vital-by-patientId?patientId=${id}&pageIndex=${1}&pageSize=${1000}`
+      );
       setVital(response?.data[0]);
-
     } catch (e) {
       console.log(e);
     }
     setIsLoading(false);
-  }
+  };
 
   const fetchVisit = async () => {
     setIsLoading(true);
     try {
-      const response = await get(`/appointment/get-appointment-bypatientId/${id}/`);
+      const response = await get(
+        `/appointment/get-appointment-bypatientId/${id}/`
+      );
       setLastVisit(response.data[response.data.length - 1]);
     } catch (e) {
       console.log(e);
@@ -75,20 +83,36 @@ function Treatments({ visit, id }) {
     <div className="w-full">
       <div className="flex flex-h-end w-full gap-10">
         <button className="rounded-btn" onClick={toggleModal}>
-          + Refer Patient
+          + Refer Patient To Lab
         </button>
         <button className="rounded-btn" onClick={toggleTreatmentModal}>
           + Add Treatment
         </button>
       </div>
-      <TreatmentTable patientId={id} data={data} isloading={isLoading} visit={visit} />
+      <TreatmentTable
+        patientId={id}
+        data={data}
+        isloading={isLoading}
+        visit={visit}
+      />
       {showModal && (
-        <ReferPatient closeModal={toggleModal} visit={lastVisit} vital={vital} id={id} treatment={data[0] || null} />
+        <ReferPatient
+          repeatedDiagnosis={repeatedDiagnosis}
+          setRepeatedDiagnosis={setRepeatedDiagnosis}
+          closeModal={toggleModal}
+          visit={lastVisit}
+          vital={vital}
+          id={id}
+          treatment={data[0] || null}
+        />
       )}
       {treatmentModal && (
         <AddTreatment
+          repeatedDiagnosis={repeatedDiagnosis}
+          setRepeatedDiagnosis={setRepeatedDiagnosis}
           closeModal={toggleTreatmentModal}
           visit={lastVisit}
+          data={data}
           id={id}
           fetchData={fetchData}
         />

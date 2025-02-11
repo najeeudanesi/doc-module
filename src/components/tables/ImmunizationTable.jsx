@@ -61,6 +61,7 @@ function ImmunizationTable({ patientId }) {
     };
 
     const fetchData = async () => {
+        console.log(patientId)
         setIsLoading(true)
         try {
             const response = await get(`/patients/GetAllImmunizationRecordByPatientId/`, { patientId: patientId });

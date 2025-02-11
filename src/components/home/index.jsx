@@ -39,7 +39,7 @@ const Home = (props) => {
         navigate("/doctor/dashboard");
       } else {
         window.location.href =
-        "https://emr-test.greenzonetechnologies.com.ng/home";
+        "https://emr.heartlandcardiovascular.com.ng/home";
         throw { e: "Invalid Role" };
        
       }

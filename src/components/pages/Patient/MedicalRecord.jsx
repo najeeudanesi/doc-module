@@ -18,6 +18,14 @@ function MedicalRecord({ data, next, patientId, fetchData }) {
   const [typeName, setTypeName] = useState("");
   const [typeComment, setTypeComment] = useState("");
   const [newData, setNewData] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [docpaths, setdocpaths] = useState();
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => {
+    setdocpaths(null);
+    setIsModalOpen(false);
+  };
 
   const getNewData = async () => {
     setLoading(true);
@@ -141,6 +149,10 @@ function MedicalRecord({ data, next, patientId, fetchData }) {
     }
   }, [selectedTab]);
 
+  function hasTIFFExtension(url) {
+    return url.toLowerCase().endsWith(".tif");
+  }
+
   return (
     <div>
       {loading ? (
@@ -208,17 +220,124 @@ function MedicalRecord({ data, next, patientId, fetchData }) {
             </div>
           </div>
 
-          <div className="flex" style={{gap:'5px', alignItems:'center', width:'100%', flexWrap:'wrap'}}>
+          <div
+            className="flex"
+            style={{
+              gap: "5px",
+              alignItems: "center",
+              width: "100%",
+              flexWrap: "wrap",
+            }}
+          >
             {medicalRecordsPic?.map((images) => (
-              <a style={{ width:'100%'}} href={images?.filePath} target="_blank">
-                <div className="flex" style={{gap:'5px', alignItems:'center'}}>
-                  <img style={{gap:'5px', alignItems:'center', width:'50px', height:'50px'}} src={doc} />
+              <a
+                className="pointer"
+                style={{ width: "100%" }}
+                // href={images?.filePath}
+                onClick={() => {
+                  setIsModalOpen(true);
+                  setdocpaths(images);
+                }}
+                // target="_blank"
+              >
+                <div
+                  className="flex"
+                  style={{ gap: "5px", alignItems: "center" }}
+                >
+                  {/* <img
+                    src={`data:image/png;base64,${images?.image64}`}
+                    alt="Base64 Image"
+                  /> */}
+                  <img
+                    style={{
+                      gap: "5px",
+                      alignItems: "center",
+                      width: "50px",
+                      height: "50px",
+                    }}
+                    src={doc}
+                  />
+
                   <p>{images?.fileName}</p>
                 </div>
               </a>
             ))}
           </div>
         </div>
+      )}
+
+      {isModalOpen && docpaths?.filePath ? (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: "8px",
+              overflow: "hidden",
+              position: "relative",
+              width: "80%",
+              height: "83vh",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div>{docpaths.fileName}</div>
+            {/* Close Button */}
+            <button
+              onClick={closeModal}
+              style={{
+                position: "absolute",
+
+                top: "10px",
+                right: "10px",
+                backgroundColor: "red",
+                color: "#fff",
+                border: "none",
+                borderRadius: "50%",
+                width: "30px",
+                height: "30px",
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              &times;
+            </button>
+
+            {/* iFrame */}
+            <iframe
+              className="flex justify-center items-center w-full"
+              src={
+                hasTIFFExtension(docpaths?.filePath)
+                  ? `https://docs.google.com/gview?url=${
+                      docpaths?.filePath
+                    }&embedded=true&cacheBust=${Date.now()}`
+                  : docpaths?.filePath
+              }
+              style={{
+                width: "100%",
+                height: "100%",
+                border: "none",
+              }}
+              title="Document Viewer"
+            ></iframe>
+          </div>
+        </div>
+      ) : (
+        ""
       )}
 
       {modal && (

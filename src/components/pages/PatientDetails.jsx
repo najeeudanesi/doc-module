@@ -27,6 +27,8 @@ function PatientDetails() {
     try {
       const data = await get(`/patients/${patientId}/data`);
       setPatient(data);
+      console.log(data)
+      console.log(data?.id)
 
       setVisit(data?.visits.pop());
     } catch (e) {
@@ -62,9 +64,9 @@ function PatientDetails() {
           />
         );
       case "immunization":
-        return <ImmunizationTable patientId={patient?.patientId} />;
+        return <ImmunizationTable patientId={patientId} />;
       case "treatment":
-        return <Treatments data={patient?.treatments} visit={visit || null} id={patientId} />;
+        return <Treatments  data={patient?.treatments} visit={visit || null} id={patientId} />;
       case "appointments":
         return (
           <AppointmentTable
