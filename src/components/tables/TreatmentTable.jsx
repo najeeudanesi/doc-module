@@ -41,10 +41,17 @@ function TreatmentTable({ data, isloading, patientId }) {
                   </tr>
                 </thead>
 
+<<<<<<< HEAD
                 <tbody className="white-bg view-det-pane">
                   {data.map((row, index) => (
                     <tr key={index}>
                       <td>{moment(row?.createdAt).format('DD/MM/YYYY')}</td>
+=======
+                                            <th>Nurse Note</th>
+                                            <th>Diagnosis</th>
+                                            <th>Admission Status</th>
+                                            <th>Medication/Prescription</th>
+>>>>>>> 578d06c39222662358dc8ecea53f8334e2bde4b9
 
                       <td>{row?.age}</td>
                       <td>{row?.weight}kg</td>
@@ -84,6 +91,7 @@ function TreatmentTable({ data, isloading, patientId }) {
                 />
               )}
 
+<<<<<<< HEAD
               {medicationData && (
                 <MedicationDetails
                   closeModal={() => stageData(null)}
@@ -95,6 +103,44 @@ function TreatmentTable({ data, isloading, patientId }) {
           ) : (
             <p>No data available</p>
           )}
+=======
+                                                <td>
+                                                    <div className="outline pointer" onClick={() => setNoteModalData(row)}>
+                                                        <RiFilePaper2Line />
+                                                    </div>
+                                                </td>
+                                                <td className="w-25">{row?.diagnosis}</td>
+                                                <td className="w-25">{row?.admissionStatus ? <><div className="mx-8 rounded-btn flex flex flex-v-center flex-h-center">admitted</div></> : <><div className=" mx-8 rounded-btn-yellow flex flex-v-center flex-h-center">not admitted</div></>}</td>
+
+                                                <td className="w-25 p-20"><div className="rounded-btn-yellow w-75 flex flex-v-center gap-2 flex-h-center pointer" onClick={() => stageData(row)}><RiFilePaper2Line /> Prescription Details</div>
+
+                                                    <div className="text-start flex gap-4 m-t-10">
+
+                                                        <u className="bold-text">Care Plan: </u>
+                                                        <p className="text-gray"> {row?.carePlan}</p></div>
+                                                </td>
+
+
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                {noteModalData && <NurseNotesTreatment closeModal={() => setNoteModalData(null)} data={noteModalData} patientId={patientId} />}
+
+                                {
+                                    medicationData && <MedicationDetails closeModal={() => stageData(null)} data={medicationData}
+                                        otherData={otherMedicationData}
+                                    />
+                                }
+                            </div>
+                        ) : (
+                            <p>No data available</p>
+                        )
+                    }
+
+                </div>) : (<div>Loading....</div>)
+            }
+>>>>>>> 578d06c39222662358dc8ecea53f8334e2bde4b9
         </div>
       ) : (
         <div>{/* Loading.... */}</div>
