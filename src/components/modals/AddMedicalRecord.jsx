@@ -3,12 +3,14 @@ import toast from 'react-hot-toast';
 import { RiCloseFill } from 'react-icons/ri';
 import { post } from '../../utility/fetch';
 import TextArea from '../UI/TextArea';
+import SpeechToTextButton from '../UI/SpeechToTextButton';
 
 function AddMedicalRecord({ closeModal, patientId, fetchData, medicalRecordType }) {
 
     const [name, setName] = useState('');
     const [comment, setComment] = useState('');
     const [loading, setLoading] = useState(false);
+    const [payload, setPayload] = useState({})
 
 
     const addMedicalRecord = async () => {
@@ -17,12 +19,11 @@ function AddMedicalRecord({ closeModal, patientId, fetchData, medicalRecordType 
             return;
         }
         setLoading(true);
-        const payload = {
-            // medicalRecordType: medicalRecordType,
-            // name: name,
+        setPayload({
+
             comment: comment,
             patientId: parseInt(patientId, 10)
-        };
+        });
         console.log(payload);
         try {
             await post(`/patients/addmedicalrecord`, payload);
@@ -36,6 +37,10 @@ function AddMedicalRecord({ closeModal, patientId, fetchData, medicalRecordType 
         setLoading(false);
     };
 
+    const handleTranscript = (transcript) => {
+        setComment(comment + transcript)
+    };
+
     return (
         <div className='overlay'>
             <RiCloseFill className='close-btn pointer' onClick={closeModal} />
@@ -43,12 +48,16 @@ function AddMedicalRecord({ closeModal, patientId, fetchData, medicalRecordType 
                 <div className="p-40">
                     <h3 className="bold-text">Add Medical Record</h3>
 
+                    <div>
 
-                    <TextArea
-                        label="Comment"
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                    />
+
+                        <TextArea
+                            label="Comment"
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                        />
+                        <SpeechToTextButton onTranscript={handleTranscript} />
+                    </div>
                     <button className="btn m-t-20 w-100" onClick={addMedicalRecord} disabled={loading}>Add Medical Record</button>
                 </div>
             </div>

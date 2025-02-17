@@ -6,6 +6,7 @@ import TextArea from "../UI/TextArea";
 import { post, get } from "../../utility/fetch";
 import toast from "react-hot-toast";
 import { BsTrash } from "react-icons/bs";
+import SpeechToTextButton from "../UI/SpeechToTextButton";
 
 function ReferPatient({
   closeModal,
@@ -144,6 +145,12 @@ function ReferPatient({
     setLoading(false);
   };
 
+
+  const handleTranscript = (transcript) => {
+    setAdditionalNote(additionalNote + transcript)
+  };
+
+
   return (
     <div className="overlay">
       <RiCloseFill className="close-btn pointer" onClick={closeModal} />
@@ -266,12 +273,17 @@ function ReferPatient({
               setRepeatedDiagnosis(e.target.value);
             }}
           />
-          <TextArea
+
+          <div> <TextArea
             label="Additional Note"
             name="additionalNote"
             value={additionalNote}
             onChange={(e) => setAdditionalNote(e.target.value)}
           />
+
+            <SpeechToTextButton onTranscript={handleTranscript} />
+          </div>
+
           <button
             className="btn m-t-20 w-100"
             onClick={referPatient}

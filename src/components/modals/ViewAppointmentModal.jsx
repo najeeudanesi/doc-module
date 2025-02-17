@@ -5,6 +5,7 @@ import { post } from "../../utility/fetch";
 import InputField from "../UI/InputField";
 import TextArea from "../UI/TextArea";
 import toast from "react-hot-toast";
+import SpeechToTextButton from "../UI/SpeechToTextButton";
 
 const formatDate = (date) => {
   const d = new Date(date);
@@ -54,6 +55,11 @@ function ImmunizationAttachment({ closeModal, data }) {
     }
 
     setIsLoading(false);
+  };
+
+
+  const handleTranscript = (transcript) => {
+    setNotes(notes + transcript)
   };
 
   return (
@@ -106,6 +112,11 @@ function ImmunizationAttachment({ closeModal, data }) {
               disabled={!isEditable}
               onChange={(e) => setNotes(e.target.value)}
             />
+
+            {
+              isEditable && <SpeechToTextButton onTranscript={handleTranscript} />
+            }
+
           </div>
 
           {!isEditable ? (
