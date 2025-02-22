@@ -119,18 +119,29 @@ function ReferPatient({
     }
 
     setLoading(true);
+
     const payload = {
-      age: treatment?.age,
-      diagnosis,
-      dateOfVisit: new Date(visit?.appointDate).toISOString(),
-      appointmentId: visit?.id,
-      hmoId: hmo?.hmoProviderId,
-      hmoPackageId: hmo?.hmoPackageId,
-      testRequests,
-      otherTestRequests,
-      additionalNote,
+      labRequestType: testRequests.length > 0 ? 1 : 2, // Assuming 1 for internal, 2 for external
+      internalLab: testRequests.length > 0 ? {
+        diagnosis,
+        dateOfVisit: new Date(visit?.appointDate).toISOString(),
+        appointmentId: visit?.id,
+        hmoId: hmo?.hmoProviderId || 0,
+        hmoPackageId: hmo?.hmoPackageId || 0,
+        testRequests,
+        additionalNote
+      } : null,
+      externalLab: otherTestRequests.length > 0 ? {
+        diagnosis,
+        dateOfVisit: new Date(visit?.appointDate).toISOString(),
+        appointmentId: visit?.id,
+        otherTestRequests,
+        additionalNote
+      } : null,
     };
+
     console.log(payload);
+
     try {
       await post(
         `/patients/${id}/vital/${vital?.vitalId}/lab-request`,
@@ -144,7 +155,6 @@ function ReferPatient({
     }
     setLoading(false);
   };
-
 
   const handleTranscript = (transcript) => {
     setAdditionalNote(additionalNote + transcript)

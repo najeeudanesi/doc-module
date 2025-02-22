@@ -35,7 +35,7 @@ function ReportsTable({ data, id }) {
 
                                 <td>{row?.testRequests?.map((test, index) => <div key={index}><div><b>Lab Request</b> {test?.labTest} </div><div> <b>lab Center</b> {test?.labCentre}</div></div>)}</td>
 
-                                <td>{row?.otherRequests?.map((test, index) => <div key={index}><div><b>Lab Request</b> {test?.labTest} </div><div> <b>lab Center</b> {test?.labCentre}</div></div>)}</td>
+                                <td>{row?.otherTestRequests?.map((test, index) => <div key={index}><div><b>Lab Request</b> {test?.labTest} </div><div> <b>lab Center</b> {test?.labCentre}</div></div>)}</td>
 
                                 <td>{row?.status}</td>
                                 <td>{row?.createdAt && formatDate(row?.createdAt)}</td>
