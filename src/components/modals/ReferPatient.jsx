@@ -27,6 +27,18 @@ function ReferPatient({
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [hmo, setHmo] = useState(null);
+  const [selectedLab, setSelectedLab] = useState(null);
+  const [labType, setLabType] = useState([
+    {
+      value: 1,
+      label: "Internal Lab",
+    },
+
+    {
+      value: 2,
+      label: "External Lab",
+    },
+  ]);
 
   const dummyLabCategories = [
     { value: 1, label: "Blood Test" },
@@ -121,8 +133,8 @@ function ReferPatient({
     setLoading(true);
 
     const payload = {
-      labRequestType: testRequests.length > 0 ? 1 : 2, // Assuming 1 for internal, 2 for external
-      internalLab: testRequests.length > 0 ? {
+      labRequestType: selectedLab?.value,
+      internalLab: testRequests?.length > 0 ? {
         diagnosis,
         dateOfVisit: new Date(visit?.appointDate).toISOString(),
         appointmentId: visit?.id,
@@ -131,7 +143,7 @@ function ReferPatient({
         testRequests,
         additionalNote
       } : null,
-      externalLab: otherTestRequests.length > 0 ? {
+      externalLab: otherTestRequests?.length > 0 ? {
         diagnosis,
         dateOfVisit: new Date(visit?.appointDate).toISOString(),
         appointmentId: visit?.id,
@@ -171,13 +183,25 @@ function ReferPatient({
             <div className="flex gap-8 flex-col">
               <div>
                 <Select
-                  options={categoryOptions}
-                  value={selectedCategory}
-                  onChange={setSelectedCategory}
-                  placeholder="Select a Lab Category"
+                  options={labType}
+                  value={selectedLab}
+                  onChange={setSelectedLab}
+                  placeholder="Select a Lab Type"
                   isClearable
                 />
               </div>
+              {
+                selectedLab?.value === 1 && <div className="m-t-20">
+                  <Select
+                    options={categoryOptions}
+                    value={selectedCategory}
+                    onChange={setSelectedCategory}
+                    placeholder="Select a Lab Category"
+                    isClearable
+                  />
+                </div>
+              }
+
               <p className="text-sm m-t-20">
                 Dont see a category? Specify the name of the lab test
               </p>

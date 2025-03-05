@@ -25,7 +25,7 @@ function ReportsTable({ data, id }) {
 
                     <tbody className="white-bg view-det-pane">
                         {data?.resultList?.map(row => (
-                            <tr key={row.id}>
+                            <tr key={row?.id}>
 
                                 <td>{row?.age}</td>
 
