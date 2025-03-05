@@ -1671,3 +1671,18 @@ textarea {
 .text-start {
   text-align: start;
 }
+
+
+.speech-btn{
+  width: 100%;
+  color: #3C7E2D;
+  background-color: #E8FFDA;
+  height: 40px;
+  text-align: center;
+  padding: 10px;
+  transition: all 0.3s ease-out;
+  border-radius: 5px;
+  border: 1px solid #3c7e2d73;
+  cursor: pointer;
+
+}

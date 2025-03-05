@@ -66,7 +66,7 @@ function PatientDetails() {
       case "immunization":
         return <ImmunizationTable patientId={patientId} />;
       case "treatment":
-        return <Treatments  data={patient?.treatments} visit={visit || null} id={patientId} />;
+        return <Treatments data={patient?.treatments} visit={visit || null} id={patientId} />;
       case "appointments":
         return (
           <AppointmentTable

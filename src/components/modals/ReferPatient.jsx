@@ -6,6 +6,7 @@ import TextArea from "../UI/TextArea";
 import { post, get } from "../../utility/fetch";
 import toast from "react-hot-toast";
 import { BsTrash } from "react-icons/bs";
+import SpeechToTextButton from "../UI/SpeechToTextButton";
 
 function ReferPatient({
   closeModal,
@@ -26,6 +27,18 @@ function ReferPatient({
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [hmo, setHmo] = useState(null);
+  const [selectedLab, setSelectedLab] = useState(null);
+  const [labType, setLabType] = useState([
+    {
+      value: 1,
+      label: "Internal Lab",
+    },
+
+    {
+      value: 2,
+      label: "External Lab",
+    },
+  ]);
 
   const dummyLabCategories = [
     { value: 1, label: "Blood Test" },
@@ -118,18 +131,29 @@ function ReferPatient({
     }
 
     setLoading(true);
+
     const payload = {
-      age: treatment?.age,
-      diagnosis,
-      dateOfVisit: new Date(visit?.appointDate).toISOString(),
-      appointmentId: visit?.id,
-      hmoId: hmo?.hmoProviderId,
-      hmoPackageId: hmo?.hmoPackageId,
-      testRequests,
-      otherTestRequests,
-      additionalNote,
+      labRequestType: selectedLab?.value,
+      internalLab: testRequests?.length > 0 ? {
+        diagnosis,
+        dateOfVisit: new Date(visit?.appointDate).toISOString(),
+        appointmentId: visit?.id,
+        hmoId: hmo?.hmoProviderId || 0,
+        hmoPackageId: hmo?.hmoPackageId || 0,
+        testRequests,
+        additionalNote
+      } : null,
+      externalLab: otherTestRequests?.length > 0 ? {
+        diagnosis,
+        dateOfVisit: new Date(visit?.appointDate).toISOString(),
+        appointmentId: visit?.id,
+        otherTestRequests,
+        additionalNote
+      } : null,
     };
+
     console.log(payload);
+
     try {
       await post(
         `/patients/${id}/vital/${vital?.vitalId}/lab-request`,
@@ -144,6 +168,11 @@ function ReferPatient({
     setLoading(false);
   };
 
+  const handleTranscript = (transcript) => {
+    setAdditionalNote(additionalNote + transcript)
+  };
+
+
   return (
     <div className="overlay">
       <RiCloseFill className="close-btn pointer" onClick={closeModal} />
@@ -154,13 +183,25 @@ function ReferPatient({
             <div className="flex gap-8 flex-col">
               <div>
                 <Select
-                  options={categoryOptions}
-                  value={selectedCategory}
-                  onChange={setSelectedCategory}
-                  placeholder="Select a Lab Category"
+                  options={labType}
+                  value={selectedLab}
+                  onChange={setSelectedLab}
+                  placeholder="Select a Lab Type"
                   isClearable
                 />
               </div>
+              {
+                selectedLab?.value === 1 && <div className="m-t-20">
+                  <Select
+                    options={categoryOptions}
+                    value={selectedCategory}
+                    onChange={setSelectedCategory}
+                    placeholder="Select a Lab Category"
+                    isClearable
+                  />
+                </div>
+              }
+
               <p className="text-sm m-t-20">
                 Dont see a category? Specify the name of the lab test
               </p>
@@ -266,12 +307,17 @@ function ReferPatient({
               setRepeatedDiagnosis(e.target.value);
             }}
           />
-          <TextArea
+
+          <div> <TextArea
             label="Additional Note"
             name="additionalNote"
             value={additionalNote}
             onChange={(e) => setAdditionalNote(e.target.value)}
           />
+
+            <SpeechToTextButton onTranscript={handleTranscript} />
+          </div>
+
           <button
             className="btn m-t-20 w-100"
             onClick={referPatient}

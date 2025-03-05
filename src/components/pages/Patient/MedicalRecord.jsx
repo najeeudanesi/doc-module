@@ -220,52 +220,11 @@ function MedicalRecord({ data, next, patientId, fetchData }) {
             </div>
           </div>
 
-<<<<<<< HEAD
-          <div
-            className="flex"
-            style={{
-              gap: "5px",
-              alignItems: "center",
-              width: "100%",
-              flexWrap: "wrap",
-            }}
-          >
-            {medicalRecordsPic?.map((images) => (
-              <a
-                className="pointer"
-                style={{ width: "100%" }}
-                // href={images?.filePath}
-                onClick={() => {
-                  setIsModalOpen(true);
-                  setdocpaths(images);
-                }}
-                // target="_blank"
-              >
-                <div
-                  className="flex"
-                  style={{ gap: "5px", alignItems: "center" }}
-                >
-                  {/* <img
-                    src={`data:image/png;base64,${images?.image64}`}
-                    alt="Base64 Image"
-                  /> */}
-                  <img
-                    style={{
-                      gap: "5px",
-                      alignItems: "center",
-                      width: "50px",
-                      height: "50px",
-                    }}
-                    src={doc}
-                  />
-
-=======
           <div className="flex" style={{ gap: '5px', alignItems: 'center', width: '100%', flexWrap: 'wrap' }}>
             {medicalRecordsPic?.map((images) => (
               <a style={{ width: '100%' }} href={images?.filePath} target="_blank">
                 <div className="flex" style={{ gap: '5px', alignItems: 'center' }}>
                   <img style={{ gap: '5px', alignItems: 'center', width: '50px', height: '50px' }} src={doc} />
->>>>>>> 578d06c39222662358dc8ecea53f8334e2bde4b9
                   <p>{images?.fileName}</p>
                 </div>
               </a>
@@ -330,9 +289,8 @@ function MedicalRecord({ data, next, patientId, fetchData }) {
               className="flex justify-center items-center w-full"
               src={
                 hasTIFFExtension(docpaths?.filePath)
-                  ? `https://docs.google.com/gview?url=${
-                      docpaths?.filePath
-                    }&embedded=true&cacheBust=${Date.now()}`
+                  ? `https://docs.google.com/gview?url=${docpaths?.filePath
+                  }&embedded=true&cacheBust=${Date.now()}`
                   : docpaths?.filePath
               }
               style={{

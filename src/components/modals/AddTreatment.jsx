@@ -6,6 +6,7 @@ import { RiCloseFill } from "react-icons/ri";
 import { get, post } from "../../utility/fetch";
 import TextArea from "../UI/TextArea";
 import debounce from "lodash.debounce"; // Import debounce from lodash
+import SpeechToTextButton from "../UI/SpeechToTextButton";
 
 function AddTreatment({
   closeModal,
@@ -39,9 +40,9 @@ function AddTreatment({
   };
 
   useEffect(() => {
-     setDiagnosis(repeatedDiagnosis);
-     console.log(repeatedDiagnosis);
-   }, [repeatedDiagnosis]);
+    setDiagnosis(repeatedDiagnosis);
+    console.log(repeatedDiagnosis);
+  }, [repeatedDiagnosis]);
 
   // Fetch Medications from API with Filter Query (Debounced)
   const fetchMedications = async (
@@ -67,6 +68,11 @@ function AddTreatment({
     } catch (error) {
       console.log(error);
     }
+  };
+
+
+  const handleTranscript = (transcript) => {
+    setCarePlan(carePlan + transcript)
   };
 
   const fetchPatientHMO = async () => {
@@ -113,6 +119,8 @@ function AddTreatment({
       toast.error("Please enter the other medication name");
     }
   };
+
+
 
   const removeMedication = (index, type) => {
     if (type === "medications") {
@@ -221,6 +229,7 @@ function AddTreatment({
   const handleInputChange = (inputValue) => {
     debouncedFetchMedications(inputValue); // Trigger debounced API call
   };
+
 
   useEffect(() => {
     fetchTreatmentCategory();
@@ -482,11 +491,17 @@ function AddTreatment({
               setRepeatedDiagnosis(e.target.value);
             }}
           />
-          <TextArea
-            label="Add Care Plan"
-            name="carePlan"
-            onChange={(e) => setCarePlan(e.target.value)}
-          />
+          <div>
+            <TextArea
+              label="Add Care Plan"
+              name="carePlan"
+              value={carePlan}
+              onChange={(e) => setCarePlan(e.target.value)}
+            />
+
+            <SpeechToTextButton onTranscript={handleTranscript} />
+          </div>
+
 
           <button
             className="btn m-t-20 w-100"
