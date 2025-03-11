@@ -7,6 +7,8 @@ import { post, get } from "../../utility/fetch";
 import toast from "react-hot-toast";
 import { BsTrash } from "react-icons/bs";
 import SpeechToTextButton from "../UI/SpeechToTextButton";
+import axios from 'axios';
+
 
 function ReferPatient({
   closeModal,
@@ -28,7 +30,10 @@ function ReferPatient({
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [hmo, setHmo] = useState(null);
   const [selectedLab, setSelectedLab] = useState(null);
-  const [labType, setLabType] = useState([
+  const [services, setServices] = useState(null);
+  const [service, setService] = useState({})
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState({}); const [labType, setLabType] = useState([
     {
       value: 1,
       label: "Internal Lab",
@@ -50,8 +55,15 @@ function ReferPatient({
   useEffect(() => {
     setCategoryOptions(dummyLabCategories);
     fetchPatientHMO();
-    fetchCategories();
+    getCategories();
+
   }, []);
+
+  useEffect(() => {
+    if (category) {
+      getCategoriesService();
+    }
+  }, [category, selectedLab]);
 
   useEffect(() => {
     setDiagnosis(repeatedDiagnosis);
@@ -67,17 +79,65 @@ function ReferPatient({
     }
   };
 
-  const fetchCategories = async () => {
+
+  const getCategories = async () => {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) {
+      console.error('Token not found in session storage');
+      return;
+    }
+
+    const options = {
+      method: 'GET',
+      headers: {
+        'Authorization': `${token}`
+      }
+    };
+
     try {
-      const response = await get("/CategoryItem/list/1/100");
-      const data = response?.resultList.map((cat) => ({
-        value: cat?.id,
-        label: cat?.itemName,
-      }));
-      setCategoryOptions(data);
-      console.log(data);
+      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/healthfinanceapi/api/category/list/1/1000`, options);
+
+      const tempServices = res?.data?.resultList
+        ?.filter((service) => service.name === "Lab Service" || service.name === "Lab Services")
+        .map((category) => ({ label: category?.name, value: parseFloat(category?.id) }));
+
+      tempServices?.unshift({ label: "Select Service", value: "" });
+
+      setCategories(tempServices);
     } catch (error) {
-      console.error("Error fetching lab categories:", error);
+      console.error("Error fetching services:", error);
+    }
+  };
+
+  const getCategoriesService = async () => {
+    const token = sessionStorage.getItem('token');
+
+    if (!token) {
+      console.error('Token not found in session storage');
+      return;
+    }
+
+    const options = {
+      method: 'GET',
+      headers: {
+        'Authorization': `${token}`
+      }
+    };
+
+    try {
+      setService({})
+      setServices(null);
+      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/healthfinanceapi/api/categoryitem/list/category/${category?.value}/1/1000`, options);
+
+      const tempServices = res?.data?.resultList
+        .map((service) => ({ label: service?.itemName, value: parseFloat(service?.id) }));
+
+      tempServices?.unshift({ label: "Select Service", value: "" });
+
+      setServices(tempServices);
+    } catch (error) {
+      console.error("Error fetching services:", error);
     }
   };
 
@@ -182,6 +242,7 @@ function ReferPatient({
           <div className="m-t-20">
             <div className="flex gap-8 flex-col">
               <div>
+                <label>Lab Type</label>
                 <Select
                   options={labType}
                   value={selectedLab}
@@ -190,28 +251,55 @@ function ReferPatient({
                   isClearable
                 />
               </div>
-              {
-                selectedLab?.value === 1 && <div className="m-t-20">
+              {selectedLab?.value === 1 &&
+                <div className="m-t-20">
+                  <label>Service Category</label>
                   <Select
-                    options={categoryOptions}
-                    value={selectedCategory}
-                    onChange={setSelectedCategory}
+                    options={categories}
+                    value={category}
+                    onChange={(selectedOption) => {
+                      setSelectedCategory(selectedOption);
+                      setCategory(selectedOption);
+                    }}
                     placeholder="Select a Lab Category"
                     isClearable
                   />
+
+                  <>
+                    {Array.isArray(services) &&
+                      <div className="m-t-20">
+                        <label>Lab Services</label>
+
+                        <Select
+                          options={services}
+                          value={service}
+                          onChange={(selectedOption) => {
+                            setSelectedCategory(selectedOption);
+                            setService(selectedOption);
+                          }}
+                          placeholder="Select a Lab Service"
+                          isClearable
+                        />
+                      </div>
+                    }
+                  </>
                 </div>
               }
 
-              <p className="text-sm m-t-20">
-                Dont see a category? Specify the name of the lab test
-              </p>
-              <InputField
-                label="Lab Test"
-                name="labTest"
-                value={labTest}
-                disabled={selectedCategory ? true : false}
-                onChange={(e) => setLabTest(e.target.value)}
-              />
+              {selectedLab?.value === 2 &&
+                <>
+                  <p className="text-sm m-t-20">
+                    Dont see a category? Specify the name of the lab test
+                  </p>
+                  <InputField
+                    label="Lab Test"
+                    name="labTest"
+                    value={labTest}
+                    disabled={selectedCategory ? true : false}
+                    onChange={(e) => setLabTest(e.target.value)}
+                  />
+                </>
+              }
               <div>
                 <div className="flex gap-8">
                   <InputField
@@ -237,7 +325,7 @@ function ReferPatient({
                 <thead>
                   <tr>
                     <th className="w-20">s/n</th>
-                    <th className="w-40">Category</th>
+                    <th className="w-40">Service</th>
                     <th className="w-40">Lab Centre</th>
                     <th className="w-20">Action</th>
                   </tr>
@@ -248,7 +336,7 @@ function ReferPatient({
                       <td>{index + 1}</td>
                       <td>
                         {
-                          categoryOptions.find(
+                          services?.find(
                             (opt) => opt.value === request.categoryItemId
                           )?.label
                         }

@@ -10,6 +10,8 @@ import ImmunizationTable from "../tables/ImmunizationTable";
 import Treatments from "./Patient/Treatments";
 import Labs from "./Patient/Labs";
 import AppointmentTable from "../tables/AppointmentTable";
+import MedicalHistory from "../modals/MedicalHistory";
+
 
 function PatientDetails() {
   const [selectedTab, setSelectedTab] = useState("personal");
@@ -17,6 +19,8 @@ function PatientDetails() {
   const [loading, setLoading] = useState(true);
   const { patientId } = useParams();
   const [visit, setVisit] = useState(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [id, setId] = useState(null);
 
   const switchToTab = (tab) => {
     setSelectedTab(tab);
@@ -30,7 +34,7 @@ function PatientDetails() {
       console.log(data)
       console.log(data?.id)
 
-      setVisit(data?.visits.pop());
+      setVisit(data?.visits?.pop());
     } catch (e) {
       console.log(e);
     }
@@ -75,11 +79,18 @@ function PatientDetails() {
           />
         )
       case "labs":
-        return <Labs visit={visit} id={patientId} />;
+        return <Labs visit={visit} id={patientId} /> ;
       default:
         return null;
     }
   };
+
+
+  const handlePatientId = () => {
+    console.log(patientId);
+    setId(patientId);
+    setShowHistory(true);
+  }
 
   return (
     <div className="w-100">
@@ -91,8 +102,9 @@ function PatientDetails() {
         <>
           {patient ? (
             <>
-              <div className="m-t-80">
+              <div className="m-t-80 flex space-between">
                 <h1>{patient?.firstName + " " + patient?.lastName}</h1>
+                <button onClick={handlePatientId} className="btn">View Medical History</button>
               </div>
               <div className="tabs flex space-between m-t-20 bold-text w-100">
                 <div
@@ -160,6 +172,10 @@ function PatientDetails() {
           )}
         </>
       )}
+
+      {
+      showHistory && <MedicalHistory patientId={id} closeModal={()=> setShowHistory(false)}/>
+      }
     </div>
   );
 }
