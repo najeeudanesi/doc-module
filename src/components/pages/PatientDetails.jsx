@@ -11,6 +11,7 @@ import Treatments from "./Patient/Treatments";
 import Labs from "./Patient/Labs";
 import AppointmentTable from "../tables/AppointmentTable";
 import MedicalHistory from "../modals/MedicalHistory";
+import Discounts from "./Patient/Discounts";
 
 
 function PatientDetails() {
@@ -79,7 +80,9 @@ function PatientDetails() {
           />
         )
       case "labs":
-        return <Labs visit={visit} id={patientId} /> ;
+        return <Labs visit={visit} id={patientId} />;
+      case "discounts":
+        return <Discounts id={patientId} />;
       default:
         return null;
     }
@@ -161,6 +164,12 @@ function PatientDetails() {
                 >
                   Labs
                 </div>
+                <div
+                  className={`tab-item ${selectedTab === "discounts" ? "active" : ""}`}
+                  onClick={() => switchToTab("discounts")}
+                >
+                  Discounts
+                </div>
 
               </div>
               <div className="w-100 p-x-20">{renderTabContent()}</div>
@@ -174,7 +183,7 @@ function PatientDetails() {
       )}
 
       {
-      showHistory && <MedicalHistory patientId={id} closeModal={()=> setShowHistory(false)}/>
+        showHistory && <MedicalHistory patientId={id} closeModal={() => setShowHistory(false)} />
       }
     </div>
   );
