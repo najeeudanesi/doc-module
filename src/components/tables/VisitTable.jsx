@@ -6,6 +6,7 @@ import { RiFilePaper2Line } from "react-icons/ri";
 import NurseNotes from "../modals/NurseNotes";
 import Pagination from "../UI/Pagination";
 import downloadicon from "../../assets/images/download-icon.png";
+import VitalsChart from "../UI/VitalChart";
 
 function VisitTable({ patientId, next }) {
   const [modalData, setModalData] = useState(null); // State to store the data for the modal
@@ -21,6 +22,7 @@ function VisitTable({ patientId, next }) {
   const [totalPagesVital, setTotalPagesVital] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [docpaths, setdocpaths] = useState();
+  const [showChart, setShowChart] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => {
@@ -29,11 +31,14 @@ function VisitTable({ patientId, next }) {
   };
   const pageSize = 10; // Number of rows per page
 
+  const toggleChart = () => {
+    setShowChart((prev) => !prev);
+  };
   const fetchData = async (page = 1) => {
     setIsLoading(true);
     try {
       const response = await get(
-        `/patients/vital-by-patientId?patientId=${patientId}&pageIndex=${page}&pageSize=${pageSize}`
+        `/patients/vital-by-patientId?patientId=${patientId}&pageIndex=${page}&pageSize=${30}`
       );
       setData(response.data);
       setTotalPages(response.totalPages || 1); // Assuming the response includes total pages
@@ -86,6 +91,7 @@ function VisitTable({ patientId, next }) {
 
                   <th>Temp (°C)</th>
                   <th>Height (cm)</th>
+                  <th>BMI</th>
                   <th>Heart (bpm)</th>
                   <th>Respiratory</th>
                   <th>Blood Pressure (mmHg)</th>
@@ -103,15 +109,16 @@ function VisitTable({ patientId, next }) {
                     <td>{row?.weight}</td>
 
                     <td>{row?.temperature} C</td>
-                    <td>{row?.height} m</td>
-                    <td>{row?.heartPulse}</td>
+                    <td>{row?.height} cm</td>
+                    <td>{row?.bmi} </td>
+                    <td>{row?.heartPulse} bpm</td>
                     <td>{row?.respiratory}</td>
                     <td>{row?.bloodPressure}</td>
                     <td>
                       <div
                         style={{ width: "100%" }}
                         className="outline pointer"
-                        // onClick={() => setNoteModalData(row)}
+                      // onClick={() => setNoteModalData(row)}
                       >
                         {row?.vitalDocuments?.map((item) => (
                           <div>
@@ -133,7 +140,7 @@ function VisitTable({ patientId, next }) {
                                 // }}
                                 href={item.docPath}
                                 target="blank"
-                                // download={true}
+                              // download={true}
                               >
                                 {item.docName}
                               </a>
@@ -190,6 +197,7 @@ function VisitTable({ patientId, next }) {
                     <th>Weight</th>
                     <th>Temp</th>
                     <th>Height</th>
+                    <th>BMI</th>
                     <th>Heart</th>
                     <th>Respiratory</th>
                     <th>Blood Pressure</th>
@@ -206,6 +214,7 @@ function VisitTable({ patientId, next }) {
                       <td>{row?.weight}</td>
                       <td>{row?.temperature}</td>
                       <td>{row?.height}</td>
+                      <td>{row?.bmi}</td>
                       <td>{row?.heartPulse}</td>
                       <td>{row?.respiratory}</td>
                       <td>{row?.bloodPressure}</td>
@@ -245,6 +254,17 @@ function VisitTable({ patientId, next }) {
               />
             </div>
           )}
+          {/* Collapsible Section for Vitals Chart */}
+          <div style={{ marginTop: "30px" }}>
+            <button onClick={toggleChart} className="submit-btn">
+              {showChart ? "Hide Vitals Chart" : "Show Vitals Chart"}
+            </button>
+            {showChart && (
+              <div className="m-t-10">
+                <VitalsChart visitsData={data} />
+              </div>
+            )}
+          </div>
         </div>
       ) : (
         <div>Loading....</div>
@@ -266,7 +286,7 @@ function VisitTable({ patientId, next }) {
         />
       )}
 
-      {isModalOpen && docpaths && docpaths.include('.tff')? (
+      {isModalOpen && docpaths && docpaths.include('.tff') ? (
         <div
           style={{
             position: "fixed",
@@ -324,8 +344,9 @@ function VisitTable({ patientId, next }) {
               title="Document Viewer"
             ></iframe>
           </div>
+
         </div>
-      ):''}
+      ) : ''}
 
     </div>
   );

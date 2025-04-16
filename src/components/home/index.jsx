@@ -31,6 +31,7 @@ const Home = (props) => {
       const data = await post(`/Auth/auth?AuthToken=${urltoken}`);
       console.log(data);
       if (data?.role.includes("Doctor")) {
+        sessionStorage.setItem("clinicId", data?.clinicId);
         sessionStorage.setItem("token", "Bearer " + data.jwt.token);
         sessionStorage.setItem("token-expiry-date", data.jwt.expirationDate);
         localStorage.setItem("name", data.firstName + " " + data.lastName);
@@ -39,7 +40,7 @@ const Home = (props) => {
         navigate("/doctor/dashboard");
       } else {
         window.location.href =
-        "https://emr.heartlandcardiovascular.com.ng/home";
+        `${process.env.REACT_APP_BASE_URL}/home`;
         throw { e: "Invalid Role" };
        
       }
@@ -87,7 +88,7 @@ const Home = (props) => {
     urltoken
       ? makePostRequest(urltoken)
       : (window.location.href =
-          "https://emr-test.greenzonetechnologies.com.ng/home");
+          `${process.env.REACT_APP_BASE_URL}/home`);
     // const query = qs.parse(location.search);
     // // encodeToken({ api: query.base }, 'api');
     // handleAuthentication(query.emp);

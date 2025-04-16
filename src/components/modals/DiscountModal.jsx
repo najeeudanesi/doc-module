@@ -6,6 +6,7 @@ import TextArea from "../UI/TextArea";
 import { useNavigate } from "react-router-dom";
 import InputField from "../UI/InputField";
 import toast from "react-hot-toast";
+import GhostTextCompletion from "../UI/TextPrediction";
 
 function DiscountModal({ data, patientId, closeModal, fetch }) {
     const [visits, setVisits] = useState([]);
@@ -36,7 +37,7 @@ function DiscountModal({ data, patientId, closeModal, fetch }) {
                 toast.success("Discount added successfully");
                 fetch();
                 closeModal();
-            }else{
+            } else {
                 toast.error("Error adding Discount");
             }
 
@@ -65,13 +66,13 @@ function DiscountModal({ data, patientId, closeModal, fetch }) {
                     </div>
 
                     <div>
-                        <TextArea
+                        <GhostTextCompletion
                             label="Comment"
                             name="comment"
-                            value={payload.comment}
-                            rows={8}
-                            onChange={(e) => setPayload({ ...payload, comment: e.target.value })}
+                            value={payload?.comment}
+                            handleChange={(e) => setPayload({ ...payload, comment: e.target.value })}
                         />
+                        
                     </div>
                     <button className="submit-btn m-t-20" onClick={addDiscount} disabled={loading}>
                         Add Discount

@@ -7,6 +7,7 @@ import { get, post } from "../../utility/fetch";
 import TextArea from "../UI/TextArea";
 import debounce from "lodash.debounce"; // Import debounce from lodash
 import SpeechToTextButton from "../UI/SpeechToTextButton";
+import GhostTextCompletion from "../UI/TextPrediction";
 
 function AddTreatment({
   closeModal,
@@ -263,6 +264,26 @@ function AddTreatment({
             </select>
           </div>
 
+          <GhostTextCompletion
+            label="Patient Diagnosis"
+            name="diagnosis"
+            value={diagnosis}
+            onChange={(e) => {
+              setDiagnosis(e.target.value);
+              setRepeatedDiagnosis(e.target.value);
+            }}
+          />
+          <div>
+            
+            <GhostTextCompletion
+              label="Add Care Plan"
+              name="carePlan"
+              value={carePlan}
+              handleChange={(e) => setCarePlan(e.target.value)}
+            />
+
+          </div>
+
           {/* Admission Status */}
           <div className="w-100 m-t-20 flex">
             <label htmlFor="admission" className="label">
@@ -303,9 +324,10 @@ function AddTreatment({
                   <tr>
                     <th>s/n</th>
                     <th>Medication</th>
-                    <th>Quantity</th>
+                    <th>Dosage</th>
                     <th>Frequency</th>
-                    <th>Duration</th>
+                    <th>Duration (days)</th>
+                    {/* <th>Route</th> */}
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -481,27 +503,6 @@ function AddTreatment({
               </table>
             </div>
           )}
-
-          <TextArea
-            label="Patient Diagnosis"
-            name="diagnosis"
-            value={diagnosis}
-            onChange={(e) => {
-              setDiagnosis(e.target.value);
-              setRepeatedDiagnosis(e.target.value);
-            }}
-          />
-          <div>
-            <TextArea
-              label="Add Care Plan"
-              name="carePlan"
-              value={carePlan}
-              onChange={(e) => setCarePlan(e.target.value)}
-            />
-
-            <SpeechToTextButton onTranscript={handleTranscript} />
-          </div>
-
 
           <button
             className="btn m-t-20 w-100"

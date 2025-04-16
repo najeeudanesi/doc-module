@@ -4,10 +4,13 @@ import { get } from "../../../utility/fetch";
 import AddTreatment from "../../modals/AddTreatment";
 import ReferPatient from "../../modals/ReferPatient";
 import TreatmentTable from "../../tables/TreatmentTable";
+import ProcedureToLab from "../../modals/ProcedureToLab";
 
 function Treatments({ visit, id }) {
   const [showModal, setShowModal] = useState(false);
   const [treatmentModal, setTreatmentModal] = useState(false);
+  const [procedureModal, setProcedureModal] = useState(false);
+
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [lastVisit, setLastVisit] = useState(null);
@@ -20,6 +23,14 @@ function Treatments({ visit, id }) {
       return;
     }
     setShowModal(!showModal);
+  };
+
+  const toggleProcedureModal = () => {
+    if (lastVisit === null) {
+      toast("A visit has to exist before you can refer patient");
+      return;
+    }
+    setProcedureModal(!procedureModal);
   };
 
   useEffect(() => {
@@ -53,7 +64,7 @@ function Treatments({ visit, id }) {
       const response = await get(
         `/patients/vital-by-patientId?patientId=${id}&pageIndex=${1}&pageSize=${1000}`
       );
-      setVital(response?.data[0]);
+      setVital(response?.data);
     } catch (e) {
       console.log(e);
     }
@@ -88,6 +99,9 @@ function Treatments({ visit, id }) {
         <button className="rounded-btn" onClick={toggleTreatmentModal}>
           + Add Treatment
         </button>
+        <button className="rounded-btn" onClick={toggleProcedureModal}>
+          + Procedures
+        </button>
       </div>
       <TreatmentTable
         patientId={id}
@@ -100,6 +114,17 @@ function Treatments({ visit, id }) {
           repeatedDiagnosis={repeatedDiagnosis}
           setRepeatedDiagnosis={setRepeatedDiagnosis}
           closeModal={toggleModal}
+          visit={lastVisit}
+          vital={vital}
+          id={id}
+          treatment={data[0] || null}
+        />
+      )}
+      {procedureModal && (
+        <ProcedureToLab
+          repeatedDiagnosis={repeatedDiagnosis}
+          setRepeatedDiagnosis={setRepeatedDiagnosis}
+          closeModal={toggleProcedureModal}
           visit={lastVisit}
           vital={vital}
           id={id}

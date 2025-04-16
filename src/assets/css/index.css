@@ -60,6 +60,7 @@
   /* margin: 10px;
   padding: 10px; */
 }
+
 .stat-card {
   flex-direction: column;
   height: 100px;
@@ -72,6 +73,7 @@
   /* margin: 10px;
   padding: 10px; */
 }
+
 .tiny-card {
   display: flex;
   justify-content: space-between;
@@ -85,6 +87,7 @@
   /* margin: 10px;
   padding: 10px; */
 }
+
 .selected-tiny-card {
   display: flex;
   justify-content: space-between;
@@ -157,6 +160,7 @@
   padding: 20px;
   border-radius: 5px;
 }
+
 .searchcard {
   background-color: white;
   width: 100%;
@@ -312,6 +316,7 @@
   background: #e8ffda;
   box-shadow: 1px 4px 11px 0px rgba(206, 189, 228, 0.25);
 }
+
 .collapse-btn:active {
   color: white;
   background-color: #3c7e2d;
@@ -456,6 +461,7 @@
   text-align: center;
   width: auto;
 }
+
 .bordered-table-2 th {
   border: 1px solid #cccccc9c;
   color: white;
@@ -486,6 +492,7 @@
 .slim-b {
   height: 30px;
 }
+
 .input-field-table {
   width: 100%;
   height: 32px;
@@ -530,6 +537,7 @@
   font-size: 13px;
   border-collapse: collapse;
 }
+
 .bordered-table-2 {
   width: 100%;
   font-size: 13px;
@@ -619,6 +627,35 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.outline-box,
+.label-box,
+.outline,
+.label-textarea {
+  width: 100%;
+  padding: 8px;
+}
+
+.label-box {
+  color: #3C7E2D;
+  background-color: #EBFFE6;
+  border-bottom: 1px solid #3c7e2d73;
+  border-top: 1px solid #3c7e2d73;
+  border-left: 1px solid #3c7e2d73;
+  border-radius: 4px 0px 0px 4px;
+  align-content: center;
+  width: 50%;
+  height: 40px;
+  padding: 2px 16px 2px 16px;
+}
+
+.modal-content {
+  background: white;
+  padding: 40px;
+  border-radius: 4px;
+  overflow-y: auto;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 1.3);
+}
+
 h1,
 h2,
 h3,
@@ -632,15 +669,23 @@ section {
   margin: 0;
 }
 
-button,
+button
+ {
+  border: none;
+  outline: none;
+}
+
 input {
   border: none;
   outline: none;
+  padding: 8px;
+  height: -webkit-fill-available;
 }
 
 textarea {
   outline-color: #3c7e2d;
 }
+
 section {
   width: 100%;
   margin: 0;
@@ -649,6 +694,7 @@ section {
 .p-r {
   position: relative !important;
 }
+
 .p-x-20 {
   padding-left: 20px !important;
   padding-right: 20px !important;
@@ -673,9 +719,11 @@ section {
 .p-t-40 {
   padding-top: 40px !important;
 }
+
 .p-t-20 {
   padding-top: 20px !important;
 }
+
 .p-b-20 {
   padding-bottom: 20px !important;
 }
@@ -804,6 +852,7 @@ section {
 .flex-h-center {
   justify-content: center !important;
 }
+
 .flex-h-end {
   justify-content: end !important;
 }
@@ -855,12 +904,15 @@ section {
 .max-w-600 {
   max-width: 600px !important;
 }
+
 .max-w-700 {
   max-width: 700px !important;
 }
+
 .max-w-800 {
   max-width: 800px !important;
 }
+
 .max-w-1000 {
   max-width: 1000px !important;
 }
@@ -1117,6 +1169,7 @@ div.bottom ul {
 }
 
 @media only screen and (max-width: 900px) {
+
   .col-8,
   .col-7,
   .col-6 {
@@ -1133,6 +1186,7 @@ div.bottom ul {
 }
 
 @media only screen and (max-width: 600px) {
+
   .col-5,
   .col-4,
   .col-3 {
@@ -1205,12 +1259,15 @@ div.bottom ul {
 .w-10 {
   width: 10% !important;
 }
+
 .w-15 {
   width: 15% !important;
 }
+
 .w-20 {
   width: 20% !important;
 }
+
 .w-25 {
   width: 25% !important;
 }
@@ -1218,12 +1275,15 @@ div.bottom ul {
 .w-75 {
   width: 75% !important;
 }
+
 .w-90 {
   width: 90% !important;
 }
+
 .w-60 {
   width: 60% !important;
 }
+
 .w-40 {
   width: 40% !important;
 }
@@ -1260,6 +1320,7 @@ div.bottom ul {
   display: grid;
   grid-template-columns: auto auto auto auto auto auto;
 }
+
 .filter-head {
   border-radius: 5px;
   border: 1px solid #3c7e2d;
@@ -1299,9 +1360,12 @@ div.bottom ul {
 }
 
 .pay-input option {
-  background-color: #f0f0f0; /* Set the background color */
-  color: #333; /* Set the text color */
-  padding: 8px; /* Adjust padding as needed */
+  background-color: #f0f0f0;
+  /* Set the background color */
+  color: #333;
+  /* Set the text color */
+  padding: 8px;
+  /* Adjust padding as needed */
   border-radius: 4px;
   border: 1px solid #3c7e2d;
 }
@@ -1385,12 +1449,15 @@ textarea {
 .white-bg {
   background-color: white;
 }
+
 .green-bg {
   background-color: #3c7e2d;
 }
+
 .red-bg {
   background-color: red;
 }
+
 .yellow-bg {
   background-color: #ffc700;
 }
@@ -1430,6 +1497,7 @@ textarea {
   color: #3c7e2d;
   cursor: pointer;
 }
+
 .rounded-btn-yellow {
   border-radius: 50px;
   border: 1px solid #cea00a;
@@ -1437,7 +1505,7 @@ textarea {
   padding: 8px;
   box-shadow: 1px 4px 11px 0px rgba(206, 189, 228, 0.25);
   color: #645203;
- 
+
 }
 
 .rounded-pill {
@@ -1473,21 +1541,28 @@ textarea {
 }
 
 .bigger-checkbox {
-  width: 30px; /* Set the desired width */
-  height: 30px; /* Set the desired height */
-  appearance: none; /* Remove default styling for better customization */
+  width: 30px;
+  /* Set the desired width */
+  height: 30px;
+  /* Set the desired height */
+  appearance: none;
+  /* Remove default styling for better customization */
   border: 1px solid #4caf50;
   position: relative;
 }
 
 .bigger-checkbox:checked {
-  background-color: #4caf50; /* Set the desired background color for checked state */
+  background-color: #4caf50;
+  /* Set the desired background color for checked state */
 }
 
 .bigger-checkbox::before {
-  content: "\2713"; /* Unicode character for checkmark */
-  font-size: 20px; /* Set the desired font size for the checkmark */
-  color: #fff; /* Set the desired color for the checkmark */
+  content: "\2713";
+  /* Unicode character for checkmark */
+  font-size: 20px;
+  /* Set the desired font size for the checkmark */
+  color: #fff;
+  /* Set the desired color for the checkmark */
   position: absolute;
   top: 50%;
   left: 50%;
@@ -1525,6 +1600,7 @@ textarea {
 .text-red {
   color: red;
 }
+
 .text-gray {
   color: gray;
 }
@@ -1532,6 +1608,7 @@ textarea {
 .text-green {
   color: green;
 }
+
 .text-white {
   color: white;
 }
@@ -1567,45 +1644,58 @@ textarea {
 }
 
 .selected-row {
-  background-color: #e8ffda; /* Change the background color as needed */
+  background-color: #e8ffda;
+  /* Change the background color as needed */
 }
 
 .gap-1 {
   gap: 1;
 }
+
 .gap-2 {
   gap: 2px;
 }
+
 .gap-3 {
   gap: 3px;
 }
+
 .gap-4 {
   gap: 4px;
 }
+
 .gap-5 {
   gap: 5px;
 }
+
 .gap-6 {
   gap: 6px;
 }
+
 .gap-7 {
   gap: 7px;
 }
+
 .gap-8 {
   gap: 8px;
 }
+
 .gap-9 {
   gap: 9px;
 }
+
 .gap-10 {
   gap: 10px;
 }
+
 .gap-16 {
   gap: 16px;
 }
+
 .gap-20 {
   gap: 20px;
 }
+
 .border-bottom {
   border-bottom: 1px solid #eeeeee;
 }
@@ -1649,6 +1739,7 @@ textarea {
 .font-link {
   color: purple;
 }
+
 .imageDimension img {
   width: 200px;
   height: 200px;
@@ -1673,7 +1764,7 @@ textarea {
 }
 
 
-.speech-btn{
+.speech-btn {
   width: 100%;
   color: #3C7E2D;
   background-color: #E8FFDA;

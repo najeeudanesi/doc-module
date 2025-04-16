@@ -25,7 +25,7 @@ function LabsAttachment({ closeModal, data, subject, patient, fullData }) {
                     }
 
                     // Construct the URL with the document name
-                    const url = `https://edogoverp.com/labapi/api/document/view-document/${item.docName}`;
+                    const url = `https://edogoverp.com/labapi/api/document/view-document/${item?.docName}`;
 
                     // Fetch options including the Authorization header with the JWT token
                     const options = {

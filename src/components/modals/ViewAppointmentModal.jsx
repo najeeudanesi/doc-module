@@ -6,6 +6,7 @@ import InputField from "../UI/InputField";
 import TextArea from "../UI/TextArea";
 import toast from "react-hot-toast";
 import SpeechToTextButton from "../UI/SpeechToTextButton";
+import GhostTextCompletion from "../UI/TextPrediction";
 
 const formatDate = (date) => {
   const d = new Date(date);
@@ -104,17 +105,23 @@ function ImmunizationAttachment({ closeModal, data }) {
             />
           </div>
           <div>
-            <TextArea
+            {!isEditable &&<TextArea
               label="Additional Notes Diagnosis"
               type="text"
               value={notes}
               // disabled={true}
               disabled={!isEditable}
               onChange={(e) => setNotes(e.target.value)}
-            />
+            />}
+
 
             {
-              isEditable && <SpeechToTextButton onTranscript={handleTranscript} />
+              isEditable &&
+              <GhostTextCompletion
+                label="Additional Note Diagnosis"
+                value={notes}
+                handleChange={(e) => setNotes(e.target.value)}
+              />
             }
 
           </div>

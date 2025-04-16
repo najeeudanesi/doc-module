@@ -4,6 +4,7 @@ import { RiCloseFill } from 'react-icons/ri';
 import { post } from '../../utility/fetch';
 import TextArea from '../UI/TextArea';
 import SpeechToTextButton from '../UI/SpeechToTextButton';
+import GhostTextCompletion from '../UI/TextPrediction';
 
 function AddMedicalRecord({ closeModal, patientId, fetchData, medicalRecordType }) {
 
@@ -50,13 +51,13 @@ function AddMedicalRecord({ closeModal, patientId, fetchData, medicalRecordType 
 
                     <div>
 
-
-                        <TextArea
+                        <GhostTextCompletion
                             label="Comment"
+                            name="comment"
                             value={comment}
-                            onChange={(e) => setComment(e.target.value)}
+                            handleChange={(e) => setComment(e.target.value)}
                         />
-                        <SpeechToTextButton onTranscript={handleTranscript} />
+                       
                     </div>
                     <button className="btn m-t-20 w-100" onClick={addMedicalRecord} disabled={loading}>Add Medical Record</button>
                 </div>

@@ -17,7 +17,7 @@ function ExternalLabs({ id }) {
     // console.log("id:", id);
     setIsLoading(true);
     try {
-      let res = await get(`/patients/${id}/external_lab_reports`);
+      let res = await get(`/patients/${id}/is-family-medicine/${false}/external_lab_reports`);
       // console.log(res);
       setData(res?.data);
     } catch (error) {
@@ -28,7 +28,7 @@ function ExternalLabs({ id }) {
 
   const getLabReport = async () => {
     try {
-      let response = await get(`/patients/list/${id}/1/10/external-lab-requests-by-patient-id`);
+      let response = await get(`/patients/list/${id}/is-family-medicine/${false}/1/10/external-lab-requests-by-patient-id`);
       setLabReports(response);
       console.log(response);
     } catch (error) {

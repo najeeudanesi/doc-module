@@ -46,6 +46,7 @@ function NurseNotes({ data, patientId, closeModal, isFacilityView }) {
                                             <th>Weight</th>
                                             <th>Temp</th>
                                             <th>Height</th>
+                                            <th>BMI</th>
                                             <th>Heart</th>
                                             <th>Respiratory</th>
                                             <th>Blood Pressure</th>
@@ -59,6 +60,7 @@ function NurseNotes({ data, patientId, closeModal, isFacilityView }) {
                                         <td>{data?.weight}</td>
                                         <td>{data?.temperature}</td>
                                         <td>{data?.height}</td>
+                                        <td>{data?.bmi}</td>
                                         <td>{data?.heartPulse}</td>
                                         <td>{data?.respiratory}</td>
                                         <td>{data?.bloodPressure}</td>

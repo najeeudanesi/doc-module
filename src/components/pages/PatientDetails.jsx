@@ -12,6 +12,7 @@ import Labs from "./Patient/Labs";
 import AppointmentTable from "../tables/AppointmentTable";
 import MedicalHistory from "../modals/MedicalHistory";
 import Discounts from "./Patient/Discounts";
+import Procedure from "./Patient/Procedures";
 
 
 function PatientDetails() {
@@ -83,6 +84,8 @@ function PatientDetails() {
         return <Labs visit={visit} id={patientId} />;
       case "discounts":
         return <Discounts id={patientId} />;
+      case "procedures":
+        return <Procedure id={patientId} name={`${patient?.firstName} ${patient?.lastName}`} />;
       default:
         return null;
     }
@@ -163,6 +166,12 @@ function PatientDetails() {
                   onClick={() => switchToTab("labs")}
                 >
                   Labs
+                </div>
+                <div
+                  className={`tab-item ${selectedTab === "procedures" ? "active" : ""}`}
+                  onClick={() => switchToTab("procedures")}
+                >
+                  Procedures
                 </div>
                 <div
                   className={`tab-item ${selectedTab === "discounts" ? "active" : ""}`}

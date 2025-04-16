@@ -8,10 +8,9 @@ import toast from "react-hot-toast";
 import { BsTrash } from "react-icons/bs";
 import SpeechToTextButton from "../UI/SpeechToTextButton";
 import axios from 'axios';
-import GhostTextCompletion from "../UI/TextPrediction";
 
 
-function ReferPatient({
+function ProcedureToLab({
   closeModal,
   visit,
   vital,
@@ -221,7 +220,7 @@ function ReferPatient({
 
     try {
       await post(
-        `/patients/${id}/vital/${selectedVital?.vitalId}/lab-request`,
+        `/patients/${id}/vital/${selectedVital?.vitalId}/procedure-request`,
         payload
       );
       toast.success("Lab request added successfully");
@@ -233,7 +232,9 @@ function ReferPatient({
     setLoading(false);
   };
 
-  
+  const handleTranscript = (transcript) => {
+    setAdditionalNote(additionalNote + transcript)
+  };
 
 
   return (
@@ -241,7 +242,7 @@ function ReferPatient({
       <RiCloseFill className="close-btn pointer" onClick={closeModal} />
       <div className="modal-box max-w-800">
         <div className="p-40">
-          <h3 className="bold-text">Refer Patient to Lab</h3>
+          <h3 className="bold-text">Procedures</h3>
           <div className="m-t-20">
             <div className="flex gap-8 flex-col">
               <div>
@@ -399,15 +400,14 @@ function ReferPatient({
             }}
           />
 
-          <div>
-            <GhostTextCompletion
-              label="Additional Note"
-              name="additionalNote"
-              value={additionalNote}
-              handleChange={(e) => setAdditionalNote(e.target.value)}
-            />
+          <div> <TextArea
+            label="Additional Note"
+            name="additionalNote"
+            value={additionalNote}
+            onChange={(e) => setAdditionalNote(e.target.value)}
+          />
 
-            
+            <SpeechToTextButton onTranscript={handleTranscript} />
           </div>
 
           <button
@@ -423,4 +423,4 @@ function ReferPatient({
   );
 }
 
-export default ReferPatient;
+export default ProcedureToLab;
