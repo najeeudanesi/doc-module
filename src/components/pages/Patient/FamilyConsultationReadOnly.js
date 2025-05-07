@@ -129,25 +129,23 @@ const FamilyConsultationReadOnly = () => {
   };
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
     console.log(treatmentData);
-    let payload = {
+    const payload = {
       dateOfVisit: formData.dateOfVisit,
-      // appointmentId: 0,
       appointmentId: +localStorage.getItem("appointmentId"),
-
-      diagnosis: formData.diagnosis,
+      diagnosis: formData.diagnosis || "No diagnosis provided",
       isAdmitted: false,
       patientId: +patientId,
-      DoctorId: +docInfo.employeeId,
-      medications: treatmentData.medications,
-      otherMedications: treatmentData.otherMedications,
+      DoctorId: +docInfo?.employeeId || 0,
+      medications: treatmentData.medications || [],
+      otherMedications: treatmentData.otherMedications || [],
       followUpAppointment: {
         id: 0,
-        appointDate: formData.appointDate,
-        appointTime: formData.appointTime,
-        description: formData.description,
-        doctorEmployeeId: formData.appointDate ? docInfo.employeeId : 0,
-
+        appointDate: formData.appointDate || null,
+        appointTime: formData.appointTime || null,
+        description: formData.description || "",
+        doctorEmployeeId: formData.appointDate ? docInfo?.employeeId || 0 : 0,
         nurseEmployeeId: 0,
         isAdmitted: false,
         patientId: formData.appointDate ? patientId : 0,
@@ -155,24 +153,22 @@ const FamilyConsultationReadOnly = () => {
         isEmergency: false,
         careType: 0,
       },
-      carePlan: carePlan,
+      carePlan: carePlan || "No care plan provided",
     };
-    // Submit form logic here
+
     try {
       const response = await post(
         `/FamilyMedicineTreatment/family-medicine/${treatmentId}`,
         payload
       );
-      if (response.isSuccess) {
+      if (response?.isSuccess) {
         navigate(`/doctor/patients/patient-details/${patientId}`);
-
-        // navigate(`/FamilyMedicineTreatment/family-medicine/${treatmentId}`);
+      } else {
+        console.error("Submission failed: Response not successful");
       }
-      console.log("API Response:", response);
     } catch (error) {
       console.error("Submission failed:", error);
     }
-    // onClose();
   };
 
   const onClose = () => {
@@ -199,6 +195,8 @@ const FamilyConsultationReadOnly = () => {
       const response = await get(`/FamilyMedicine/${treatmentId}`);
       if (response?.isSuccess) {
         setRecords(response.data || {});
+      } else {
+        console.error("Failed to fetch record: Response not successful");
       }
     } catch (error) {
       console.error("Failed to fetch record:", error);
@@ -215,23 +213,13 @@ const FamilyConsultationReadOnly = () => {
           "appointmentId"
         )}&pageIndex=1&pageSize=10`
       );
-      if (true) {
+      if (response?.data) {
         setvitals(response.data);
-        console.log(response.data);
-        // console.log(response.data.recordList[0] || {});
-        // setDiagnosis(response.data.recordList[0].diagnosis || 89);
-        // setCarePlan(response.data.recordList[0].carePlan || 89);
-        // setAdditionalNotes(response.data.recordList[0].additionalNotes || 89);
-
-        // setFormData({
-        //   ...response.data.recordList[0],
-        // });
-        // console.log({
-        //   ...response.data.recordList[0],
-        // });
+      } else {
+        console.error("Failed to fetch vitals: No data in response");
       }
     } catch (error) {
-      console.error("Failed to fetch record:", error);
+      console.error("Failed to fetch vitals:", error);
     } finally {
       setLoading(false);
     }
@@ -244,21 +232,16 @@ const FamilyConsultationReadOnly = () => {
         `/FamilyMedicineTreatment/list/family-medicine/${treatmentId}/1/10`
       );
       if (response?.isSuccess) {
-        setFamilyMedcineTreatmentDataById(response.data.recordList[0] || {});
-        console.log(response.data.recordList[0] || {});
-        setDiagnosis(response.data.recordList[0].diagnosis || 89);
-        setCarePlan(response.data.recordList[0].carePlan || 89);
-        setAdditionalNotes(response.data.recordList[0].additionalNotes || 89);
-
-        // setFormData({
-        //   ...response.data.recordList[0],
-        // });
-        // console.log({
-        //   ...response.data.recordList[0],
-        // });
+        const record = response.data.recordList?.[0] || {};
+        setFamilyMedcineTreatmentDataById(record);
+        setDiagnosis(record.diagnosis || "No diagnosis provided");
+        setCarePlan(record.carePlan || "No care plan provided");
+        setAdditionalNotes(record.additionalNotes || "No additional notes provided");
+      } else {
+        console.error("Failed to fetch treatment record: Response not successful");
       }
     } catch (error) {
-      console.error("Failed to fetch record:", error);
+      console.error("Failed to fetch treatment record:", error);
     } finally {
       setLoading(false);
     }
@@ -779,57 +762,69 @@ const FamilyConsultationReadOnly = () => {
           <div className="field-row">
             <label>Last confinement</label>
             <div className="readonly-box">
-              {formatDate(records.lastConfinement)}
+              {formatDate(records?.lastConfinement)}
             </div>
           </div>
           <div className="field-row">
             <label>Type of delivery</label>
             <div className="readonly-box">
-              {deliveryTypes[records.deliveryType]}
+              {deliveryTypes[records?.deliveryType]}
             </div>
           </div>
           <div className="field-column">
             <label>Delivery Complications?</label>
-            <div className="readonly-box">{records.details ? "Yes" : "No"}</div>
+            <div className="readonly-box">{records?.details ? "Yes" : "No"}</div>
           </div>
           <div className="field-column">
             <label>Provide Details</label>
-            <div className="readonly-box">{records.details}</div>
+            <div className="readonly-box">
+              {records?.details || "No details provided"}
+            </div>
           </div>
           <div className="field-column">
             <label>Breast feeding?</label>
             <div className="readonly-box">
-              {records.breastFeeding ? "Yes" : "No"}
+              {records?.breastFeeding !== undefined ? (records.breastFeeding ? "Yes" : "No") : "N/A"}
             </div>
           </div>
           <div className="field-column">
             <label>Menstrual resumed?</label>
             <div className="readonly-box">
-              {records.menstrualResumed ? "Yes" : "No"}
+              {records?.menstrualResumed !== undefined ? (records.menstrualResumed ? "Yes" : "No") : "N/A"}
             </div>
           </div>
           <div className="group-box">
             <label>Investigation</label>
             <div className="group-options">
-              {records.familyMedicineInvestigations.map((rec) => (
-                <span className="checked">{investigations[rec.id]}</span>
-              ))}
+              {records?.familyMedicineInvestigations?.length > 0 ? (
+                records.familyMedicineInvestigations.map((rec, index) => (
+                  <span key={index} className="checked">
+                    {investigations[rec.id] || "Unknown Investigation"}
+                  </span>
+                ))
+              ) : (
+                <span>No investigations recorded</span>
+              )}
             </div>
           </div>
           <div className="group-box">
             <label>Family Plan Methods</label>
             <div className="group-options">
-              <span className="checked">{plans[records.familyPlanMethod]}</span>
+              <span className="checked">
+                {plans[records?.familyPlanMethod] || "No family plan method selected"}
+              </span>
             </div>
           </div>
           <div className="field-column">
             <label>Consent</label>
-            <div className="readonly-box">{records.consent ? "Yes" : "No"}</div>
+            <div className="readonly-box">
+              {records?.consent !== undefined ? (records.consent ? "Yes" : "No") : "N/A"}
+            </div>
           </div>
           <div className="field-row">
             <label>Date commence</label>
             <div className="readonly-box">
-              {formatDate(records.dateCommence)}
+              {formatDate(records?.dateCommence) || "No date provided"}
             </div>
           </div>
           <div className="field-row">
@@ -838,26 +833,33 @@ const FamilyConsultationReadOnly = () => {
           </div>
           <div className="field-column">
             <label>Instructions</label>
-            <div className="readonly-box">{records.instructions}</div>
+            <div className="readonly-box">
+              {records?.instructions || "No instructions provided"}
+            </div>
           </div>
           <div className="field-column">
             <label>Remarks</label>
-            <div className="readonly-box">{records.remarks}</div>
+            <div className="readonly-box">
+              {records?.remarks || "No remarks provided"}
+            </div>
           </div>
           <div className="field-column">
             <label>Attach documents</label>
             <div className="readonly-box">
-              {records.familyMedicineDocuments?.map((doc, i) => (
-                <a key={i} href={doc.docPath || "#"} className="doc-link">
-                  {doc.docName}
-                </a>
-              ))}
+              {records?.familyMedicineDocuments?.length > 0 ? (
+                records.familyMedicineDocuments.map((doc, i) => (
+                  <a key={i} href={doc.docPath || "#"} className="doc-link">
+                    {doc.docName || "Unnamed Document"}
+                  </a>
+                ))
+              ) : (
+                <span>No documents attached</span>
+              )}
             </div>
           </div>
         </section>
       </main>
-      {!view &&
-        !treatmentId(
+      {!view && !treatmentId && (
           <div className="action-row">
             {/* <button type="button" className="btn grey">
             Preview Record

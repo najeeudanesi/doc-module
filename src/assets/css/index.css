@@ -74,6 +74,11 @@
   padding: 10px; */
 }
 
+.green {
+  color: #3C7E2D;
+  text-decoration: underline;
+}
+
 .tiny-card {
   display: flex;
   justify-content: space-between;
@@ -285,7 +290,8 @@
 .upload-btn:hover {
   background-color: #1c811c88;
 }
-.flex-col-gap{
+
+.flex-col-gap {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -506,7 +512,8 @@
   border: 1px solid #3c7e2da6;
   box-shadow: 1px 4px 11px 0px #cebde440;
 }
-.flex-center{
+
+.flex-center {
   display: flex;
   align-items: center;
   justify-items: center;
@@ -687,8 +694,7 @@ section {
   margin: 0;
 }
 
-button
- {
+button {
   border: none;
   outline: none;
 }
@@ -1358,7 +1364,8 @@ div.bottom ul {
   width: 250px;
   border: 1px solid #017d34; */
 
-  background-color: #ebffe6; /* light green */
+  background-color: #ebffe6;
+  /* light green */
   color: #333;
   padding: 6px 10px;
   width: 250px;

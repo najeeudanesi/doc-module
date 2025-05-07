@@ -54,31 +54,19 @@ const FamilyConsultation = () => {
   const { patientId } = useParams();
 
   const fetchTreatmentVitalsRecord = async () => {
-    //  setLoading(true);
     try {
       const response = await get(
         `/patients/vital-by-appointmentId?appointmentId=${+localStorage.getItem(
           "appointmentId"
         )}&pageIndex=1&pageSize=10`
       );
-      if (true) {
+      if (response?.data) {
         setvitals(response.data);
-        // console.log(response.data.recordList[0] || {});
-        // setDiagnosis(response.data.recordList[0].diagnosis || 89);
-        // setCarePlan(response.data.recordList[0].carePlan || 89);
-        // setAdditionalNotes(response.data.recordList[0].additionalNotes || 89);
-
-        // setFormData({
-        //   ...response.data.recordList[0],
-        // });
-        // console.log({
-        //   ...response.data.recordList[0],
-        // });
+      } else {
+        console.error("Failed to fetch vitals: No data in response");
       }
     } catch (error) {
       console.error("Failed to fetch record:", error);
-    } finally {
-      //  setLoading(false);
     }
   };
 
@@ -87,7 +75,7 @@ const FamilyConsultation = () => {
     const payload = {
       patientId: parseInt(patientId),
       lastConfinement: formData.lastConfinement || null,
-      deliveryType: +formData.deliveryType,
+      deliveryType: +formData.deliveryType || null,
       deliveryComplications: formData.deliveryComplications === "Yes",
       details: formData.details || "",
       breastFeeding: formData.breastFeeding === "Yes",
@@ -95,13 +83,12 @@ const FamilyConsultation = () => {
       familyMedicineInvestigations: investigationArray.map((item) => ({
         investigation: item.id,
       })),
-      familyPlanMethod: +formData.familyPlanMethod,
+      familyPlanMethod: +formData.familyPlanMethod || null,
       dateCommence: formData.dateCommence || null,
-      // nextVisit: formData.nextVisit || null,
       appointmentId: +localStorage.getItem("appointmentId"),
       instructions: formData.instructions || "",
       remarks: formData.remark || "",
-      doctorId: docInfo.employeeId,
+      doctorId: docInfo?.employeeId || 0,
       consent: formData.consent === "Yes",
       familyMedicineDocuments: [
         {
@@ -112,13 +99,14 @@ const FamilyConsultation = () => {
     };
 
     console.log("Mapped Payload:", payload);
-    // return;
+
     try {
       const response = await post("/FamilyMedicine", payload);
-      if (response.isSuccess) {
+      if (response?.isSuccess) {
         navigate(`/doctor/patients/patient-details/${patientId}`);
+      } else {
+        console.error("Submission failed: Response not successful");
       }
-      console.log("API Response:", response);
     } catch (error) {
       console.error("Submission failed:", error);
     }
