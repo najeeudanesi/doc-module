@@ -32,11 +32,13 @@ const Home = (props) => {
       console.log(data);
       if (data?.role.includes("Doctor")) {
         sessionStorage.setItem("clinicId", data?.clinicId);
+        localStorage.setItem("homeLink", data?.homeLink);
         sessionStorage.setItem("token", "Bearer " + data.jwt.token);
         sessionStorage.setItem("token-expiry-date", data.jwt.expirationDate);
         localStorage.setItem("name", data.firstName + " " + data.lastName);
         localStorage.setItem("role", data.role[0].replace(/[^\w\s]/gi, ""));
         localStorage.setItem("USER_INFO", JSON.stringify(data));
+
         navigate("/doctor/dashboard");
       } else {
         window.location.href =

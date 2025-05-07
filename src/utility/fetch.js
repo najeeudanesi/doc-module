@@ -12,6 +12,7 @@ async function fetchBackend(endpoint, method, auth, body, params) {
   const fetchObject = { method, headers };
   const path = paths[endpoint] || endpoint;
   let url = `${process.env.REACT_APP_BACKEND_URL}${path}`;
+  // let url = `https://api.greenzonetechnologies.com.ng/medicals/api${path}`;
   
  
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { get } from "../../../utility/fetch";
-import AddTreatment from "../../modals/AddTreatment";
+import AddTreatment from "../../modals/AddTreatmentOld";
 import ReferPatient from "../../modals/ReferPatient";
 import TreatmentTable from "../../tables/TreatmentTable";
 import ProcedureToLab from "../../modals/ProcedureToLab";

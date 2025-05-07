@@ -7,15 +7,20 @@ import { post, get } from "../../utility/fetch";
 import toast from "react-hot-toast";
 import { BsTrash } from "react-icons/bs";
 import SpeechToTextButton from "../UI/SpeechToTextButton";
-import axios from 'axios';
+import axios from "axios";
 import GhostTextCompletion from "../UI/TextPrediction";
-
 
 function ReferPatient({
   closeModal,
   visit,
   vital,
+  ivf,
+  antenatal,
+  generalSurgery,
+  familyMedcine,
+  orthopedic,
   id,
+  generalPractice,
   treatment,
   setRepeatedDiagnosis,
   repeatedDiagnosis,
@@ -32,9 +37,10 @@ function ReferPatient({
   const [hmo, setHmo] = useState(null);
   const [selectedLab, setSelectedLab] = useState(null);
   const [services, setServices] = useState(null);
-  const [service, setService] = useState({})
+  const [service, setService] = useState({});
   const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState({}); const [labType, setLabType] = useState([
+  const [category, setCategory] = useState({});
+  const [labType, setLabType] = useState([
     {
       value: 1,
       label: "Internal Lab",
@@ -57,7 +63,6 @@ function ReferPatient({
     setCategoryOptions(dummyLabCategories);
     fetchPatientHMO();
     getCategories();
-
   }, []);
 
   useEffect(() => {
@@ -80,30 +85,38 @@ function ReferPatient({
     }
   };
 
-  console.log(vital, 'visit', visit)
-
+  console.log(vital, "visit", visit);
 
   const getCategories = async () => {
     const token = sessionStorage.getItem("token");
 
     if (!token) {
-      console.error('Token not found in session storage');
+      console.error("Token not found in session storage");
       return;
     }
 
     const options = {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `${token}`
-      }
+        Authorization: `${token}`,
+      },
     };
 
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/healthfinanceapi/api/category/list/1/1000`, options);
+      const res = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/healthfinanceapi/api/category/list/1/1000`,
+        options
+      );
 
       const tempServices = res?.data?.resultList
-        ?.filter((service) => service.name === "Lab Service" || service.name === "Lab Services")
-        .map((category) => ({ label: category?.name, value: parseFloat(category?.id) }));
+        ?.filter(
+          (service) =>
+            service.name === "Lab Service" || service.name === "Lab Services"
+        )
+        .map((category) => ({
+          label: category?.name,
+          value: parseFloat(category?.id),
+        }));
 
       tempServices?.unshift({ label: "Select Service", value: "" });
 
@@ -114,27 +127,32 @@ function ReferPatient({
   };
 
   const getCategoriesService = async () => {
-    const token = sessionStorage.getItem('token');
+    const token = sessionStorage.getItem("token");
 
     if (!token) {
-      console.error('Token not found in session storage');
+      console.error("Token not found in session storage");
       return;
     }
 
     const options = {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `${token}`
-      }
+        Authorization: `${token}`,
+      },
     };
 
     try {
-      setService({})
+      setService({});
       setServices(null);
-      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/healthfinanceapi/api/categoryitem/list/category/${category?.value}/1/1000`, options);
+      const res = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/healthfinanceapi/api/categoryitem/list/category/${category?.value}/1/1000`,
+        options
+      );
 
-      const tempServices = res?.data?.resultList
-        .map((service) => ({ label: service?.itemName, value: parseFloat(service?.id) }));
+      const tempServices = res?.data?.resultList.map((service) => ({
+        label: service?.itemName,
+        value: parseFloat(service?.id),
+      }));
 
       tempServices?.unshift({ label: "Select Service", value: "" });
 
@@ -195,26 +213,52 @@ function ReferPatient({
 
     setLoading(true);
 
-    const selectedVital = vital.find(v => v.appointmentId === visit.id);
+    const selectedVital = vital.find((v) => v.appointmentId === visit.id);
 
     const payload = {
       labRequestType: selectedLab?.value,
-      internalLab: testRequests?.length > 0 ? {
-        diagnosis,
-        dateOfVisit: new Date(visit?.appointDate).toISOString(),
-        appointmentId: visit?.id,
-        hmoId: hmo?.hmoProviderId || 0,
-        hmoPackageId: hmo?.hmoPackageId || 0,
-        testRequests,
-        additionalNote
-      } : null,
-      externalLab: otherTestRequests?.length > 0 ? {
-        diagnosis,
-        dateOfVisit: new Date(visit?.appointDate).toISOString(),
-        appointmentId: visit?.id,
-        otherTestRequests,
-        additionalNote
-      } : null,
+      internalLab:
+        testRequests?.length > 0
+          ? {
+              diagnosis,
+              isFamilyMedicine: familyMedcine ? true : false,
+              dateOfVisit: new Date(visit?.appointDate).toISOString(),
+              appointmentId: visit?.id,
+              hmoId: hmo?.hmoProviderId || 0,
+              hmoPackageId: hmo?.hmoPackageId || 0,
+              testRequests,
+              additionalNote,
+              familyMedicineId: +familyMedcine || 0,
+              oG_IVFId: ivf,
+              oG_BirthRecordId: 0,
+              orthopedicId: orthopedic || 0,
+              generalSurgeryId: generalSurgery || 0,
+              antenatalId: antenatal||0,
+              pediatricId: 0,
+              generalPracticeId: generalPractice||0,
+            }
+          : null,
+      externalLab:
+        otherTestRequests?.length > 0
+          ? {
+            diagnosis,
+            isFamilyMedicine: familyMedcine ? true : false,
+            dateOfVisit: new Date(visit?.appointDate).toISOString(),
+            appointmentId: visit?.id,
+            hmoId: hmo?.hmoProviderId || 0,
+            hmoPackageId: hmo?.hmoPackageId || 0,
+            testRequests,
+            additionalNote,
+            familyMedicineId: +familyMedcine || 0,
+            oG_IVFId: ivf,
+            oG_BirthRecordId: 0,
+            orthopedicId: orthopedic || 0,
+            generalSurgeryId: generalSurgery || 0,
+            antenatalId: antenatal||0,
+            pediatricId: 0,
+            generalPracticeId: 0,
+            }
+          : null,
     };
 
     console.log(payload);
@@ -232,9 +276,6 @@ function ReferPatient({
     }
     setLoading(false);
   };
-
-  
-
 
   return (
     <div className="overlay">
@@ -254,7 +295,7 @@ function ReferPatient({
                   isClearable
                 />
               </div>
-              {selectedLab?.value === 1 &&
+              {selectedLab?.value === 1 && (
                 <div className="m-t-20">
                   <label>Service Category</label>
                   <Select
@@ -269,7 +310,7 @@ function ReferPatient({
                   />
 
                   <>
-                    {Array.isArray(services) &&
+                    {Array.isArray(services) && (
                       <div className="m-t-20">
                         <label>Lab Services</label>
 
@@ -284,12 +325,12 @@ function ReferPatient({
                           isClearable
                         />
                       </div>
-                    }
+                    )}
                   </>
                 </div>
-              }
+              )}
 
-              {selectedLab?.value === 2 &&
+              {selectedLab?.value === 2 && (
                 <>
                   <p className="text-sm m-t-20">
                     Dont see a category? Specify the name of the lab test
@@ -302,7 +343,7 @@ function ReferPatient({
                     onChange={(e) => setLabTest(e.target.value)}
                   />
                 </>
-              }
+              )}
               <div>
                 <div className="flex gap-8">
                   <InputField
@@ -406,8 +447,6 @@ function ReferPatient({
               value={additionalNote}
               handleChange={(e) => setAdditionalNote(e.target.value)}
             />
-
-            
           </div>
 
           <button

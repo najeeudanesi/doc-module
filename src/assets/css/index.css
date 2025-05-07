@@ -285,6 +285,11 @@
 .upload-btn:hover {
   background-color: #1c811c88;
 }
+.flex-col-gap{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
 .upload-btn:active {
   background-color: #3c7e2d;
@@ -501,16 +506,29 @@
   border: 1px solid #3c7e2da6;
   box-shadow: 1px 4px 11px 0px #cebde440;
 }
+.flex-center{
+  display: flex;
+  align-items: center;
+  justify-items: center;
+}
 
 .input-field {
-  width: 100%;
-  height: 32px;
+  /* 
   top: -99px;
   left: -300px;
   padding: 2px;
   border-radius: 4px;
-  border: 1px solid #3c7e2da6;
+   */
+  /* flex: 1; */
+  height: 32px;
+
   box-shadow: 1px 4px 11px 0px #cebde440;
+  border: 1px solid #3c7e2da6;
+  width: 100%;
+  border: none;
+  padding: 6px 10px;
+  outline: none;
+  font-size: 13px;
 }
 
 .clickable-row {
@@ -1335,10 +1353,19 @@ div.bottom ul {
 }
 
 .label {
-  background-color: #ebffe6;
+  /* background-color: #ebffe6;
   padding: 6px;
   width: 250px;
-  border: 1px solid #017d34;
+  border: 1px solid #017d34; */
+
+  background-color: #ebffe6; /* light green */
+  color: #333;
+  padding: 6px 10px;
+  width: 250px;
+  border-right: 1px solid #017d34;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
 }
 
 .filter-input {

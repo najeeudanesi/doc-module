@@ -13,10 +13,8 @@ function AddTreatment({
   closeModal,
   visit,
   id,
-  getTreatmentData,
-  treatmentData,
-  createTreatment,
   fetchData,
+  createTreatment,
   data,
   repeatedDiagnosis,
   setRepeatedDiagnosis,
@@ -34,6 +32,47 @@ function AddTreatment({
   const [medicationOptions, setMedicationOptions] = useState([]); // State for fetched medication options
   const [hmo, setHmo] = useState(null);
 
+  const routesOfAdministration = [
+    { id: 1, name: "Orally" },
+    { id: 2, name: "Sublingual" },
+    { id: 3, name: "Topical" },
+    { id: 4, name: "Inhalation" },
+    { id: 5, name: "Suppository" },
+    { id: 6, name: "IV" },
+    { id: 7, name: "IM" },
+    { id: 8, name: "Subcut" },
+    { id: 9, name: "Intradermal" },
+    { id: 10, name: "PerRectum" },
+    { id: 11, name: "PerVagina" },
+    { id: 12, name: "Implant" },
+  ];
+
+  const administrationFrequencies = [
+    { id: 1, name: "Immediately" },
+    { id: 2, name: "As needed" },
+    { id: 3, name: "Once daily" },
+    { id: 4, name: "Twice a day" },
+    { id: 5, name: "Three times a day" },
+    { id: 6, name: "Four times a day" },
+    { id: 7, name: "At night" },
+    { id: 8, name: "Morning" },
+    { id: 9, name: "Evening" },
+    { id: 10, name: "Every 24 hours" },
+    { id: 11, name: "Every 12 hours" },
+    { id: 12, name: "Every 8 hours" },
+    { id: 13, name: "Every 6 hours" },
+    { id: 14, name: "Every 4 hours" },
+    { id: 15, name: "Every 3 hours" },
+    { id: 16, name: "Every 2 hours" },
+    { id: 17, name: "Every hour" },
+    { id: 18, name: "Every 2 months" },
+    { id: 19, name: "Every 3 months" },
+    // Every 3 months
+  ];
+
+  
+
+
   const fetchTreatmentCategory = async () => {
     try {
       const response = await get("/patients/get-all-categories");
@@ -47,6 +86,58 @@ function AddTreatment({
     setDiagnosis(repeatedDiagnosis);
     console.log(repeatedDiagnosis);
   }, [repeatedDiagnosis]);
+
+  // const drugMeasurementUnits = [
+  //   { id: 1, name: "Tablets", symbol: "µg" },
+  //   { id: 2, name: "Milligram", symbol: "mg" },
+  //   { id: 3, name: "Bottle", symbol: "g" },
+  //   { id: 4, name: "Ampule", symbol: "g" },
+  //   // { id: 4, name: "Kilogram", symbol: "kg" },
+  //   // { id: 5, name: "Nanogram", symbol: "ng" },
+  //   // { id: 6, name: "International Unit", symbol: "IU" },
+  //   // { id: 7, name: "Milliliter", symbol: "mL" },
+  //   // { id: 8, name: "Liter", symbol: "L" },
+  //   // { id: 9, name: "Percent", symbol: "%" },
+  //   // { id: 10, name: "Milligram per Milliliter", symbol: "mg/mL" },
+  //   // { id: 11, name: "Microgram per Milliliter", symbol: "µg/mL" },
+  //   // { id: 12, name: "Gram per Liter", symbol: "g/L" },
+  //   // { id: 13, name: "Millimole", symbol: "mmol" },
+  //   // { id: 14, name: "Mole", symbol: "mol" },
+  //   // { id: 15, name: "Milliequivalent", symbol: "mEq" },
+  //   // { id: 16, name: "Unit per Kilogram", symbol: "U/kg" },
+  //   // { id: 17, name: "Microgram per Kilogram", symbol: "µg/kg" },
+  //   // { id: 18, name: "Milligram per Kilogram", symbol: "mg/kg" },
+  // ];
+
+  const drugMeasurementUnits = [
+    { id: 1, name: "Milligrams", symbol: "mg" },
+    { id: 2, name: "Grams", symbol: "g" },
+    { id: 3, name: "Micrograms", symbol: "µg" },
+    { id: 4, name: "Milliliters", symbol: "mL" },
+    { id: 5, name: "Liters", symbol: "L" },
+    { id: 6, name: "Units", symbol: "U" },
+    { id: 7, name: "Puffs" },
+    { id: 8, name: "Sprays" },
+    { id: 9, name: "Drops" },
+    { id: 10, name: "Patch" },
+    { id: 11, name: "Bottle" },
+    { id: 12, name: "Transdermal System" },
+    { id: 13, name: "Tablet" },
+    { id: 14, name: "Capsule" },
+    { id: 15, name: "Suppository" },
+    { id: 16, name: "Scoop" },
+    { id: 17, name: "Sachet" },
+    { id: 18, name: "Ampoule" },
+    { id: 19, name: "Vial" },
+    { id: 20, name: "Injection Pen" },
+    { id: 21, name: "Enema" },
+    { id: 22, name: "Ounces", symbol: "oz" },
+    { id: 23, name: "Teaspoon", symbol: "tsp" },
+    { id: 24, name: "Tablespoon", symbol: "tbsp" },
+    { id: 25, name: "Milliequivalents", symbol: "mEq" },
+    { id: 26, name: "International Units", symbol: "IU" }
+  ];
+  
 
   // Fetch Medications from API with Filter Query (Debounced)
   const fetchMedications = async (
@@ -99,20 +190,6 @@ function AddTreatment({
           duration: "",
         },
       ]);
-
-      getTreatmentData({
-        ...treatmentData,
-        medications: [
-          ...medications,
-          {
-            name: selectedMedication.label,
-            pharmacyInventoryId: selectedMedication.value, // Save the medication ID (value) here
-            quantity: "",
-            frequency: "",
-            duration: "",
-          },
-        ],
-      });
       setSelectedMedication(null); // Clear selection after adding
     } else {
       toast.error("Please select a valid medication");
@@ -131,20 +208,6 @@ function AddTreatment({
           duration: 0,
         },
       ]);
-
-      getTreatmentData({
-        ...treatmentData,
-        otherMedications: [
-          ...otherMedications,
-          // { name: newOtherMedication, quantity: "", frequency: "", duration: "" },
-          {
-            name: newOtherMedication,
-            quantity: 0,
-            frequency: 0,
-            duration: 0,
-          },
-        ],
-      });
       setNewOtherMedication("");
     } else {
       toast.error("Please enter the other medication name");
@@ -155,21 +218,11 @@ function AddTreatment({
     if (type === "medications") {
       const updatedMedications = [...medications];
       updatedMedications.splice(index, 1);
-      getTreatmentData({
-        ...treatmentData,
-        medications: updatedMedications,
-      });
-
       setMedications(updatedMedications);
     } else if (type === "otherMedications") {
       const updatedOtherMedications = [...otherMedications];
       updatedOtherMedications.splice(index, 1);
       setOtherMedications(updatedOtherMedications);
-
-      getTreatmentData({
-        ...treatmentData,
-        otherMedications: updatedOtherMedications,
-      });
     }
   };
 
@@ -184,7 +237,7 @@ function AddTreatment({
     ];
 
     let updatedValue = value;
-    if (["duration", "frequency", "quantity"].includes(field)) {
+    if (["duration", "quantity"].includes(field)) {
       updatedValue = parseInt(value, 10) || 0;
     }
 
@@ -195,17 +248,8 @@ function AddTreatment({
 
     if (type === "medications") {
       setMedications(updatedMedications);
-
-      getTreatmentData({
-        ...treatmentData,
-        medications: updatedMedications,
-      });
     } else {
       setOtherMedications(updatedMedications);
-      getTreatmentData({
-        ...treatmentData,
-        otherMedications: updatedMedications,
-      });
     }
   };
   const addTreatment = async () => {
@@ -215,22 +259,29 @@ function AddTreatment({
     }
 
     const dateOfVisit = new Date(visit?.appointDate).toISOString();
-    setLoading(true);
+    // setLoading(true);
 
     // Prepare the medications payload with pharmacyInventoryId
     const formattedMedications = medications.map((med) => ({
-      pharmacyInventoryId: med.pharmacyInventoryId, // Using the selected medication's ID
+      pharmacyInventoryId: med.pharmacyInventoryId,
       quantity: med.quantity,
-      frequency: med.frequency,
+      strength: med.frequency,
+      administrationFrequency: +med.administrationFrequency || 1,
+      routeOfAdministration: +med.routeOfAdministration || 1,
       duration: med.duration,
+
+      drugStrengthUnit: +med.drugStrengthUnit,
     }));
 
     // Prepare the otherMedications payload
     const formattedOtherMedications = otherMedications.map((med) => ({
       name: med.name,
       quantity: med.quantity,
-      frequency: med.frequency,
+      strength: med.frequency,
+      administrationFrequency: +med.administrationFrequency || 1,
+      routeOfAdministration: +med.routeOfAdministration || 1,
       duration: med.duration,
+      drugStrengthUnit:+med.drugStrengthUnit||1,
     }));
 
     // Construct the payload in the required format
@@ -247,23 +298,26 @@ function AddTreatment({
     };
 
     console.log(payload);
-    createTreatment && createTreatment(payload);
-    // settreatmentData(payload);
+    // return
+    if (createTreatment) {
+      createTreatment && createTreatment(payload);
+      return;
+    }
 
-    // try {
-    //   await post(
-    //     `/patients/${id}/appoint/${localStorage.getItem(
-    //       "appointmentId"
-    //     )}/addtreatmentprescription`,
-    //     payload
-    //   );
-    //   await fetchData();
-    //   toast.success("Treatment added successfully");
-    //   closeModal();
-    // } catch (error) {
-    //   toast.error("Error adding treatment");
-    //   console.log(error);
-    // }
+    try {
+      await post(
+        `/patients/${id}/appoint/${localStorage.getItem(
+          "appointmentId"
+        )}/addtreatmentprescription`,
+        payload
+      );
+      await fetchData();
+      toast.success("Treatment added successfully");
+      closeModal();
+    } catch (error) {
+      toast.error("Error adding treatment");
+      console.log(error);
+    }
     setLoading(false);
   };
 
@@ -287,20 +341,20 @@ function AddTreatment({
   }, []);
 
   return (
-    <div className="">
-      {/* <RiCloseFill className="close-btn pointer" onClick={closeModal} /> */}
+    <div className="overlay">
+      <RiCloseFill className="close-btn pointer" onClick={closeModal} />
       <div className="modal-box max-w-700">
         <div className="p-40">
           <h3 className="bold-text">Add Treatment</h3>
 
           {/* Treatment Category */}
-          {/* <div className="w-100 m-t-20 flex">
+          <div className="w-100 m-t-20 flex">
             <label htmlFor="category" className="label">
               Treatment Category
             </label>
             <select
               id="category"
-              className="input"
+              className="input-field"
               value={selectedCategoryId}
               onChange={(e) => setSelectedCategoryId(e.target.value)}
             >
@@ -310,13 +364,13 @@ function AddTreatment({
                 </option>
               ))}
             </select>
-          </div> */}
+          </div>
 
-          {/* <GhostTextCompletion
+          <GhostTextCompletion
             label="Patient Diagnosis"
             name="diagnosis"
             value={diagnosis}
-            onChange={(e) => {
+            handleChange={(e) => {
               setDiagnosis(e.target.value);
               setRepeatedDiagnosis(e.target.value);
             }}
@@ -326,12 +380,12 @@ function AddTreatment({
               label="Add Care Plan"
               name="carePlan"
               value={carePlan}
-              onChange={(e) => setCarePlan(e.target.value)}
+              handleChange={(e) => setCarePlan(e.target.value)}
             />
-          </div> */}
+          </div>
 
           {/* Admission Status */}
-          {/* <div className="w-100 m-t-20 flex">
+          <div className="w-100 m-t-20 flex">
             <label htmlFor="admission" className="label">
               Admission Status
             </label>
@@ -344,7 +398,7 @@ function AddTreatment({
               <option value="Admitted">To Be Admitted</option>
               <option value="Not To Be Admitted">Not To Be Admitted</option>
             </select>
-          </div> */}
+          </div>
 
           {/* Medications from API */}
           <div className="m-t-20">
@@ -370,10 +424,12 @@ function AddTreatment({
                   <tr>
                     <th>s/n</th>
                     <th>Medication</th>
-                    <th>Dosage</th>
-                    <th>Frequency</th>
+                    <th>Quantity</th>
+                    <th>Strength</th>
+                    <th>Units Of Measurement</th>
+                    <th>Administration Frequency</th>
                     <th>Duration (days)</th>
-                    {/* <th>Route</th> */}
+                    <th>Route</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -399,9 +455,9 @@ function AddTreatment({
                       </td>
                       <td>
                         <input
-                          type="number"
+                          // type="text"
                           className="input-field-table"
-                          value={med.frequency}
+                          // value={med.frequency}
                           onChange={(e) =>
                             handleMedicationChange(
                               index,
@@ -411,6 +467,46 @@ function AddTreatment({
                             )
                           }
                         />
+                      </td>
+                      <td>
+                        <select
+                          className="input-field-table"
+                          value={med.drugStrengthUnit || ""}
+                          onChange={(e) =>
+                            handleMedicationChange(
+                              index,
+                              "drugStrengthUnit",
+                              e.target.value,
+                              "medications"
+                            )
+                          }
+                        >
+                          {drugMeasurementUnits.map((freq) => (
+                            <option key={freq.id} value={freq.id}>
+                              {freq.name}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <select
+                          className="input-field-table"
+                          value={med.administrationFrequency || ""}
+                          onChange={(e) =>
+                            handleMedicationChange(
+                              index,
+                              "administrationFrequency",
+                              e.target.value,
+                              "medications"
+                            )
+                          }
+                        >
+                          {administrationFrequencies.map((freq) => (
+                            <option key={freq.id} value={freq.id}>
+                              {freq.name}
+                            </option>
+                          ))}
+                        </select>
                       </td>
                       <td>
                         <input
@@ -426,6 +522,26 @@ function AddTreatment({
                             )
                           }
                         />
+                      </td>
+                      <td>
+                        <select
+                          className="input-field-table"
+                          value={med.routeOfAdministration || ""}
+                          onChange={(e) =>
+                            handleMedicationChange(
+                              index,
+                              "routeOfAdministration",
+                              e.target.value,
+                              "medications"
+                            )
+                          }
+                        >
+                          {routesOfAdministration.map((route) => (
+                            <option key={route.id} value={route.id}>
+                              {route.name}
+                            </option>
+                          ))}
+                        </select>
                       </td>
                       <td>
                         <BsTrash
@@ -444,7 +560,7 @@ function AddTreatment({
           <div className="m-t-20">
             <input
               type="text"
-              className="input"
+              // className="input-field"
               placeholder="Enter other medication"
               value={newOtherMedication}
               onChange={(e) => setNewOtherMedication(e.target.value)}
@@ -462,9 +578,12 @@ function AddTreatment({
                   <tr>
                     <th>s/n</th>
                     <th>Medication</th>
-                    {/* <th>Quantity</th>
-                    <th>Frequency</th>
-                    <th>Duration</th> */}
+                    <th>Quantity</th>
+                    <th>Strength</th>
+                    <th>Units Of Measurement</th>
+                    <th>Administration Frequency</th>
+                    <th>Duration (days)</th>
+                    <th>Route</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -473,6 +592,111 @@ function AddTreatment({
                     <tr key={index}>
                       <td>{index + 1}</td>
                       <td>{med.name}</td>
+                      <td>
+                        <input
+                          type="number"
+                          className="input-field-table"
+                          value={med.quantity}
+                          onChange={(e) =>
+                            handleMedicationChange(
+                              index,
+                              "quantity",
+                              e.target.value,
+                              "otherMedications"
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          // type="text"
+                          className="input-field-table"
+                          // value={med.frequency}
+                          onChange={(e) =>
+                            handleMedicationChange(
+                              index,
+                              "frequency",
+                              e.target.value,
+                              "otherMedications"
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <select
+                          className="input-field-table"
+                          value={med.drugStrengthUnit || ""}
+                          onChange={(e) =>
+                            handleMedicationChange(
+                              index,
+                              "drugStrengthUnit",
+                              e.target.value,
+                              "otherMedications"
+                            )
+                          }
+                        >
+                          {drugMeasurementUnits.map((freq) => (
+                            <option key={freq.id} value={freq.id}>
+                              {freq.name}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <select
+                          className="input-field-table"
+                          value={med.administrationFrequency || ""}
+                          onChange={(e) =>
+                            handleMedicationChange(
+                              index,
+                              "administrationFrequency",
+                              e.target.value,
+                              "otherMedications"
+                            )
+                          }
+                        >
+                          {administrationFrequencies.map((freq) => (
+                            <option key={freq.id} value={freq.id}>
+                              {freq.name}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          className="input-field-table"
+                          value={med.duration}
+                          onChange={(e) =>
+                            handleMedicationChange(
+                              index,
+                              "duration",
+                              e.target.value,
+                              "otherMedications"
+                            )
+                          }
+                        />
+                      </td>
+                      <td>
+                        <select
+                          className="input-field-table"
+                          value={med.routeOfAdministration || ""}
+                          onChange={(e) =>
+                            handleMedicationChange(
+                              index,
+                              "routeOfAdministration",
+                              e.target.value,
+                              "otherMedications"
+                            )
+                          }
+                        >
+                          {routesOfAdministration.map((route) => (
+                            <option key={route.id} value={route.id}>
+                              {route.name}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
                       {/* <td >
                         <div style={{ display: "flex", gap: "4px" }}>
                           <input
