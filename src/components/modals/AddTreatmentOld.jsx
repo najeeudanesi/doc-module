@@ -75,7 +75,7 @@ function AddTreatment({
   ];
 
 
-
+  console.log(visit)
 
   const fetchTreatmentCategory = async () => {
     try {
@@ -90,28 +90,6 @@ function AddTreatment({
     setDiagnosis(repeatedDiagnosis);
     console.log(repeatedDiagnosis);
   }, [repeatedDiagnosis]);
-
-  // const drugMeasurementUnits = [
-  //   { id: 1, name: "Tablets", symbol: "µg" },
-  //   { id: 2, name: "Milligram", symbol: "mg" },
-  //   { id: 3, name: "Bottle", symbol: "g" },
-  //   { id: 4, name: "Ampule", symbol: "g" },
-  //   // { id: 4, name: "Kilogram", symbol: "kg" },
-  //   // { id: 5, name: "Nanogram", symbol: "ng" },
-  //   // { id: 6, name: "International Unit", symbol: "IU" },
-  //   // { id: 7, name: "Milliliter", symbol: "mL" },
-  //   // { id: 8, name: "Liter", symbol: "L" },
-  //   // { id: 9, name: "Percent", symbol: "%" },
-  //   // { id: 10, name: "Milligram per Milliliter", symbol: "mg/mL" },
-  //   // { id: 11, name: "Microgram per Milliliter", symbol: "µg/mL" },
-  //   // { id: 12, name: "Gram per Liter", symbol: "g/L" },
-  //   // { id: 13, name: "Millimole", symbol: "mmol" },
-  //   // { id: 14, name: "Mole", symbol: "mol" },
-  //   // { id: 15, name: "Milliequivalent", symbol: "mEq" },
-  //   // { id: 16, name: "Unit per Kilogram", symbol: "U/kg" },
-  //   // { id: 17, name: "Microgram per Kilogram", symbol: "µg/kg" },
-  //   // { id: 18, name: "Milligram per Kilogram", symbol: "mg/kg" },
-  // ];
 
   const drugMeasurementUnits = [
     { id: 1, name: "Milligrams", symbol: "mg" },
@@ -192,7 +170,7 @@ function AddTreatment({
     if (allMedications.length === 0) {
       setSuggPayload({ medications: [] });
       return;
-    }else{
+    } else {
       setSuggPayload({ medications: allMedications });
     }
   };
@@ -797,7 +775,9 @@ function AddTreatment({
             </div>
           )}
 
-          <Suggestions payload={sugesstPayload} patientId={id} />
+          <div className="m-t-20">
+            <Suggestions payload={sugesstPayload} patientId={visit?.patientId} />
+          </div>
 
           <button
             className="btn m-t-20 w-100"

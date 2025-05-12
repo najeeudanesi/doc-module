@@ -1,6 +1,5 @@
 import React from 'react';
 import { RiCloseFill } from 'react-icons/ri';
-import InputField from '../UI/InputField';
 import TextArea from '../UI/TextArea';
 import { formatDate } from "../../utility/general";
 

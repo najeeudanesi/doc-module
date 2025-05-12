@@ -7,6 +7,7 @@ import { get } from "../../utility/fetch";
 import { RiCalendar2Fill } from "react-icons/ri";
 import { stats } from "./mockdata/PatientData";
 import SearchInput from "../UI/SearchInput";
+import AdmitCheck from "./Patient/AdmitCheck";
 
 function Patients() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -21,7 +22,12 @@ function Patients() {
   const [filteredData, setFilteredData] = useState([]);
   const [searchText, setSearchText] = useState("")
   const [loading, setLoading] = useState(false)
+
+  const [selectedTab, setSelectedTab] = useState("patients");
   const [filteredDate, setFilteredDate] = useState(null); // Add state for filtered date
+  const [admittedPatients, setAdmittedPatients] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const getTableData = async () => {
     try {
@@ -116,6 +122,23 @@ function Patients() {
     }
 
   }
+
+  const getAllAdmittedPatients = async (currentPage) => {
+    setLoading(true);
+    try {
+      let res = await get(`/patients/admitted-patients-service?pageNumber=${currentPage}&pageSize=10`);
+      setAdmittedPatients(res?.data);
+      setTotalPages(res?.pageCount);
+    } catch (error) {
+      console.error('Error fetching all patients:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getAllAdmittedPatients(currentPage)
+  }, [currentPage]);
 
   useEffect(() => {
     fetchData();
@@ -261,9 +284,41 @@ function Patients() {
             </div> */}
           </div>
         </div>
+        <div className="tabs m-t-20 bold-text">
+          <div
+            className={`tab-item ${selectedTab === "patients" ? "active" : ""}`}
+            onClick={() => setSelectedTab("patients")}
+          >
+            Patients To See
+          </div>
+          <div
+            className={`tab-item ${selectedTab === "admitted" ? "active" : ""}`}
+            onClick={() => setSelectedTab("admitted")}
+          >
+            Patients Currently Admitted
+          </div>
 
+        </div>
         <div className="">
-          <PatientsTable data={filteredData} />
+          {
+            selectedTab === "patients" ? (
+              <PatientsTable
+                data={filteredData}
+                setCurrentPage={setCurrentPage}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                
+              />
+            ) : (
+              <AdmitCheck
+                data={admittedPatients}
+                setCurrentPage={setCurrentPage}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                
+              />
+            )
+          }
         </div>
       </div>) : (<div>loading....</div>)}
 
