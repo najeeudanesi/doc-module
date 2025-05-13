@@ -10,6 +10,7 @@ import ReferPatient from "../../modals/ReferPatient";
 import AddTreatmentOld from "../../modals/AddTreatmentOld";
 import MedicationTable from "./MedicationTable";
 import VitalsRecords from "../../modals/VitalsRecord";
+import GhostTextCompletion from "../../UI/TextPrediction";
 
 // import IVFConsultation from "./IVFConsultation";
 
@@ -1318,23 +1319,43 @@ const IVFConsultation = () => {
               <div class="m-t-10">
                 <div className="field-column new">
                   <label>Cause Of Infertility</label>
-                  <textarea
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="causeOfInfertility"
+                    value={formData.causeOfInfertility}
+                    handleChange={(e) => {
+                      setFormData({ causeOfInfertility: e.target.value });
+                      // setRepeatedDiagnosis(e.target.value);
+                    }}
+                    none={true}
+                  />
+                  {/* <textarea
                     rows={6}
                     name="causeOfInfertility"
                     onChange={handleChange}
                     value={formData.causeOfInfertility}
                     className="input-field"
-                  ></textarea>
+                  ></textarea> */}
                 </div>
                 <div className="field-column new">
                   <label>Type Of Infertility</label>
-                  <textarea
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="typeOfInfertility"
+                    value={formData.typeOfInfertility}
+                    handleChange={(e) => {
+                      setFormData({ typeOfInfertility: e.target.value });
+                      // setRepeatedDiagnosis(e.target.value);
+                    }}
+                    none={true}
+                  />
+                  {/* <textarea
                     rows={6}
                     name="typeOfInfertility"
                     onChange={handleChange}
                     value={formData.typeOfInfertility}
                     className="input-field"
-                  ></textarea>
+                  ></textarea> */}
                 </div>
               </div>
             </div>
@@ -1400,13 +1421,23 @@ const IVFConsultation = () => {
           )}
           <div className="field-column new">
             <label>Treatment Schedule</label>
-            <textarea
+            <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="treatmentSchedule"
+                    value={formData.treatmentSchedule}
+                    handleChange={(e) => {
+                      setFormData({ treatmentSchedule: e.target.value });
+                      // setRepeatedDiagnosis(e.target.value);
+                    }}
+                    none={true}
+                  />
+            {/* <textarea
               rows={6}
               name="treatmentSchedule"
               onChange={handleChange}
               value={formData.treatmentSchedule}
               className="input-field"
-            ></textarea>
+            ></textarea> */}
           </div>
 
           {!view && (

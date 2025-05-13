@@ -174,19 +174,19 @@ const AntenatalVisitTable = ({
             <tr>
               <th>Visit#</th>
               <th>Date</th>
-              <th>GA</th>
-              <th>BP</th>
-              <th>PR</th>
-              <th>Weight</th>
+              <th>GA (Weeks)</th>
+              <th>BP (mmHg)</th>
+              <th>PR (Bpm)</th>
+              <th>Weight (kg)</th>
               <th>Oedema</th>
-              <th>SFHCM</th>
+              <th>SFHCM (cm)</th>
               <th>Presentation</th>
               <th>Lie</th>
               <th>Position</th>
-              <th>FHR</th>
+              <th>Foetal Heart Rate (Bpm)</th>
               <th>VE</th>
               <th>TT</th>
-              <th>PCV</th>
+              <th>PCV (%)</th>
               <th>Urine (Prot/Glu)</th>
               <th>Remarks</th>
               <th>Actions</th>

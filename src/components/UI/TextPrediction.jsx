@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import '../../assets/css/textpred.css';
 import SpeechToTextButton from './SpeechToTextButton';
 
-const GhostTextCompletion = ({ label, name, value, handleChange, noEdit, className, max }) => {
+const GhostTextCompletion = ({ label, name, value, handleChange, noEdit, className, max, none }) => {
   const [input, setInput] = useState(value || '');
   const [suggestion, setSuggestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -75,7 +75,7 @@ const GhostTextCompletion = ({ label, name, value, handleChange, noEdit, classNa
     <div className="ghost-container">
       <div className="m-b-10 w-100 m-t-20 m-r-10">
         <div className="flex">
-          <div className={`label-box ellipses-over `}>{label}</div>
+         {!none && <div className={`label-box ellipses-over `}>{label}</div>}
           <div className="rel" style={{ height: "auto", border: "1px solid #17621A", width: "100%" }}>
             <div className="textarea-wrapper">
               {suggestion && (

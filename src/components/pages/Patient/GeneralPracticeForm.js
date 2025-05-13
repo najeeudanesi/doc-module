@@ -10,6 +10,7 @@ import LabRequestTable from "./LabRequestTable";
 import AddTreatmentOld from "../../modals/AddTreatmentOld";
 import MedicationTable from "./MedicationTable";
 import VitalsRecords from "../../modals/VitalsRecord";
+import GhostTextCompletion from "../../UI/TextPrediction";
 
 // import IVFConsultation from "./IVFConsultation";
 
@@ -295,33 +296,54 @@ const GeneralPracticeForm = () => {
             <div className="section-box flex-col-gap">
               <div className="field-column">
                 <label>History</label>
-                <textarea
+                <GhostTextCompletion
+                  // label="Patient Diagnosis"
+                  name="history"
+                  value={formData.history || ""}
+                  handleChange={handleChange}
+                  none={true}
+                />
+                {/* <textarea
                   name="history"
                   onChange={handleChange}
                   className="input-field"
                   rows={6}
                   value={formData.history}
-                />
+                /> */}
               </div>
               <div className="field-column">
                 <label>Physical Examination</label>
-                <textarea
+                <GhostTextCompletion
+                  // label="Patient Diagnosis"
+                  name="physicalExamination"
+                  value={formData.physicalExamination || ""}
+                  handleChange={handleChange}
+                  none={true}
+                />
+                {/* <textarea
                   name="physicalExamination"
                   onChange={handleChange}
                   className="input-field"
                   rows={6}
                   value={formData.physicalExamination}
-                />
+                /> */}
               </div>
               <div className="field-column">
                 <label>Investigation</label>
-                <textarea
+                <GhostTextCompletion
+                  // label="Patient Diagnosis"
+                  name="investigation"
+                  value={formData.investigation || ""}
+                  handleChange={handleChange}
+                  none={true}
+                />
+                {/* <textarea
                   name="investigation"
                   onChange={handleChange}
                   className="input-field"
                   rows={6}
                   value={formData.investigation}
-                />
+                /> */}
               </div>
 
               {/* <div className="field-column">

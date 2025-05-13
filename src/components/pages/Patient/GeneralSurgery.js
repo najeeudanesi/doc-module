@@ -10,6 +10,8 @@ import LabRequestTable from "./LabRequestTable";
 import AddTreatmentOld from "../../modals/AddTreatmentOld";
 import MedicationTable from "./MedicationTable";
 import VitalsRecords from "../../modals/VitalsRecord";
+import SpeechToTextButton from "../../UI/SpeechToTextButton";
+import GhostTextCompletion from "../../UI/TextPrediction";
 
 // import IVFConsultation from "./IVFConsultation";
 
@@ -565,6 +567,18 @@ const GeneralSurgery = () => {
       console.log(error);
     }
   };
+
+  // const acceptSuggestion = () => {
+  //   setInput(prev => prev + '' + suggestion);
+  //   setSuggestion('');
+  //   handleChange({ target: { name, value: input + '' + suggestion } });
+  // };
+
+  const handleTranscript = (transcript) => {
+    console.log((prev) => prev + "" + transcript);
+    // handleChange({ target: { name, value: input + '' + transcript } });
+  };
+
   return (
     <div style={{ padding: "90px" }} className="w-100">
       <div class="flex-between align-center">
@@ -637,13 +651,23 @@ const GeneralSurgery = () => {
 
                 <div className="field-column">
                   <label>Indication</label>
-                  <textarea
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="indication"
+                    value={formData.indication}
+                    handleChange={(e) => {
+                      setFormData({ indication: e.target.value });
+                      setRepeatedDiagnosis(e.target.value);
+                    }}
+                    none={true}
+                  />
+                  {/* <textarea
                     name="indication"
                     onChange={handleChange}
                     className="input-field"
                     rows={6}
                     value={formData.indication}
-                  />
+                  /> */}
                 </div>
                 <div className="field-row flex-row-gap">
                   <div className="field-row">
@@ -754,33 +778,63 @@ const GeneralSurgery = () => {
                 </div>
                 <div className="field-column">
                   <label>Incisions</label>
-                  <textarea
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="incisions"
+                    value={formData.incisions}
+                    handleChange={(e) => {
+                      setFormData({ incisions: e.target.value });
+                      setRepeatedDiagnosis(e.target.value);
+                    }}
+                    none={true}
+                  />
+                  {/* <textarea
                     value={formData.incisions || ""}
                     name="incisions"
                     onChange={handleChange}
                     className="input-field"
                     rows={6}
-                  />
+                  /> */}
                 </div>
                 <div className="field-column">
                   <label>Findings</label>
-                  <textarea
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="findings"
+                    value={formData.findings}
+                    handleChange={(e) => {
+                      setFormData({ findings: e.target.value });
+                      setRepeatedDiagnosis(e.target.value);
+                    }}
+                    none={true}
+                  />
+                  {/* <textarea
                     value={formData.findings || ""}
                     name="findings"
                     onChange={handleChange}
                     className="input-field"
                     rows={6}
-                  />
+                  /> */}
                 </div>
                 <div className="field-column">
                   <label>Procedures</label>
-                  <textarea
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="procedures"
+                    value={formData.procedures}
+                    handleChange={(e) => {
+                      setFormData({ procedures: e.target.value });
+                      setRepeatedDiagnosis(e.target.value);
+                    }}
+                    none={true}
+                  />
+                  {/* <textarea
                     value={formData.procedures || ""}
                     name="procedures"
                     onChange={handleChange}
                     className="input-field"
                     rows={6}
-                  />
+                  /> */}
                 </div>
                 <div className="field-row flex-row-gap">
                   <div className="field-row">
@@ -852,33 +906,63 @@ const GeneralSurgery = () => {
                 )}
                 <div className="field-column">
                   <label>Intra-operative treatment</label>
-                  <textarea
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="intra_OperationTreatment"
+                    value={formData.intra_OperationTreatment}
+                    handleChange={(e) => {
+                      setFormData({ intra_OperationTreatment: e.target.value });
+                      setRepeatedDiagnosis(e.target.value);
+                    }}
+                    none={true}
+                  />
+                  {/* <textarea
                     name="intra_OperationTreatment"
                     onChange={handleChange}
                     value={formData.intra_OperationTreatment || ""}
                     className="input-field"
                     rows={6}
-                  />
+                  /> */}
                 </div>
                 <div className="field-column">
                   <label>Post-operative treatment order</label>
-                  <textarea
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="post_OperationTreatmentOrder"
+                    value={formData.post_OperationTreatmentOrder}
+                    handleChange={(e) => {
+                      setFormData({ post_OperationTreatmentOrder: e.target.value });
+                      setRepeatedDiagnosis(e.target.value);
+                    }}
+                    none={true}
+                  />
+                  {/* <textarea
                     name="post_OperationTreatmentOrder"
                     onChange={handleChange}
                     value={formData.post_OperationTreatmentOrder || ""}
                     className="input-field"
                     rows={6}
-                  />
+                  /> */}
                 </div>
                 <div className="field-column">
                   <label>Special instructions</label>
-                  <textarea
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="specialInstructions"
+                    value={formData.specialInstructions}
+                    handleChange={(e) => {
+                      setFormData({ specialInstructions: e.target.value });
+                      setRepeatedDiagnosis(e.target.value);
+                    }}
+                    none={true}
+                  />
+                  {/* <textarea
                     value={formData.specialInstructions || ""}
                     name="specialInstructions"
                     onChange={handleChange}
                     className="input-field"
                     rows={6}
-                  />
+                  /> */}
                 </div>
                 {/* <div className="field-column">
                   <label>Surgeon Signature</label>

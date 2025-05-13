@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { get, post } from "../../../utility/fetch";
 import { FiArrowLeft } from "react-icons/fi";
 import VitalsRecords from "../../modals/VitalsRecord";
+import GhostTextCompletion from "../../UI/TextPrediction";
 
 const FamilyConsultation = () => {
   const [formData, setFormData] = useState({});
@@ -198,12 +199,22 @@ const FamilyConsultation = () => {
 
           <div className="field-column">
             <label htmlFor="details">Provide Details</label>
-            <textarea
+            <GhostTextCompletion
+              // label="Patient Diagnosis"
+              name="details"
+              value={formData.details}
+              handleChange={(e) => {
+                setFormData({ details: e.target.value });
+                // setRepeatedDiagnosis(e.target.value);
+              }}
+              none={true}
+            />
+            {/* <textarea
               id="details"
               name="details"
               onChange={handleChange}
               className="textarea-field"
-            ></textarea>
+            ></textarea> */}
           </div>
 
           <div className="radio-row">
@@ -359,22 +370,42 @@ const FamilyConsultation = () => {
 
           <div className="field-column">
             <label htmlFor="instructions">Instructions</label>
-            <textarea
+            <GhostTextCompletion
+              // label="Patient Diagnosis"
+              name="instructions"
+              value={formData.instructions}
+              handleChange={(e) => {
+                setFormData({ instructions: e.target.value });
+                // setRepeatedDiagnosis(e.target.value);
+              }}
+              none={true}
+            />
+            {/* <textarea
               id="instructions"
               name="instructions"
               onChange={handleChange}
               className="textarea-field"
-            ></textarea>
+            ></textarea> */}
           </div>
 
           <div className="field-column">
             <label htmlFor="remark">Remark</label>
-            <textarea
+            <GhostTextCompletion
+              // label="Patient Diagnosis"
+              name="remark"
+              value={formData.remark}
+              handleChange={(e) => {
+                setFormData({ remark: e.target.value });
+                // setRepeatedDiagnosis(e.target.value);
+              }}
+              none={true}
+            />
+            {/* <textarea
               id="remark"
               name="remark"
               onChange={handleChange}
               className="textarea-field"
-            ></textarea>
+            ></textarea> */}
           </div>
 
           {/* <div className="upload-box">Attach documents</div> */}
