@@ -82,7 +82,7 @@ const GeneralSurgeryTable = () => {
                         {record.patient?.firstName} {record.patient?.lastName}
                       </td>
                       <td>{new Date(record.createdAt).toLocaleDateString()}</td>
-                      <td>{record.deliveryType || "OG IVF Consultation"}</td>
+                      <td>{record.deliveryType || "General Surgery Case"}</td>
                       <td>{record.findings}</td>
                       <td>
                         Dr. {record.surgeon?.firstName}{" "}

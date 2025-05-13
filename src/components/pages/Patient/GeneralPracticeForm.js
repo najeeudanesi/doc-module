@@ -274,11 +274,12 @@ const GeneralPracticeForm = () => {
   };
   return (
     <div className="w-100">
-      <div class="flex-between align-center">
+      <div class="flex-between align-center w-70">
         {/* <div class="flex" style={{ padding: "20px" }}>
           <FiArrowLeft />
           <p onClick={() => navigate(-1)}> Back</p>
         </div> */}
+        <div className=""></div>
         {treatmentId && (
           <div class="flex-row-gap">
             <button className="rounded-btn" onClick={toggleModal}>
@@ -290,106 +291,107 @@ const GeneralPracticeForm = () => {
           </div>
         )}
       </div>
-      <div class="flex-row-gap-start w-100">
-        <main className="w-70">
-          <section className="">
-            <div className="section-box flex-col-gap">
-              <div className="field-column">
-                <label>History</label>
-                <GhostTextCompletion
-                  // label="Patient Diagnosis"
-                  name="history"
-                  value={formData.history || ""}
-                  handleChange={handleChange}
-                  none={true}
-                />
-                {/* <textarea
-                  name="history"
-                  onChange={handleChange}
-                  className="input-field"
-                  rows={6}
-                  value={formData.history}
-                /> */}
+      <div class="flex-row-gap-start w-100 m-t-10">
+        <div class="section-box w-100">
+          <h2 style={{ textAlign: "center" }} className="w-100">
+            General Practice
+          </h2>
+
+          <main className="w-70 m-t-20">
+            <section className="">
+              <div className="section-box flex-col-gap">
+                <div className="field-column">
+                  <label>History</label>
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="history"
+                    value={formData.history || ""}
+                    handleChange={handleChange}
+                    none={true}
+                  />
+                  {/* <textarea
+                    name="history"
+                    onChange={handleChange}
+                    className="input-field"
+                    rows={6}
+                    value={formData.history}
+                  /> */}
+                </div>
+                <div className="field-column">
+                  <label>Physical Examination</label>
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="physicalExamination"
+                    value={formData.physicalExamination || ""}
+                    handleChange={handleChange}
+                    none={true}
+                  />
+                  {/* <textarea
+                    name="physicalExamination"
+                    onChange={handleChange}
+                    className="input-field"
+                    rows={6}
+                    value={formData.physicalExamination}
+                  /> */}
+                </div>
+                <div className="field-column">
+                  <label>Investigation</label>
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="investigation"
+                    value={formData.investigation || ""}
+                    handleChange={handleChange}
+                    none={true}
+                  />
+                  {/* <textarea
+                    name="investigation"
+                    onChange={handleChange}
+                    className="input-field"
+                    rows={6}
+                    value={formData.investigation}
+                  /> */}
+                </div>
+                {/* <div className="field-column">
+                  <label>Surgeon Signature</label>
+                  <textarea
+                    value={formData.surgeonSignature || ""}
+                    name="surgeonSignature"
+                    onChange={handleChange}
+                    className="input-field"
+                    rows={3}
+                  />
+                </div> */}
               </div>
-              <div className="field-column">
-                <label>Physical Examination</label>
-                <GhostTextCompletion
-                  // label="Patient Diagnosis"
-                  name="physicalExamination"
-                  value={formData.physicalExamination || ""}
-                  handleChange={handleChange}
-                  none={true}
+              <h2 style={{ marginTop: "40px", marginBottom: "20px" }}>
+                Lab Reports{" "}
+              </h2>
+              {treatmentId && dataFromLab.length > 0 ? (
+                <div className="field-column">
+                  <label>Patient's Lab Results</label>
+                  <LabRequestTable data={dataFromLab} isFamily={false} />
+                </div>
+              ) : (
+                <p>No lab records</p>
+              )}
+              <h2 style={{ marginTop: "40px", marginBottom: "20px" }}>
+                Treatments{" "}
+              </h2>
+              {treatmentId && (
+                <MedicationTable
+                  data={{
+                    treatmentType: "GeneralPractice",
+                    treatmentId: treatmentId,
+                  }}
                 />
-                {/* <textarea
-                  name="physicalExamination"
-                  onChange={handleChange}
-                  className="input-field"
-                  rows={6}
-                  value={formData.physicalExamination}
-                /> */}
-              </div>
-              <div className="field-column">
-                <label>Investigation</label>
-                <GhostTextCompletion
-                  // label="Patient Diagnosis"
-                  name="investigation"
-                  value={formData.investigation || ""}
-                  handleChange={handleChange}
-                  none={true}
-                />
-                {/* <textarea
-                  name="investigation"
-                  onChange={handleChange}
-                  className="input-field"
-                  rows={6}
-                  value={formData.investigation}
-                /> */}
-              </div>
-
-              {/* <div className="field-column">
-                <label>Surgeon Signature</label>
-                <textarea
-                  value={formData.surgeonSignature || ""}
-                  name="surgeonSignature"
-                  onChange={handleChange}
-                  className="input-field"
-                  rows={3}
-                />
-              </div> */}
-            </div>
-
-            <h2 style={{ marginTop: "40px", marginBottom: "20px" }}>
-              Lab Reports{" "}
-            </h2>
-
-            {treatmentId && dataFromLab.length > 0 ? (
-              <div className="field-column">
-                <label>Patient's Lab Results</label>
-                <LabRequestTable data={dataFromLab} isFamily={false} />
-              </div>
-            ) : (
-              <p>No lab records</p>
-            )}
-
-            <h2 style={{ marginTop: "40px", marginBottom: "20px" }}>
-              Treatments{" "}
-            </h2>
-
-            {treatmentId && (
-              <MedicationTable
-                data={{
-                  treatmentType: "GeneralPractice",
-                  treatmentId: treatmentId,
-                }}
-              />
-            )}
-            {!treatmentId && (
-              <button onClick={handleSubmit} className="submit-btn">
-                Submit
-              </button>
-            )}
-          </section>
-        </main>
+              )}
+              {!treatmentId && (
+                <button onClick={handleSubmit} className="submit-btn">
+                  Submit
+                </button>
+              )}
+            </section>
+          </main>
+        </div>
         <VitalsRecords vitals={vitals} />
       </div>
       {treatmentModal && (

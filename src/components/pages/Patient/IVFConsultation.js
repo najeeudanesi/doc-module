@@ -109,13 +109,12 @@ const IVFConsultation = () => {
         details: formData.previousDetails,
         partnerProfile: {
           age: +formData.age,
-          otherWives: formData.otherWives && formData.otherWives,
-          otherKids: formData.otherKids && formData.otherKids,
-          previousSpermTest:
-            formData.previousSpermTest && formData.previousSpermTest,
-          spermTestResult: "",
+          otherWives: formData.otherWives === "Yes",
+          otherKids: formData.otherKids === "Yes",
+          previousSpermTest: formData.previousSpermTest === "Yes",
+          spermTestResult: "Normal",
         },
-        inMateProfile: "" || formData.intimateProfile,
+        // inMateProfile: "" || formData.intimateProfile,
         pelvicScanDocuments: [], // handle file uploads separately
       },
       previousInvestigation: {
@@ -636,6 +635,7 @@ const IVFConsultation = () => {
           <FiArrowLeft />
           <p onClick={() => navigate(-1)}> Back</p>
         </div>
+
         {view && (
           <div class="flex-row-gap">
             <button className="rounded-btn" onClick={toggleModal}>
@@ -648,8 +648,12 @@ const IVFConsultation = () => {
         )}
       </div>
       <main className="">
-        <section className="">
-          <div className="section-box flex-row-gap-start">
+        <section className="section-box">
+          <h2 style={{ textAlign: "center" }} className="w-100">
+            O & G IVF
+          </h2>
+
+          <div className=" flex-row-gap-start m-t-20">
             <div className="input-row w-70">
               <div class="w-100 flex-row-gap">
                 <div className="field-row">
@@ -915,18 +919,28 @@ const IVFConsultation = () => {
                 </label>
               </div>
 
-              {formData.previousTreatment === "Yes" && (
-                <div className="field-column new">
-                  <label>Detail</label>
-                  <textarea
+              {formData.previousTreatment === "Yes" &&
+                (treatmentId ? (
+                  <div className="field-column new">
+                    <label>Detail</label>
+
+                    <textarea
+                      name="previousDetails"
+                      onChange={handleChange}
+                      className="input-field"
+                      rows={6}
+                      value={formData.previousDetails || ""}
+                    ></textarea>
+                  </div>
+                ) : (
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
                     name="previousDetails"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={formData.previousDetails || ""}
-                  ></textarea>
-                </div>
-              )}
+                    value={formData.previousDetails}
+                    handleChange={handleChange}
+                    none={true}
+                  />
+                ))}
               <div className="radio-row">
                 <span>Any previous Investigation</span>
                 <label>
@@ -950,18 +964,27 @@ const IVFConsultation = () => {
                   No
                 </label>
               </div>
-              {formData.previousInvestigation === "Yes" && (
-                <div className="field-column new">
-                  <label>Details</label>
-                  <textarea
-                    name="previousInvestigationDetails"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={formData.previousInvestigationDetails || ""}
-                  ></textarea>
-                </div>
-              )}
+              {formData.previousInvestigation === "Yes" &&
+                (treatmentId ? (
+                  <div className="field-column new">
+                    <label>Details</label>
+                    <textarea
+                      name="previousInvestigationDetails"
+                      onChange={handleChange}
+                      className="input-field"
+                      rows={6}
+                      value={formData.previousInvestigationDetails || ""}
+                    ></textarea>
+                  </div>
+                ) : (
+                  <GhostTextCompletion
+                    // label="Patient Diagnosis"
+                    name="previousDetails"
+                    value={formData.previousDetails}
+                    handleChange={handleChange}
+                    none={true}
+                  />
+                ))}
               <div>
                 <div>
                   <div className="radio-row">
@@ -1319,16 +1342,23 @@ const IVFConsultation = () => {
               <div class="m-t-10">
                 <div className="field-column new">
                   <label>Cause Of Infertility</label>
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="causeOfInfertility"
-                    value={formData.causeOfInfertility}
-                    handleChange={(e) => {
-                      setFormData({ causeOfInfertility: e.target.value });
-                      // setRepeatedDiagnosis(e.target.value);
-                    }}
-                    none={true}
-                  />
+                  {treatmentId ? (
+                    <textarea
+                      rows={6}
+                      name="causeOfInfertility"
+                      onChange={handleChange}
+                      value={formData.causeOfInfertility}
+                      className="input-field"
+                    ></textarea>
+                  ) : (
+                    <GhostTextCompletion
+                      // label="Patient Diagnosis"
+                      name="causeOfInfertility"
+                      value={formData.causeOfInfertility}
+                      handleChange={handleChange}
+                      none={true}
+                    />
+                  )}
                   {/* <textarea
                     rows={6}
                     name="causeOfInfertility"
@@ -1339,16 +1369,23 @@ const IVFConsultation = () => {
                 </div>
                 <div className="field-column new">
                   <label>Type Of Infertility</label>
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="typeOfInfertility"
-                    value={formData.typeOfInfertility}
-                    handleChange={(e) => {
-                      setFormData({ typeOfInfertility: e.target.value });
-                      // setRepeatedDiagnosis(e.target.value);
-                    }}
-                    none={true}
-                  />
+                  {treatmentId ? (
+                    <textarea
+                      rows={6}
+                      name="typeOfInfertility"
+                      onChange={handleChange}
+                      value={formData.typeOfInfertility}
+                      className="input-field"
+                    ></textarea>
+                  ) : (
+                    <GhostTextCompletion
+                      // label="Patient Diagnosis"
+                      name="typeOfInfertility"
+                      value={formData.typeOfInfertility}
+                      handleChange={handleChange}
+                      none={true}
+                    />
+                  )}
                   {/* <textarea
                     rows={6}
                     name="typeOfInfertility"
@@ -1421,16 +1458,23 @@ const IVFConsultation = () => {
           )}
           <div className="field-column new">
             <label>Treatment Schedule</label>
-            <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="treatmentSchedule"
-                    value={formData.treatmentSchedule}
-                    handleChange={(e) => {
-                      setFormData({ treatmentSchedule: e.target.value });
-                      // setRepeatedDiagnosis(e.target.value);
-                    }}
-                    none={true}
-                  />
+            {treatmentId ? (
+              <textarea
+                rows={6}
+                name="treatmentSchedule"
+                onChange={handleChange}
+                value={formData.treatmentSchedule}
+                className="input-field"
+              ></textarea>
+            ) : (
+              <GhostTextCompletion
+                // label="Patient Diagnosis"
+                name="treatmentSchedule"
+                value={formData.treatmentSchedule}
+                handleChange={handleChange}
+                none={true}
+              />
+            )}
             {/* <textarea
               rows={6}
               name="treatmentSchedule"

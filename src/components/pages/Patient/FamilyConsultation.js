@@ -16,6 +16,8 @@ const FamilyConsultation = () => {
   const navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    console.log(name)
+    console.log(value)
 
     if (type === "checkbox") {
       console.log(checked);
@@ -145,7 +147,7 @@ const FamilyConsultation = () => {
                       name="deliveryType"
                       value={index + 1}
                       onChange={handleChange}
-                    />{" "}
+                    />
                     {opt}
                   </label>
                 ))}
@@ -191,10 +193,11 @@ const FamilyConsultation = () => {
               // label="Patient Diagnosis"
               name="details"
               value={formData.details}
-              handleChange={(e) => {
-                setFormData({ details: e.target.value });
+              handleChange={
+                handleChange
+                // setFormData({ details: e.target.value });
                 // setRepeatedDiagnosis(e.target.value);
-              }}
+              }
               none={true}
             />
             {/* <textarea
@@ -362,10 +365,7 @@ const FamilyConsultation = () => {
               // label="Patient Diagnosis"
               name="instructions"
               value={formData.instructions}
-              handleChange={(e) => {
-                setFormData({ instructions: e.target.value });
-                // setRepeatedDiagnosis(e.target.value);
-              }}
+              handleChange={handleChange}
               none={true}
             />
             {/* <textarea
@@ -382,10 +382,8 @@ const FamilyConsultation = () => {
               // label="Patient Diagnosis"
               name="remark"
               value={formData.remark}
-              handleChange={(e) => {
-                setFormData({ remark: e.target.value });
-                // setRepeatedDiagnosis(e.target.value);
-              }}
+              handleChange={handleChange}
+
               none={true}
             />
             {/* <textarea

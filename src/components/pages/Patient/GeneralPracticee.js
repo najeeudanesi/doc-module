@@ -110,6 +110,7 @@ function PatientDetails() {
               </div>
               <div className=" flex space-between">
                 <h1>{patient?.firstName + " " + patient?.lastName}</h1>
+
                 {/* <button onClick={handlePatientId} className="btn">
                   View Medical History
                 </button> */}

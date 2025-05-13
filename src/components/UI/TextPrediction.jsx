@@ -16,6 +16,7 @@ const GhostTextCompletion = ({ label, name, value, handleChange, noEdit, classNa
   });
 
   console.log(value, 'input', input)
+  
 
   useEffect(() => {
     const fetchCompletion = async () => {

@@ -66,8 +66,7 @@ const Antinatal = () => {
 
   // Save edits
   const saveEdit = (index) => {
-
-    console.log(formData.obstetricHistories)
+    console.log(formData.obstetricHistories);
     const updatedHistories = [...formData.obstetricHistories];
     updatedHistories[index] = obstetricEntry;
     setFormData({ ...formData, obstetricHistories: updatedHistories });
@@ -468,7 +467,6 @@ const Antinatal = () => {
     // setIsLoading(false);
   };
 
-
   return (
     <div className="consultation-container" style={{ paddingTop: "60px" }}>
       <div class="flex-between align-center">
@@ -489,8 +487,12 @@ const Antinatal = () => {
       </div>
       <form onSubmit={handleSubmit}>
         <div>
-          <div>
-            <div className="flex-row-gap-start">
+          <div className="section-box">
+            <h2 style={{ textAlign: "center" }} className="w-100">
+              Antenatal
+            </h2>
+
+            <div className="flex-row-gap-start m-t-20">
               <div className="w-100">
                 {/* <h2>1. Past History</h2> */}
 
@@ -608,7 +610,7 @@ const Antinatal = () => {
                           <th>Sex Of Baby</th>
                           <th>Weight (Kg)</th>
                           <th>Foetal Outcome</th>
-                          <th >APH</th>
+                          <th>APH</th>
                           <th>PPH</th>
                           <th>PIH</th>
                           <th>Other Illness</th>
@@ -945,7 +947,6 @@ const Antinatal = () => {
 
               <h4 style={{ margin: "20px 0px" }}>Booking Test Results</h4>
               <div className="form-grid">
-                
                 <div className="field-column">
                   <label>Weight (kg)</label>
                   <input

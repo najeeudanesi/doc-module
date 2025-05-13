@@ -586,6 +586,7 @@ const GeneralSurgery = () => {
           <FiArrowLeft />
           <p onClick={() => navigate(-1)}> Back</p>
         </div>
+
         {treatmentId && (
           <div class="flex-row-gap">
             <button className="rounded-btn" onClick={toggleModal}>
@@ -597,419 +598,477 @@ const GeneralSurgery = () => {
           </div>
         )}
       </div>
-      <div className="field-row">
-        <label>Surgery Performed</label>
-        <select
-          className="input-field"
-          onChange={handleChange}
-          name="operationPerformedId"
-          value={formData.operationPerformedId || ""}
-        >
-          <option value="">-- Select Surgery Type --</option>
-          {surgicalOpList?.map((user) => (
-            <option key={user.id} value={user.id}>
-              {user.name}
-            </option>
-          ))}
-        </select>
-        {/* <input
-                  onChange={handleChange}
-                  name="operationPerformedId"
-                  className="input-field"
-                  type="number"
-                /> */}
-      </div>
-      <div>
-        <div class="flex-row-gap-start m-t-20">
-          <main className="">
-            <section className="">
-              <div className="section-box flex-col-gap">
-                <div className="input-row">
-                  <div className="flex-row-gap">
-                    <div className="field-row">
-                      <label>Start time</label>
-                      <input
-                        onChange={handleChange}
-                        name="startTime"
-                        className="input-field"
-                        type="time"
-                        value={formData.startTime || ""}
-                      />
-                    </div>
-                    <div className="field-row">
-                      <label>End Time</label>
-                      <input
-                        onChange={handleChange}
-                        name="endTime"
-                        className="input-field"
-                        type="time"
-                        value={formData.endTime || ""}
-                      />
-                    </div>
-                  </div>
-                </div>
+      <div class="section-box">
+      <h2 style={{ textAlign: "center" }} className="w-100">General Surgery</h2>
 
-                <div className="field-column">
-                  <label>Indication</label>
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="indication"
-                    value={formData.indication}
-                    handleChange={(e) => {
-                      setFormData({ indication: e.target.value });
-                      setRepeatedDiagnosis(e.target.value);
-                    }}
-                    none={true}
-                  />
-                  {/* <textarea
-                    name="indication"
+        <div className="field-row m-t-20">
+          <label>Surgery Performed</label>
+          <select
+            className="input-field"
+            onChange={handleChange}
+            name="operationPerformedId"
+            value={formData.operationPerformedId || ""}
+          >
+            <option value="">-- Select Surgery Type --</option>
+            {surgicalOpList?.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.name}
+              </option>
+            ))}
+          </select>
+          {/* <input
                     onChange={handleChange}
+                    name="operationPerformedId"
                     className="input-field"
-                    rows={6}
-                    value={formData.indication}
+                    type="number"
                   /> */}
-                </div>
-                <div className="field-row flex-row-gap">
-                  <div className="field-row">
-                    <label>Surgeon</label>
-                    <select
-                      className="input-field"
-                      onChange={handleChange}
-                      value={formData.surgeonId || ""}
-                      name="surgeonId"
-                    >
-                      <option value="">-- Select a user --</option>
-                      {surgeonList?.map((user) => (
-                        <option key={user.id} value={user.id}>
-                          {user.firstName} {user.middleName} {user.lastName}
-                        </option>
-                      ))}
-                    </select>
-                    {/* <input
-              onChange={handleChange}
-              className="input-field"
-              type="number"
-            /> */}
-                  </div>
-                  <div className="field-row">
-                    <label>Asst. Surgeon</label>
-                    <select
-                      className="input-field"
-                      onChange={handleChange}
-                      value={formData.asstSurgeonId || ""}
-                      name="asstSurgeonId"
-                    >
-                      <option value="">-- Select a user --</option>
-                      {surgeonList?.map((user) => (
-                        <option key={user.id} value={user.id}>
-                          {user.firstName} {user.middleName} {user.lastName}
-                        </option>
-                      ))}
-                    </select>
-                    {/* <input
-                      onChange={handleChange}
-                      name="asstSurgeonId"
-                      className="input-field"
-                      type="number"
-                    /> */}
-                  </div>
-                </div>
-                <div className="field-row flex-row-gap">
-                  <div className="field-row">
-                    <label>Anesthetist</label>
-                    <select
-                      className="input-field"
-                      onChange={handleChange}
-                      value={formData.anesthetistId || ""}
-                      name="anesthetistId"
-                    >
-                      <option value="">-- Select a user --</option>
-                      {anasList?.map((user) => (
-                        <option key={user.id} value={user.id}>
-                          {user.firstName} {user.middleName} {user.lastName}
-                        </option>
-                      ))}
-                    </select>
-                    {/* <input
-                      onChange={handleChange}
-                      name="anesthetistId"
-                      className="input-field"
-                      type="number"
-                    /> */}
-                  </div>
-                  <div className="field-row">
-                    <label>Asst. Anesthetist</label>
-                    <select
-                      className="input-field"
-                      onChange={handleChange}
-                      value={formData.asstAnesthetistId || ""}
-                      name="asstAnesthetistId"
-                    >
-                      <option value="">-- Select a user --</option>
-                      {anasList?.map((user) => (
-                        <option key={user.id} value={user.id}>
-                          {user.firstName} {user.middleName} {user.lastName}
-                        </option>
-                      ))}
-                    </select>
-                    {/* <input
-                      onChange={handleChange}
-                      name="asstAnesthetistId"
-                      className="input-field"
-                      type="number"
-                    /> */}
-                  </div>
-                </div>
-                <div className="field-row">
-                  <label>Anesthesia</label>
-                  <select
-                    className="input-field"
-                    value={formData.anesthesiaId || ""}
-                    onChange={handleChange}
-                    name="anesthesiaId"
-                  >
-                    <option value="">-- Select Anesthesia--</option>
-                    {anasOPList?.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="field-column">
-                  <label>Incisions</label>
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="incisions"
-                    value={formData.incisions}
-                    handleChange={(e) => {
-                      setFormData({ incisions: e.target.value });
-                      setRepeatedDiagnosis(e.target.value);
-                    }}
-                    none={true}
-                  />
-                  {/* <textarea
-                    value={formData.incisions || ""}
-                    name="incisions"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                  /> */}
-                </div>
-                <div className="field-column">
-                  <label>Findings</label>
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="findings"
-                    value={formData.findings}
-                    handleChange={(e) => {
-                      setFormData({ findings: e.target.value });
-                      setRepeatedDiagnosis(e.target.value);
-                    }}
-                    none={true}
-                  />
-                  {/* <textarea
-                    value={formData.findings || ""}
-                    name="findings"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                  /> */}
-                </div>
-                <div className="field-column">
-                  <label>Procedures</label>
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="procedures"
-                    value={formData.procedures}
-                    handleChange={(e) => {
-                      setFormData({ procedures: e.target.value });
-                      setRepeatedDiagnosis(e.target.value);
-                    }}
-                    none={true}
-                  />
-                  {/* <textarea
-                    value={formData.procedures || ""}
-                    name="procedures"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                  /> */}
-                </div>
-                <div className="field-row flex-row-gap">
-                  <div className="field-row">
-                    <label>Anesthesia start time</label>
-                    <input
-                      onChange={handleChange}
-                      value={formData.anesthesiaStartTime || ""}
-                      name="anesthesiaStartTime"
-                      className="input-field"
-                      type="time"
-                    />
-                  </div>
-                  <div className="field-row">
-                    <label>Anesthesia end time</label>
-                    <input
-                      onChange={handleChange}
-                      value={formData.anesthesiaEndTime || ""}
-                      name="anesthesiaEndTime"
-                      className="input-field"
-                      type="time"
-                    />
-                  </div>
-                </div>
-                <div className="flex-row-gap">
-                  <div className="field-column">
-                    <label>Drain</label>
-                    <textarea
-                      name="tran"
-                      value={formData.tran || ""}
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                    />
-                  </div>
-                  <div className="field-column">
-                    <label>Catheter</label>
-                    <textarea
-                      name="catheter"
-                      value={formData.catheter || ""}
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                    />
-                  </div>
-                  <div className="field-column">
-                    <label>Specimen</label>
-                    <textarea
-                      value={formData.specimen || ""}
-                      name="specimen"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                    />
-                  </div>
-                </div>
-                {treatmentId && dataFromLab && (
-                  <div className="field-column">
-                    <label>Patient's Lab Results</label>
-                    <LabRequestTable data={dataFromLab} isFamily={false} />
-                  </div>
-                )}
-                {treatmentId && (
-                  <MedicationTable
-                    data={{
-                      treatmentType: "GeneralSurgery",
-                      treatmentId: treatmentId,
-                    }}
-                  />
-                )}
-                <div className="field-column">
-                  <label>Intra-operative treatment</label>
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="intra_OperationTreatment"
-                    value={formData.intra_OperationTreatment}
-                    handleChange={(e) => {
-                      setFormData({ intra_OperationTreatment: e.target.value });
-                      setRepeatedDiagnosis(e.target.value);
-                    }}
-                    none={true}
-                  />
-                  {/* <textarea
-                    name="intra_OperationTreatment"
-                    onChange={handleChange}
-                    value={formData.intra_OperationTreatment || ""}
-                    className="input-field"
-                    rows={6}
-                  /> */}
-                </div>
-                <div className="field-column">
-                  <label>Post-operative treatment order</label>
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="post_OperationTreatmentOrder"
-                    value={formData.post_OperationTreatmentOrder}
-                    handleChange={(e) => {
-                      setFormData({ post_OperationTreatmentOrder: e.target.value });
-                      setRepeatedDiagnosis(e.target.value);
-                    }}
-                    none={true}
-                  />
-                  {/* <textarea
-                    name="post_OperationTreatmentOrder"
-                    onChange={handleChange}
-                    value={formData.post_OperationTreatmentOrder || ""}
-                    className="input-field"
-                    rows={6}
-                  /> */}
-                </div>
-                <div className="field-column">
-                  <label>Special instructions</label>
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="specialInstructions"
-                    value={formData.specialInstructions}
-                    handleChange={(e) => {
-                      setFormData({ specialInstructions: e.target.value });
-                      setRepeatedDiagnosis(e.target.value);
-                    }}
-                    none={true}
-                  />
-                  {/* <textarea
-                    value={formData.specialInstructions || ""}
-                    name="specialInstructions"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                  /> */}
-                </div>
-                {/* <div className="field-column">
-                  <label>Surgeon Signature</label>
-                  <textarea
-                    value={formData.surgeonSignature || ""}
-                    name="surgeonSignature"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={3}
-                  />
-                </div> */}
-                {!treatmentId && (
-                  <button onClick={handleSubmit} className="submit-btn">
-                    Submit
-                  </button>
-                )}
-              </div>
-            </section>
-          </main>
-          <VitalsRecords vitals={vitals} />
         </div>
+        <div>
+          <div class="flex-row-gap-start m-t-20">
+            <main className="">
+              <section className="">
+                <div className="section-box flex-col-gap">
+                  <div className="input-row">
+                    <div className="flex-row-gap">
+                      <div className="field-row">
+                        <label>Start time</label>
+                        <input
+                          onChange={handleChange}
+                          name="startTime"
+                          className="input-field"
+                          type="time"
+                          value={formData.startTime || ""}
+                        />
+                      </div>
+                      <div className="field-row">
+                        <label>End Time</label>
+                        <input
+                          onChange={handleChange}
+                          name="endTime"
+                          className="input-field"
+                          type="time"
+                          value={formData.endTime || ""}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="field-column">
+                    <label>Indication</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="indication"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={formData.indication}
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="indication"
+                        value={formData.indication}
+                        handleChange={(e) => {
+                          setFormData({ indication: e.target.value });
+                          setRepeatedDiagnosis(e.target.value);
+                        }}
+                        none={true}
+                      />
+                    )}
+                    {/*  */}
+                  </div>
+                  <div className="field-row flex-row-gap">
+                    <div className="field-row">
+                      <label>Surgeon</label>
+                      <select
+                        className="input-field"
+                        onChange={handleChange}
+                        value={formData.surgeonId || ""}
+                        name="surgeonId"
+                      >
+                        <option value="">-- Select a user --</option>
+                        {surgeonList?.map((user) => (
+                          <option key={user.id} value={user.id}>
+                            {user.firstName} {user.middleName} {user.lastName}
+                          </option>
+                        ))}
+                      </select>
+                      {/* <input
+                onChange={handleChange}
+                className="input-field"
+                type="number"
+              /> */}
+                    </div>
+                    <div className="field-row">
+                      <label>Asst. Surgeon</label>
+                      <select
+                        className="input-field"
+                        onChange={handleChange}
+                        value={formData.asstSurgeonId || ""}
+                        name="asstSurgeonId"
+                      >
+                        <option value="">-- Select a user --</option>
+                        {surgeonList?.map((user) => (
+                          <option key={user.id} value={user.id}>
+                            {user.firstName} {user.middleName} {user.lastName}
+                          </option>
+                        ))}
+                      </select>
+                      {/* <input
+                        onChange={handleChange}
+                        name="asstSurgeonId"
+                        className="input-field"
+                        type="number"
+                      /> */}
+                    </div>
+                  </div>
+                  <div className="field-row flex-row-gap">
+                    <div className="field-row">
+                      <label>Anesthetist</label>
+                      <select
+                        className="input-field"
+                        onChange={handleChange}
+                        value={formData.anesthetistId || ""}
+                        name="anesthetistId"
+                      >
+                        <option value="">-- Select a user --</option>
+                        {anasList?.map((user) => (
+                          <option key={user.id} value={user.id}>
+                            {user.firstName} {user.middleName} {user.lastName}
+                          </option>
+                        ))}
+                      </select>
+                      {/* <input
+                        onChange={handleChange}
+                        name="anesthetistId"
+                        className="input-field"
+                        type="number"
+                      /> */}
+                    </div>
+                    <div className="field-row">
+                      <label>Asst. Anesthetist</label>
+                      <select
+                        className="input-field"
+                        onChange={handleChange}
+                        value={formData.asstAnesthetistId || ""}
+                        name="asstAnesthetistId"
+                      >
+                        <option value="">-- Select a user --</option>
+                        {anasList?.map((user) => (
+                          <option key={user.id} value={user.id}>
+                            {user.firstName} {user.middleName} {user.lastName}
+                          </option>
+                        ))}
+                      </select>
+                      {/* <input
+                        onChange={handleChange}
+                        name="asstAnesthetistId"
+                        className="input-field"
+                        type="number"
+                      /> */}
+                    </div>
+                  </div>
+                  <div className="field-row">
+                    <label>Anesthesia</label>
+                    <select
+                      className="input-field"
+                      value={formData.anesthesiaId || ""}
+                      onChange={handleChange}
+                      name="anesthesiaId"
+                    >
+                      <option value="">-- Select Anesthesia--</option>
+                      {anasOPList?.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field-column">
+                    <label>Incisions</label>
+                    {treatmentId ? (
+                      <textarea
+                        value={formData.incisions || ""}
+                        name="incisions"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="incisions"
+                        value={formData.incisions}
+                        handleChange={(e) => {
+                          setFormData({ incisions: e.target.value });
+                          setRepeatedDiagnosis(e.target.value);
+                        }}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      value={formData.incisions || ""}
+                      name="incisions"
+                      onChange={handleChange}
+                      className="input-field"
+                      rows={6}
+                    /> */}
+                  </div>
+                  <div className="field-column">
+                    <label>Findings</label>
+                    {treatmentId ? (
+                      <textarea
+                        value={formData.findings || ""}
+                        name="findings"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="findings"
+                        value={formData.findings}
+                        handleChange={(e) => {
+                          setFormData({ findings: e.target.value });
+                          setRepeatedDiagnosis(e.target.value);
+                        }}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      value={formData.findings || ""}
+                      name="findings"
+                      onChange={handleChange}
+                      className="input-field"
+                      rows={6}
+                    /> */}
+                  </div>
+                  <div className="field-column">
+                    <label>Procedures</label>
+                    {treatmentId ? (
+                      <textarea
+                        value={formData.procedures || ""}
+                        name="procedures"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="procedures"
+                        value={formData.procedures}
+                        handleChange={(e) => {
+                          setFormData({ procedures: e.target.value });
+                          setRepeatedDiagnosis(e.target.value);
+                        }}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      value={formData.procedures || ""}
+                      name="procedures"
+                      onChange={handleChange}
+                      className="input-field"
+                      rows={6}
+                    /> */}
+                  </div>
+                  <div className="field-row flex-row-gap">
+                    <div className="field-row">
+                      <label>Anesthesia start time</label>
+                      <input
+                        onChange={handleChange}
+                        value={formData.anesthesiaStartTime || ""}
+                        name="anesthesiaStartTime"
+                        className="input-field"
+                        type="time"
+                      />
+                    </div>
+                    <div className="field-row">
+                      <label>Anesthesia end time</label>
+                      <input
+                        onChange={handleChange}
+                        value={formData.anesthesiaEndTime || ""}
+                        name="anesthesiaEndTime"
+                        className="input-field"
+                        type="time"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex-row-gap">
+                    <div className="field-column">
+                      <label>Drain</label>
+                      <textarea
+                        name="tran"
+                        value={formData.tran || ""}
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                      />
+                    </div>
+                    <div className="field-column">
+                      <label>Catheter</label>
+                      <textarea
+                        name="catheter"
+                        value={formData.catheter || ""}
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                      />
+                    </div>
+                    <div className="field-column">
+                      <label>Specimen</label>
+                      <textarea
+                        value={formData.specimen || ""}
+                        name="specimen"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                      />
+                    </div>
+                  </div>
+                  {treatmentId && dataFromLab && (
+                    <div className="field-column">
+                      <label>Patient's Lab Results</label>
+                      <LabRequestTable data={dataFromLab} isFamily={false} />
+                    </div>
+                  )}
+                  {treatmentId && (
+                    <MedicationTable
+                      data={{
+                        treatmentType: "GeneralSurgery",
+                        treatmentId: treatmentId,
+                      }}
+                    />
+                  )}
+                  <div className="field-column">
+                    <label>Intra-operative treatment</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="intra_OperationTreatment"
+                        onChange={handleChange}
+                        value={formData.intra_OperationTreatment || ""}
+                        className="input-field"
+                        rows={6}
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="intra_OperationTreatment"
+                        value={formData.intra_OperationTreatment}
+                        handleChange={(e) => {
+                          setFormData({
+                            intra_OperationTreatment: e.target.value,
+                          });
+                          setRepeatedDiagnosis(e.target.value);
+                        }}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      name="intra_OperationTreatment"
+                      onChange={handleChange}
+                      value={formData.intra_OperationTreatment || ""}
+                      className="input-field"
+                      rows={6}
+                    /> */}
+                  </div>
+                  <div className="field-column">
+                    <label>Post-operative treatment order</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="post_OperationTreatmentOrder"
+                        onChange={handleChange}
+                        value={formData.post_OperationTreatmentOrder || ""}
+                        className="input-field"
+                        rows={6}
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="post_OperationTreatmentOrder"
+                        value={formData.post_OperationTreatmentOrder}
+                        handleChange={(e) => {
+                          setFormData({
+                            post_OperationTreatmentOrder: e.target.value,
+                          });
+                          setRepeatedDiagnosis(e.target.value);
+                        }}
+                        none={true}
+                      />
+                    )}
+                    {/*  */}
+                  </div>
+                  <div className="field-column">
+                    <label>Special instructions</label>
+                    {treatmentId ? (
+                      <textarea
+                        value={formData.specialInstructions || ""}
+                        name="specialInstructions"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="specialInstructions"
+                        value={formData.specialInstructions}
+                        handleChange={(e) => {
+                          setFormData({ specialInstructions: e.target.value });
+                          setRepeatedDiagnosis(e.target.value);
+                        }}
+                        none={true}
+                      />
+                    )}
+                  </div>
+                  {/* <div className="field-column">
+                    <label>Surgeon Signature</label>
+                    <textarea
+                      value={formData.surgeonSignature || ""}
+                      name="surgeonSignature"
+                      onChange={handleChange}
+                      className="input-field"
+                      rows={3}
+                    />
+                  </div> */}
+                  {!treatmentId && (
+                    <button onClick={handleSubmit} className="submit-btn">
+                      Submit
+                    </button>
+                  )}
+                </div>
+              </section>
+            </main>
+            <VitalsRecords vitals={vitals} />
+          </div>
+        </div>
+        {treatmentModal && (
+          <AddTreatmentOld
+            createTreatment={createTreatmet}
+            repeatedDiagnosis={repeatedDiagnosis}
+            setRepeatedDiagnosis={setRepeatedDiagnosis}
+            closeModal={toggleTreatmentModal}
+            visit={lastVisit}
+            // data={data}
+            id={patientId}
+            // fetchData={fetchData}
+          />
+        )}
+        {showModal && (
+          <ReferPatient
+            repeatedDiagnosis={repeatedDiagnosis}
+            setRepeatedDiagnosis={setRepeatedDiagnosis}
+            closeModal={toggleModal}
+            visit={lastVisit}
+            vital={vitals}
+            generalSurgery={+treatmentId || 0}
+            // vitalId = {vitals.id}
+            id={patientId}
+            // treatment={data[0] || null}
+          />
+        )}
       </div>
-      {treatmentModal && (
-        <AddTreatmentOld
-          createTreatment={createTreatmet}
-          repeatedDiagnosis={repeatedDiagnosis}
-          setRepeatedDiagnosis={setRepeatedDiagnosis}
-          closeModal={toggleTreatmentModal}
-          visit={lastVisit}
-          // data={data}
-          id={patientId}
-          // fetchData={fetchData}
-        />
-      )}
-      {showModal && (
-        <ReferPatient
-          repeatedDiagnosis={repeatedDiagnosis}
-          setRepeatedDiagnosis={setRepeatedDiagnosis}
-          closeModal={toggleModal}
-          visit={lastVisit}
-          vital={vitals}
-          generalSurgery={+treatmentId || 0}
-          // vitalId = {vitals.id}
-          id={patientId}
-          // treatment={data[0] || null}
-        />
-      )}
     </div>
   );
 };
