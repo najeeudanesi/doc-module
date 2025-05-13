@@ -265,7 +265,7 @@ function DetailedNurseNotes({ closeModal, treatment, doctors, nurses, patientId,
                     <h4>Medication</h4>
                     <MedicationTable medications={meds} administrationFrequencies={administrationFrequencies} routesOfAdministration={routesOfAdministration} drugStrengthUnits={drugStrengthUnits} />
 
-                    <button onClick={() => setAdd(true)} className="submit-btn">Add to existing prescriptions</button>
+                    <button onClick={() => setAdd(true)} className="submit-btn m-t-10">Add to existing prescriptions</button>
                 </div>
 
                 {currentNote ? (

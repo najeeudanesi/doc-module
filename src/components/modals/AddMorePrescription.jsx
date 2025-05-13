@@ -309,10 +309,15 @@ function AddMoreTreatment({
         // }
 
         try {
-            await post("/patients/add-additional-prescription", payload); // Send payload to the endpoint
-            await fetchData();
-            toast.success("Treatment added successfully");
-            closeModal();
+            const res = await post(`/patients/${patientId}/Treatment/${treatment?.id}/add-additional-prescription`, payload,); // Send payload to the endpoint
+            console.log(res);
+            if (res === "Successful") {
+    
+                toast.success("Treatment added successfully");
+                closeModal();
+            } else {
+                toast.error("Error adding prescription");
+            }
         } catch (error) {
             toast.error("Error adding treatment");
             console.log(error);
