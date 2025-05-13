@@ -74,6 +74,11 @@
   padding: 10px; */
 }
 
+.green {
+  color: #3C7E2D;
+  text-decoration: underline;
+}
+
 .tiny-card {
   display: flex;
   justify-content: space-between;
@@ -100,6 +105,17 @@
   filter: drop-shadow(1px 4px 11px rgba(108, 24, 164, 0.25));
   /* margin: 10px;
   padding: 10px; */
+}
+
+.cards {
+  background-color: white;
+  border-radius: 5px 5px 5px 0;
+  box-shadow: 1px 4px 11px 0px #CEBDE440;
+  padding: 10px;
+  width: 100%;
+  align-items: center;
+  border: 1px solid #3C7E2D73;
+
 }
 
 .Tablecard {
@@ -285,7 +301,8 @@
 .upload-btn:hover {
   background-color: #1c811c88;
 }
-.flex-col-gap{
+
+.flex-col-gap {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -506,7 +523,8 @@
   border: 1px solid #3c7e2da6;
   box-shadow: 1px 4px 11px 0px #cebde440;
 }
-.flex-center{
+
+.flex-center {
   display: flex;
   align-items: center;
   justify-items: center;
@@ -687,8 +705,16 @@ section {
   margin: 0;
 }
 
-button
- {
+.tabs {
+  border-bottom: 1px solid #3c7e2d73;
+  border-top: 1px solid #3c7e2d73;
+  width: 100%;
+  margin-bottom: 20px;
+  align-items: center;
+  display: flex;
+}
+
+button {
   border: none;
   outline: none;
 }
@@ -1358,7 +1384,8 @@ div.bottom ul {
   width: 250px;
   border: 1px solid #017d34; */
 
-  background-color: #ebffe6; /* light green */
+  background-color: #ebffe6;
+  /* light green */
   color: #333;
   padding: 6px 10px;
   width: 250px;
@@ -1596,20 +1623,19 @@ textarea {
   transform: translate(-50%, -50%);
 }
 
-.tabs {
-  border-bottom: 1px solid #b1b1b1;
-  border-top: 1px solid #b1b1b1;
-  margin-bottom: 20px;
-  align-items: center;
-  font-size: small;
-}
 
 .tab-item {
-  padding: 20px;
-  border-right: 1px solid #b1b1b1;
+  padding: 18px;
+  border-right: 1px solid #3c7e2d73;
   cursor: pointer;
   font-weight: normal;
+
 }
+
+.tab-item:last-child {
+  border-right: none;
+}
+
 
 .active {
   color: #3c7e2d;
@@ -1803,4 +1829,96 @@ textarea {
   border: 1px solid #3c7e2d73;
   cursor: pointer;
 
+}
+
+@media screen and (max-width: 1115px) {
+  .tabs {
+    flex-wrap: wrap;
+    /* Allow items to wrap onto multiple lines */
+    justify-content: center;
+    /* Center align items horizontally */
+  }
+
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    grid-template-columns: auto auto auto auto auto auto;
+
+  }
+}
+
+@media (max-width: 800px) {
+  .modal-content {
+    padding: 20px;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .tab-item {
+    flex: 1 1 100%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .pilled {
+    padding: 8px;
+  }
+
+  .outline-box,
+  .label-box,
+  .outline,
+  .label-textarea {
+    width: 100%;
+    padding: 8px;
+  }
+
+  .grid {
+    grid-template-columns: auto auto;
+  }
+
+  .gap-1,
+  .gap-2,
+  .gap-3,
+  .gap-4,
+  .gap-5,
+  .gap-6,
+  .gap-7,
+  .gap-8,
+  .gap-9,
+  .gap-10,
+  .gap-16,
+  .gap-20 {
+    gap: 4px;
+    /* Reduce gap size for smaller screens */
+  }
+
+  .tableInput {
+    width: 100%;
+  }
+
+  .dev-border,
+  .outline,
+  .border-bottom,
+  .outline-box {
+    width: 100%;
+  }
+
+  .flex-direction-v {
+    flex-direction: column;
+  }
+
+  .label-box,
+  .label-textarea {
+    width: 100%;
+  }
+
+  .close {
+    width: 35px;
+    height: 35px;
+  }
 }

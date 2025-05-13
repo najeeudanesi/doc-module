@@ -8,6 +8,8 @@ import TextArea from "../UI/TextArea";
 import debounce from "lodash.debounce"; // Import debounce from lodash
 import SpeechToTextButton from "../UI/SpeechToTextButton";
 import GhostTextCompletion from "../UI/TextPrediction";
+import Suggestions from "../UI/Suggestions";
+import PatientDetails from "../pages/PatientDetails";
 
 function AddTreatment({
   closeModal,
@@ -31,6 +33,8 @@ function AddTreatment({
   const [selectedMedication, setSelectedMedication] = useState(null); // State for React Select
   const [medicationOptions, setMedicationOptions] = useState([]); // State for fetched medication options
   const [hmo, setHmo] = useState(null);
+  const [sugesstPayload, setSuggPayload] = useState({ medications: [] });
+
 
   const routesOfAdministration = [
     { id: 1, name: "Orally" },
@@ -70,8 +74,8 @@ function AddTreatment({
     // Every 3 months
   ];
 
-  
 
+  console.log(visit)
 
   const fetchTreatmentCategory = async () => {
     try {
@@ -86,28 +90,6 @@ function AddTreatment({
     setDiagnosis(repeatedDiagnosis);
     console.log(repeatedDiagnosis);
   }, [repeatedDiagnosis]);
-
-  // const drugMeasurementUnits = [
-  //   { id: 1, name: "Tablets", symbol: "µg" },
-  //   { id: 2, name: "Milligram", symbol: "mg" },
-  //   { id: 3, name: "Bottle", symbol: "g" },
-  //   { id: 4, name: "Ampule", symbol: "g" },
-  //   // { id: 4, name: "Kilogram", symbol: "kg" },
-  //   // { id: 5, name: "Nanogram", symbol: "ng" },
-  //   // { id: 6, name: "International Unit", symbol: "IU" },
-  //   // { id: 7, name: "Milliliter", symbol: "mL" },
-  //   // { id: 8, name: "Liter", symbol: "L" },
-  //   // { id: 9, name: "Percent", symbol: "%" },
-  //   // { id: 10, name: "Milligram per Milliliter", symbol: "mg/mL" },
-  //   // { id: 11, name: "Microgram per Milliliter", symbol: "µg/mL" },
-  //   // { id: 12, name: "Gram per Liter", symbol: "g/L" },
-  //   // { id: 13, name: "Millimole", symbol: "mmol" },
-  //   // { id: 14, name: "Mole", symbol: "mol" },
-  //   // { id: 15, name: "Milliequivalent", symbol: "mEq" },
-  //   // { id: 16, name: "Unit per Kilogram", symbol: "U/kg" },
-  //   // { id: 17, name: "Microgram per Kilogram", symbol: "µg/kg" },
-  //   // { id: 18, name: "Milligram per Kilogram", symbol: "mg/kg" },
-  // ];
 
   const drugMeasurementUnits = [
     { id: 1, name: "Milligrams", symbol: "mg" },
@@ -137,7 +119,7 @@ function AddTreatment({
     { id: 25, name: "Milliequivalents", symbol: "mEq" },
     { id: 26, name: "International Units", symbol: "IU" }
   ];
-  
+
 
   // Fetch Medications from API with Filter Query (Debounced)
   const fetchMedications = async (
@@ -178,10 +160,30 @@ function AddTreatment({
       console.log(error);
     }
   };
+
+  // Function to update the suggestPayload
+  const updateSuggestPayload = () => {
+    const allMedications = [
+      ...medications.map((med) => med.name),
+      ...otherMedications.map((med) => med.name),
+    ];
+    if (allMedications.length === 0) {
+      setSuggPayload({ medications: [] });
+      return;
+    } else {
+      setSuggPayload({ medications: allMedications });
+    }
+  };
+
+  // Update suggestPayload whenever medications or otherMedications change
+  useEffect(() => {
+    updateSuggestPayload();
+  }, [medications, otherMedications]);
+
   const addMedicationFromDropdown = () => {
     if (selectedMedication) {
-      setMedications([
-        ...medications,
+      setMedications((prev) => [
+        ...prev,
         {
           name: selectedMedication.label,
           pharmacyInventoryId: selectedMedication.value, // Save the medication ID (value) here
@@ -198,9 +200,8 @@ function AddTreatment({
 
   const addOtherMedication = () => {
     if (newOtherMedication) {
-      setOtherMedications([
-        ...otherMedications,
-        // { name: newOtherMedication, quantity: "", frequency: "", duration: "" },
+      setOtherMedications((prev) => [
+        ...prev,
         {
           name: newOtherMedication,
           quantity: 0,
@@ -281,7 +282,7 @@ function AddTreatment({
       administrationFrequency: +med.administrationFrequency || 1,
       routeOfAdministration: +med.routeOfAdministration || 1,
       duration: med.duration,
-      drugStrengthUnit:+med.drugStrengthUnit||1,
+      drugStrengthUnit: +med.drugStrengthUnit || 1,
     }));
 
     // Construct the payload in the required format
@@ -773,6 +774,10 @@ function AddTreatment({
               </table>
             </div>
           )}
+
+          <div className="m-t-20">
+            <Suggestions payload={sugesstPayload} patientId={visit?.patientId} />
+          </div>
 
           <button
             className="btn m-t-20 w-100"
