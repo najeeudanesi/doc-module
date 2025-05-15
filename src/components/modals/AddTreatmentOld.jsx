@@ -35,7 +35,6 @@ function AddTreatment({
   const [hmo, setHmo] = useState(null);
   const [sugesstPayload, setSuggPayload] = useState({ medications: [] });
 
-
   const routesOfAdministration = [
     { id: 1, name: "Orally" },
     { id: 2, name: "Sublingual" },
@@ -74,8 +73,7 @@ function AddTreatment({
     // Every 3 months
   ];
 
-
-  console.log(visit)
+  console.log(visit);
 
   const fetchTreatmentCategory = async () => {
     try {
@@ -117,9 +115,8 @@ function AddTreatment({
     { id: 23, name: "Teaspoon", symbol: "tsp" },
     { id: 24, name: "Tablespoon", symbol: "tbsp" },
     { id: 25, name: "Milliequivalents", symbol: "mEq" },
-    { id: 26, name: "International Units", symbol: "IU" }
+    { id: 26, name: "International Units", symbol: "IU" },
   ];
-
 
   // Fetch Medications from API with Filter Query (Debounced)
   const fetchMedications = async (
@@ -636,6 +633,7 @@ function AddTreatment({
                             )
                           }
                         >
+                          <option value={""}>--Select Route--</option>
                           {drugMeasurementUnits.map((freq) => (
                             <option key={freq.id} value={freq.id}>
                               {freq.name}
@@ -656,6 +654,7 @@ function AddTreatment({
                             )
                           }
                         >
+                          <option value={""}>--Select Route--</option>
                           {administrationFrequencies.map((freq) => (
                             <option key={freq.id} value={freq.id}>
                               {freq.name}
@@ -691,6 +690,7 @@ function AddTreatment({
                             )
                           }
                         >
+                          <option value={""}>--Select Route--</option>
                           {routesOfAdministration.map((route) => (
                             <option key={route.id} value={route.id}>
                               {route.name}

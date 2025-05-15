@@ -60,6 +60,8 @@ function ReferPatient({
   ];
 
   useEffect(() => {
+    console.log(vital);
+
     setCategoryOptions(dummyLabCategories);
     fetchPatientHMO();
     getCategories();
@@ -68,12 +70,14 @@ function ReferPatient({
   useEffect(() => {
     if (category) {
       getCategoriesService();
+      console.log(vital);
     }
   }, [category, selectedLab]);
 
   useEffect(() => {
     setDiagnosis(repeatedDiagnosis);
     console.log(repeatedDiagnosis);
+    console.log(vital);
   }, [repeatedDiagnosis]);
 
   const fetchPatientHMO = async () => {
@@ -213,7 +217,14 @@ function ReferPatient({
 
     setLoading(true);
 
-    const selectedVital = vital.find((v) => v.appointmentId === visit.id);
+    console.log(vital);
+    console.log(visit);
+
+    const selectedVital = vital.find(
+      (v) => v.appointmentId === +localStorage.getItem("appointmentId")
+    );
+
+    console.log(selectedVital);
 
     const payload = {
       labRequestType: selectedLab?.value,
@@ -233,35 +244,36 @@ function ReferPatient({
               oG_BirthRecordId: 0,
               orthopedicId: orthopedic || 0,
               generalSurgeryId: generalSurgery || 0,
-              antenatalId: antenatal||0,
+              antenatalId: antenatal || 0,
               pediatricId: 0,
-              generalPracticeId: generalPractice||0,
+              generalPracticeId: generalPractice || 0,
             }
           : null,
       externalLab:
         otherTestRequests?.length > 0
           ? {
-            diagnosis,
-            isFamilyMedicine: familyMedcine ? true : false,
-            dateOfVisit: new Date(visit?.appointDate).toISOString(),
-            appointmentId: visit?.id,
-            hmoId: hmo?.hmoProviderId || 0,
-            hmoPackageId: hmo?.hmoPackageId || 0,
-            testRequests,
-            additionalNote,
-            familyMedicineId: +familyMedcine || 0,
-            oG_IVFId: ivf,
-            oG_BirthRecordId: 0,
-            orthopedicId: orthopedic || 0,
-            generalSurgeryId: generalSurgery || 0,
-            antenatalId: antenatal||0,
-            pediatricId: 0,
-            generalPracticeId: 0,
+              diagnosis,
+              isFamilyMedicine: familyMedcine ? true : false,
+              dateOfVisit: new Date(visit?.appointDate).toISOString(),
+              appointmentId: visit?.id,
+              hmoId: hmo?.hmoProviderId || 0,
+              hmoPackageId: hmo?.hmoPackageId || 0,
+              testRequests,
+              additionalNote,
+              familyMedicineId: +familyMedcine || 0,
+              oG_IVFId: ivf,
+              oG_BirthRecordId: 0,
+              orthopedicId: orthopedic || 0,
+              generalSurgeryId: generalSurgery || 0,
+              antenatalId: antenatal || 0,
+              pediatricId: 0,
+              generalPracticeId: 0,
             }
           : null,
     };
 
     console.log(payload);
+    // return
 
     try {
       await post(

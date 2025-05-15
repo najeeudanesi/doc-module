@@ -461,6 +461,7 @@ const Antinatal = () => {
         `/appointment/get-appointment-bypatientId/${patientId}/`
       );
       setLastVisit(response.data[response.data.length - 1]);
+      console.log(response.data)
     } catch (e) {
       console.log(e);
     }
