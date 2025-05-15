@@ -3,7 +3,7 @@ import { BeatLoader } from "react-spinners";
 import axios from 'axios';
 import { get } from '../../utility/fetch';
 
-const Suggestions = ({ payload, patientId }) => {
+const Suggestions = ({ payload, patientId, symptoms }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [suggestion, setSuggestion] = useState('');
     const [allergyPred, setAllergyPred] = useState('');
@@ -12,6 +12,8 @@ const Suggestions = ({ payload, patientId }) => {
     const [showRisk, setShowRisk] = useState(true);
     const [showSuggestion, setShowSuggestion] = useState(true);
     const [showAllergy, setShowAllergy] = useState(true);
+    const [showDiagnosis, setShowDiagnosis] = useState(true);
+    const [diagnosis, setDiagnosis] = useState('');
 
     const formatSuggestion = (rawSuggestion) => {
         const lines = rawSuggestion
@@ -43,6 +45,44 @@ const Suggestions = ({ payload, patientId }) => {
         });
     };
 
+    const formatDiagnosis = (diagnosisData) => {
+        if (!diagnosisData || !diagnosisData.possibleDiagnoses) return null;
+    
+        const { possibleDiagnoses, notes } = diagnosisData;
+    
+        return (
+            <div>
+                {/* Header */}
+                <p>
+                    <span style={{ color: "green", fontWeight: "bold" }}>
+                        {possibleDiagnoses[0]}
+                    </span>
+                </p>
+    
+                {/* List of diagnoses */}
+                <ul style={{ marginTop: "10px" }}>
+                    {possibleDiagnoses.slice(1).map((item, index) => (
+                        <li key={index} style={{ marginBottom: "5px" }}>
+                            {item}
+                        </li>
+                    ))}
+                </ul>
+    
+                {/* Notes */}
+                <p
+                    style={{
+                        fontStyle: "italic",
+                        color: "gray",
+                        textAlign: "right",
+                        marginTop: "10px",
+                    }}
+                >
+                    {notes}
+                </p>
+            </div>
+        );
+    };
+
     const fetchSuggestions = async () => {
         setIsLoading(true);
 
@@ -53,17 +93,30 @@ const Suggestions = ({ payload, patientId }) => {
         }
 
         try {
+
+            const diagnosisRes = await axios.post(
+                `${process.env.REACT_APP_BASE_URL}/ConnectedHealthWebApi/api/Diagnosis/diagnose`,
+                { patientId: patientId, symptoms: [symptoms] }
+            );
+            console.log('Diagnosis Response:', diagnosisRes?.data?.diagnosis?.possibleDiagnoses);
+            if (diagnosisRes?.data?.diagnosis?.isSuccessful) {
+                const formattedDiagnosis = formatDiagnosis(diagnosisRes?.data?.diagnosis);
+                setDiagnosis(formattedDiagnosis);
+            }
+
             const drugRes = await axios.post(`${process.env.REACT_APP_BASE_URL}/ConnectedHealthWebApi/api/Patient/drug-interactions`, payload);
-            if (drugRes.status === 200) {
+            if (drugRes?.status === 200) {
                 const formattedDrugSuggestion = formatSuggestion(drugRes?.data?.data?.analysis);
                 setSuggestion(formattedDrugSuggestion);
             }
 
             const allergyRes = await axios.post(`${process.env.REACT_APP_BASE_URL}/ConnectedHealthWebApi/api/Patient/allergy-interactions`, payload);
-            if (allergyRes.status === 200) {
+            if (allergyRes?.status === 200) {
                 const formattedAllergySuggestion = formatSuggestion(allergyRes?.data?.data?.analysis);
                 setAllergyPred(formattedAllergySuggestion);
             }
+
+            
         } catch (error) {
             console.error('Error fetching suggestions:', error);
         } finally {
@@ -71,6 +124,7 @@ const Suggestions = ({ payload, patientId }) => {
         }
     };
 
+    console.log('Payload:', diagnosis);
     const toLabel = (key) =>
         key
             .replace(/([A-Z])/g, ' $1')
@@ -119,11 +173,13 @@ const Suggestions = ({ payload, patientId }) => {
     useEffect(() => {
         if (payload?.medications?.length > 0) {
             fetchSuggestions();
+        }else if(symptoms){
+            fetchSuggestions();
         } else {
             setIsLoading(false);
             setSuggestion(null);
         }
-    }, [payload]);
+    }, [payload, symptoms]);
 
     useEffect(() => {
         fetchRiskSuggestions();
@@ -169,6 +225,17 @@ const Suggestions = ({ payload, patientId }) => {
                                 Allergic Reactions Suggestions {showAllergy ? '▲' : '▼'}
                             </h3>
                             {showAllergy && <ul>{allergyPred}</ul>}
+                        </div>
+                    )}
+                    {diagnosis && (
+                        <div className="cards m-t-20">
+                            <h3
+                                className="green pointer"
+                                onClick={() => setShowDiagnosis(!showDiagnosis)}
+                            >
+                                Diagnosis Suggestions {showDiagnosis ? '▲' : '▼'}
+                            </h3>
+                            {showDiagnosis && <ul>{diagnosis}</ul>}
                         </div>
                     )}
                 </>
