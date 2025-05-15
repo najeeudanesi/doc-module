@@ -81,7 +81,7 @@ const MedicalLog = ({ patient }) => {
     { key: "ivf", label: "O&G IVF" },
     // { key: "birthrecord", label: "O&G Birth Record" },
     { key: "Orthopedic", label: "Orthopedic" },
-    { key: "atenatal", label: "Antenatal & Post-natal" },
+    { key: "atenatal", label: " O&G Antenatal/Post-natal" },
     { key: "generalsurgery", label: "General Surgery" },
     { key: "generalPractie", label: "General Practice" },
     // { key: "pediatrics", label: "Pediatrics" },

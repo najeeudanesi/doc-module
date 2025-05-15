@@ -775,9 +775,9 @@ function AddTreatment({
             </div>
           )}
 
-          <div className="m-t-20">
+          {/* <div className="m-t-20">
             <Suggestions payload={sugesstPayload} patientId={visit?.patientId} />
-          </div>
+          </div> */}
 
           <button
             className="btn m-t-20 w-100"
