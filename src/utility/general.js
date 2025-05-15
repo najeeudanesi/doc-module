@@ -22,6 +22,25 @@ export const formatDate = (input) => {
 
 }
 
+
+export function calculateAge(isoDateString) {
+  const birthDate = new Date(isoDateString);
+  const today = new Date();
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  
+  const hasHadBirthdayThisYear =
+    today.getMonth() > birthDate.getMonth() ||
+    (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+
+  if (!hasHadBirthdayThisYear) {
+    age--;
+  }
+
+  return age;
+}
+
+
 export const convertImgToBase64 = (inputFile) => {
   if (inputFile === undefined) return '';
   const file = new FileReader();

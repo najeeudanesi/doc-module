@@ -1,6 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { get } from '../../utility/fetch';
+import { calculateAge } from '../../utility/general';
 
 const VitalsRecords = ({ vitals = [] }) => {
+
+  const { patientId, } = useParams();
+  const [patient, setPatient] = React.useState(null);
+  const getPatientDetails = async () => {
+    // setLoading(true);
+    try {
+      const data = await get(`/patients/${patientId}/data`);
+      setPatient(data);
+      console.log(data);
+      console.log(data?.id);
+
+      // setVisit(data?.visits?.pop());
+    } catch (e) {
+      console.log(e);
+    }
+    // setLoading(false);
+  };
+
+  useEffect(() => {
+    getPatientDetails();
+  }, []);
+
+
+
+  console.log('Vitals Records:', vitals);
   return (
     <aside className="sidebar">
       <div className="bg-black bg-opacity-40 z-50 flex items-center justify-center">
@@ -13,7 +41,9 @@ const VitalsRecords = ({ vitals = [] }) => {
               <div key={i} className="vitals-card border-b border-gray-200 py-3 mb-3">
                 <div className="vitals-row"><strong>Date of Visit:</strong> {v.dateOfVisit}</div>
                 <div className="vitals-row"><strong>Nurse:</strong> {v.vitalNurseName}</div>
-                <div className="vitals-row"><strong>Patient:</strong> {v.patientName}</div>
+                <div className="vitals-row"><strong>Patient:</strong> {patient.firstName} {patient.lastName}</div>
+                <div className="vitals-row"><strong>Age:</strong> {calculateAge(patient.dateOfBirth)} years</div>
+                <div className="vitals-row"><strong>Sex:</strong> {patient.gender}</div>                
                 <div className="vitals-row"><strong>Temperature:</strong> {v.temperature} °C</div>
                 <div className="vitals-row"><strong>Blood Pressure:</strong> {v.bloodPressure}</div>
                 <div className="vitals-row"><strong>Heart Pulse:</strong> {v.heartPulse}</div>
