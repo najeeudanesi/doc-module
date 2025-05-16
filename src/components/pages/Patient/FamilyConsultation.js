@@ -16,8 +16,8 @@ const FamilyConsultation = () => {
   const navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    console.log(name)
-    console.log(value)
+    console.log(name);
+    console.log(value);
 
     if (type === "checkbox") {
       console.log(checked);
@@ -121,157 +121,179 @@ const FamilyConsultation = () => {
         <FiArrowLeft />
         <p onClick={() => navigate(-1)}> Back</p>
       </div>
-      <main className="consultation-main">
-        <form className="consultation-form" onSubmit={handleSubmit}>
-          <div className="input-row">
-            <div class="flex-row-gap">
-              <div className="field-row">
-                <label htmlFor="lastConfinement">Last confinement</label>
+      <div class="w-100">
+        <h2 style={{ textAlign: "center" }} className="w-70">
+          Family Planning
+        </h2>
+        <main className="consultation-main">
+          <form className="consultation-form" onSubmit={handleSubmit}>
+            <div className="input-row">
+              <div class="flex-row-gap">
+                <div className="field-row">
+                  <label htmlFor="lastConfinement">Last confinement</label>
+                  <input
+                    id="lastConfinement"
+                    name="lastConfinement"
+                    onChange={handleChange}
+                    type="date"
+                    className="input-field"
+                  />
+                </div>
+              </div>
+              <div className="group-box">
+                <label>Type Of Delivery</label>
+                <div className="group-options">
+                  {["Normal", "C-section", "Assisted"].map((opt, index) => (
+                    <label key={opt}>
+                      <input
+                        type="radio"
+                        name="deliveryType"
+                        value={index + 1}
+                        onChange={handleChange}
+                      />
+                      {opt}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              {/* <div className="field-row">
+                <label htmlFor="deliveryType">Type of delivery</label>
                 <input
-                  id="lastConfinement"
-                  name="lastConfinement"
+                  id="deliveryType"
+                  name="deliveryType"
                   onChange={handleChange}
-                  type="date"
+                  type="text"
                   className="input-field"
                 />
-              </div>
+              </div> */}
             </div>
-
-            <div className="group-box">
-              <label>Type Of Delivery</label>
-              <div className="group-options">
-                {["Normal", "C-section", "Assisted"].map((opt, index) => (
-                  <label key={opt}>
-                    <input
-                      type="radio"
-                      name="deliveryType"
-                      value={index + 1}
-                      onChange={handleChange}
-                    />
-                    {opt}
-                  </label>
-                ))}
-              </div>
+            <div className="radio-row">
+              <span>Delivery Complications?</span>
+              <label>
+                <input
+                  type="radio"
+                  name="deliveryComplications"
+                  value="Yes"
+                  onChange={handleChange}
+                />{" "}
+                Yes
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="deliveryComplications"
+                  value="No"
+                  onChange={handleChange}
+                />{" "}
+                No
+              </label>
             </div>
-            {/* <div className="field-row">
-              <label htmlFor="deliveryType">Type of delivery</label>
-              <input
-                id="deliveryType"
-                name="deliveryType"
-                onChange={handleChange}
-                type="text"
-                className="input-field"
+            <div className="field-column">
+              <label htmlFor="details">Provide Details</label>
+              <GhostTextCompletion
+                // label="Patient Diagnosis"
+                name="details"
+                value={formData.details}
+                handleChange={
+                  handleChange
+                  // setFormData({ details: e.target.value });
+                  // setRepeatedDiagnosis(e.target.value);
+                }
+                none={true}
               />
-            </div> */}
-          </div>
-
-          <div className="radio-row">
-            <span>Delivery Complications?</span>
-            <label>
-              <input
-                type="radio"
-                name="deliveryComplications"
-                value="Yes"
+              {/* <textarea
+                id="details"
+                name="details"
                 onChange={handleChange}
-              />{" "}
-              Yes
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="deliveryComplications"
-                value="No"
-                onChange={handleChange}
-              />{" "}
-              No
-            </label>
-          </div>
-
-          <div className="field-column">
-            <label htmlFor="details">Provide Details</label>
-            <GhostTextCompletion
-              // label="Patient Diagnosis"
-              name="details"
-              value={formData.details}
-              handleChange={
-                handleChange
-                // setFormData({ details: e.target.value });
-                // setRepeatedDiagnosis(e.target.value);
-              }
-              none={true}
-            />
-            {/* <textarea
-              id="details"
-              name="details"
-              onChange={handleChange}
-              className="textarea-field"
-            ></textarea> */}
-          </div>
-
-          <div className="radio-row">
-            <span>Breast feeding?</span>
-            <label>
-              <input
-                type="radio"
-                name="breastFeeding"
-                value="Yes"
-                onChange={handleChange}
-              />{" "}
-              Yes
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="breastFeeding"
-                value="No"
-                onChange={handleChange}
-              />{" "}
-              No
-            </label>
-            <span>Menstrual resumption?</span>
-            <label>
-              <input
-                type="radio"
-                name="menstrualResumption"
-                value="Yes"
-                onChange={handleChange}
-              />{" "}
-              Yes
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="menstrualResumption"
-                value="No"
-                onChange={handleChange}
-              />{" "}
-              No
-            </label>
-          </div>
-
-          <div className="input-row">
-            <div className="group-box">
-              <label>Investigation</label>
+                className="textarea-field"
+              ></textarea> */}
+            </div>
+            <div className="radio-row">
+              <span>Breast feeding?</span>
+              <label>
+                <input
+                  type="radio"
+                  name="breastFeeding"
+                  value="Yes"
+                  onChange={handleChange}
+                />{" "}
+                Yes
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="breastFeeding"
+                  value="No"
+                  onChange={handleChange}
+                />{" "}
+                No
+              </label>
+              <span>Menstrual resumption?</span>
+              <label>
+                <input
+                  type="radio"
+                  name="menstrualResumption"
+                  value="Yes"
+                  onChange={handleChange}
+                />{" "}
+                Yes
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="menstrualResumption"
+                  value="No"
+                  onChange={handleChange}
+                />{" "}
+                No
+              </label>
+            </div>
+            <div className="input-row">
               <div className="group-box">
+                <label>Investigation</label>
+                <div className="group-box">
+                  <div className="group-options">
+                    {investigations.map((opt) => (
+                      <label key={opt.name}>
+                        <input
+                          type="checkbox"
+                          name="investigation"
+                          value={opt.name}
+                          checked={investigationArray.some(
+                            (item) => item.name === opt.name
+                          )}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setInvestigationArray((prev) => [...prev, opt]);
+                            } else {
+                              setInvestigationArray((prev) =>
+                                prev.filter((item) => item.name !== opt.name)
+                              );
+                            }
+                          }}
+                        />{" "}
+                        {opt.name}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="group-box">
+                <label>Family Plan Methods</label>
                 <div className="group-options">
-                  {investigations.map((opt) => (
-                    <label key={opt.name}>
+                  {[
+                    { name: "IUCD", id: 1 },
+                    { name: "Pills", id: 2 },
+                    { name: "Injectable-two months", id: 3 },
+                    { name: "Injectable-three months", id: 4 },
+                    { name: "Implant", id: 5 },
+                  ].map((opt) => (
+                    <label key={opt.id}>
                       <input
-                        type="checkbox"
-                        name="investigation"
-                        value={opt.name}
-                        checked={investigationArray.some(
-                          (item) => item.name === opt.name
-                        )}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setInvestigationArray((prev) => [...prev, opt]);
-                          } else {
-                            setInvestigationArray((prev) =>
-                              prev.filter((item) => item.name !== opt.name)
-                            );
-                          }
-                        }}
+                        type="radio"
+                        name="familyPlanMethod"
+                        value={opt.id}
+                        onChange={handleChange}
                       />{" "}
                       {opt.name}
                     </label>
@@ -279,135 +301,104 @@ const FamilyConsultation = () => {
                 </div>
               </div>
             </div>
-
-            <div className="group-box">
-              <label>Family Plan Methods</label>
-              <div className="group-options">
-                {[
-                  { name: "IUCD", id: 1 },
-                  { name: "Pills", id: 2 },
-                  { name: "Injectable-two months", id: 3 },
-                  { name: "Injectable-three months", id: 4 },
-                  { name: "Implant", id: 5 },
-                ].map((opt) => (
-                  <label key={opt.id}>
-                    <input
-                      type="radio"
-                      name="familyPlanMethod"
-                      value={opt.id}
-                      onChange={handleChange}
-                    />{" "}
-                    {opt.name}
-                  </label>
-                ))}
+            <div className="radio-row">
+              <span>Consent</span>
+              <label>
+                <input
+                  type="radio"
+                  name="consent"
+                  value="Yes"
+                  onChange={handleChange}
+                />{" "}
+                Yes
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="consent"
+                  value="No"
+                  onChange={handleChange}
+                />{" "}
+                No
+              </label>
+            </div>
+            <div className="input-row">
+              <div className="field-row">
+                <label htmlFor="dateCommence">Date commence</label>
+                <input
+                  id="dateCommence"
+                  name="dateCommence"
+                  onChange={handleChange}
+                  type="date"
+                  className="input-field"
+                />
               </div>
+              <div className="field-row">
+                <label htmlFor="lastConfinement">Date Expired</label>
+                <input
+                  id="dateExpired"
+                  name="dateExpired"
+                  onChange={handleChange}
+                  type="date"
+                  className="input-field"
+                />
+              </div>
+              {/* <div className="field-row">
+                <label htmlFor="nextVisit">Next visit</label>
+                <input
+                  id="nextVisit"
+                  name="nextVisit"
+                  onChange={handleChange}
+                  type="text"
+                  className="input-field"
+                />
+              </div> */}
             </div>
-          </div>
-
-          <div className="radio-row">
-            <span>Consent</span>
-            <label>
-              <input
-                type="radio"
-                name="consent"
-                value="Yes"
-                onChange={handleChange}
-              />{" "}
-              Yes
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="consent"
-                value="No"
-                onChange={handleChange}
-              />{" "}
-              No
-            </label>
-          </div>
-
-          <div className="input-row">
-            <div className="field-row">
-              <label htmlFor="dateCommence">Date commence</label>
-              <input
-                id="dateCommence"
-                name="dateCommence"
-                onChange={handleChange}
-                type="date"
-                className="input-field"
+            <div className="field-column">
+              <label htmlFor="instructions">Instructions</label>
+              <GhostTextCompletion
+                // label="Patient Diagnosis"
+                name="instructions"
+                value={formData.instructions}
+                handleChange={handleChange}
+                none={true}
               />
+              {/* <textarea
+                id="instructions"
+                name="instructions"
+                onChange={handleChange}
+                className="textarea-field"
+              ></textarea> */}
             </div>
-            <div className="field-row">
-              <label htmlFor="lastConfinement">Date Expired</label>
-              <input
-                id="dateExpired"
-                name="dateExpired"
-                onChange={handleChange}
-                type="date"
-                className="input-field"
+            <div className="field-column">
+              <label htmlFor="remark">Remark</label>
+              <GhostTextCompletion
+                // label="Patient Diagnosis"
+                name="remark"
+                value={formData.remark}
+                handleChange={handleChange}
+                none={true}
               />
+              {/* <textarea
+                id="remark"
+                name="remark"
+                onChange={handleChange}
+                className="textarea-field"
+              ></textarea> */}
             </div>
-            {/* <div className="field-row">
-              <label htmlFor="nextVisit">Next visit</label>
-              <input
-                id="nextVisit"
-                name="nextVisit"
-                onChange={handleChange}
-                type="text"
-                className="input-field"
-              />
-            </div> */}
-          </div>
-
-          <div className="field-column">
-            <label htmlFor="instructions">Instructions</label>
-            <GhostTextCompletion
-              // label="Patient Diagnosis"
-              name="instructions"
-              value={formData.instructions}
-              handleChange={handleChange}
-              none={true}
-            />
-            {/* <textarea
-              id="instructions"
-              name="instructions"
-              onChange={handleChange}
-              className="textarea-field"
-            ></textarea> */}
-          </div>
-
-          <div className="field-column">
-            <label htmlFor="remark">Remark</label>
-            <GhostTextCompletion
-              // label="Patient Diagnosis"
-              name="remark"
-              value={formData.remark}
-              handleChange={handleChange}
-
-              none={true}
-            />
-            {/* <textarea
-              id="remark"
-              name="remark"
-              onChange={handleChange}
-              className="textarea-field"
-            ></textarea> */}
-          </div>
-
-          {/* <div className="upload-box">Attach documents</div> */}
-
-          <div className="action-row">
-            {/* <button type="button" className="btn grey">
-              Preview Record
-            </button> */}
-            <button type="submit" className="btn green">
-              Submit Record
-            </button>
-          </div>
-        </form>
-
-        <VitalsRecords vitals={vitals} />
-      </main>
+            {/* <div className="upload-box">Attach documents</div> */}
+            <div className="action-row">
+              {/* <button type="button" className="btn grey">
+                Preview Record
+              </button> */}
+              <button type="submit" className="btn green">
+                Submit Record
+              </button>
+            </div>
+          </form>
+          <VitalsRecords vitals={vitals} />
+        </main>
+      </div>
     </div>
   );
 };

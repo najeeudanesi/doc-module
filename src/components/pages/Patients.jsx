@@ -8,20 +8,25 @@ import { RiCalendar2Fill } from "react-icons/ri";
 import { stats } from "./mockdata/PatientData";
 import SearchInput from "../UI/SearchInput";
 import AdmitCheck from "./Patient/AdmitCheck";
+import HMOPatientListTable from "../tables/HMOPatientListTable";
+import AllPatientsTable from "../tables/AllPatientsTable";
 
 function Patients() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  const [assignedPatients, setAssignedPatients] = useState(0)
-  const [outPatients, setOutpatients] = useState(0)
-  const [waiting, setWaiting] = useState(0)
-  const [admitted, setAdmitted] = useState(0)
-  const [hmoPatients, setHmoPatients] = useState(0)
-  const [summary, setSummary] = useState([0, 0, 0, 0, 0])
-  const [patientData, setPatientData] = useState([])
+  const [assignedPatients, setAssignedPatients] = useState(0);
+  const [outPatients, setOutpatients] = useState(0);
+  const [waiting, setWaiting] = useState(0);
+  const [admitted, setAdmitted] = useState(0);
+  const [hmoPatients, setHmoPatients] = useState(0);
+  const [hmoPatientsList, setHmoPatientsList] = useState([]);
+  const [allPatientsList, setAllPatientsList] = useState([]);
+
+  const [summary, setSummary] = useState([0, 0, 0, 0, 0]);
+  const [patientData, setPatientData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [searchText, setSearchText] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [searchText, setSearchText] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [selectedTab, setSelectedTab] = useState("patients");
   const [filteredDate, setFilteredDate] = useState(null); // Add state for filtered date
@@ -29,14 +34,13 @@ function Patients() {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const docInfo = JSON.parse(localStorage.getItem("USER_INFO"));
+
   const getTableData = async () => {
     try {
       const data = await get(`/patients/assignedtodoctor`);
       setPatientData(data.data);
       setFilteredData(data.data); // Initialize filtered data with all patient data
-
-
-      ;
     } catch (e) {
       console.log("Error: ", e);
     }
@@ -45,99 +49,100 @@ function Patients() {
   //done
   const getAssigned = async () => {
     try {
-      const data = await get(
-        `/dashboard/assignedtodoctor`, { status: 1 }
-      )
-      setAssignedPatients(data)
-
-
+      const data = await get(`/dashboard/assignedtodoctor`, { status: 1 });
+      setAssignedPatients(data);
     } catch (e) {
-      console.log("Error: ", e)
-
+      console.log("Error: ", e);
     }
+  };
 
-  }
+  // https://edogoverp.com/medicals/api/HMO/all-patient-hmo/2?pageIndex=1&pageSize=10
 
   const getOutPatients = async () => {
     try {
-      const data = await get(
-        `/dashboard/AllOutPatientAndInPatientCount`
-      )
+      const data = await get(`/dashboard/AllOutPatientAndInPatientCount`);
 
       setOutpatients(data.outpatientCount || 0);
-
-
-
     } catch (e) {
-      console.log("Error: ", e)
-
+      console.log("Error: ", e);
     }
+  };
 
-  }
+  const getHMOPatientsByClientId = async (pageIndex = 1, pageSize = 1000) => {
+    try {
+      const data = await get(
+        `/HMO/all-patient-hmo/${docInfo.clinicId}?pageIndex=${pageIndex}&pageSize=${pageSize}`
+      );
+      console.log(data);
+      setHmoPatientsList(data.data);
+
+      // setOutpatients(data.outpatientCount || 0);
+    } catch (e) {
+      console.log("Error: ", e);
+    }
+  };
+
+  const getAllPatientsList = async (pageIndex = 1, pageSize = 1000) => {
+    try {
+      const data = await get(
+        `/patients/AllPatient/${docInfo.clinicId}?$pageIndex=${pageIndex}&pageSize=${pageSize}`
+      );
+      console.log(data);
+      setAllPatientsList(data.data);
+
+      // setOutpatients(data.outpatientCount || 0);
+    } catch (e) {
+      console.log("Error: ", e);
+    }
+  };
 
   const getWaiting = async () => {
     try {
-      const data = await get(
-        `/dashboard/assignedtodoctor`, { status: 1 }
-      )
+      const data = await get(`/dashboard/assignedtodoctor`, { status: 1 });
 
       setWaiting(data);
-
-
     } catch (e) {
-      console.log("Error: ", e)
-
+      console.log("Error: ", e);
     }
-
-  }
+  };
   const getAdmitted = async () => {
     try {
-      const data = await get(
-        `/dashboard/doctor/admittedpatients`
-      )
+      const data = await get(`/dashboard/doctor/admittedpatients`);
 
       setAdmitted(data);
-
-
     } catch (e) {
-      console.log("Error: ", e)
-
+      console.log("Error: ", e);
     }
-
-  }
+  };
 
   //done
   const getHmoPatients = async () => {
     try {
-      const data = await get(
-        `/dashboard/hmo-patient`
-      )
+      const data = await get(`/dashboard/hmo-patient`);
 
       setHmoPatients(data);
-
-
     } catch (e) {
-      console.log("Error: ", e)
-
+      console.log("Error: ", e);
     }
-
-  }
+  };
 
   const getAllAdmittedPatients = async (currentPage) => {
     setLoading(true);
     try {
-      let res = await get(`/patients/admitted-patients-service?pageNumber=${currentPage}&pageSize=10`);
+      let res = await get(
+        `/patients/admitted-patients-service?pageNumber=${currentPage}&pageSize=10`
+      );
       setAdmittedPatients(res?.data);
       setTotalPages(res?.pageCount);
     } catch (error) {
-      console.error('Error fetching all patients:', error);
+      console.error("Error fetching all patients:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    getAllAdmittedPatients(currentPage)
+    getAllAdmittedPatients(currentPage);
   }, [currentPage]);
 
   useEffect(() => {
@@ -145,32 +150,39 @@ function Patients() {
   }, []);
 
   const fetchData = async () => {
-    setLoading(true)
+    setLoading(true);
     await getAssigned();
+    await getHMOPatientsByClientId();
+    await getAllPatientsList();
     await getAdmitted();
     await getHmoPatients();
     await getOutPatients();
     await getWaiting();
-    await getTableData()
-    setLoading(false)
-  }
+    await getTableData();
+    setLoading(false);
+  };
 
   useEffect(() => {
-    setSummary([assignedPatients, outPatients, waiting, admitted, hmoPatients]);
+    setSummary([
+      assignedPatients,
+      admitted,
+      hmoPatientsList?.length,
+      allPatientsList.length,
+    ]);
   }, [assignedPatients, outPatients, waiting, admitted, hmoPatients]);
 
   useEffect(() => {
     if (searchText === "") {
       dateFilter();
-      return
+      return;
     }
-    const filteredResults = patientData.filter((patient) =>
-      patient.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-      patient.lastName.toLowerCase().includes(searchText.toLowerCase())
+    const filteredResults = patientData.filter(
+      (patient) =>
+        patient.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
+        patient.lastName.toLowerCase().includes(searchText.toLowerCase())
     );
 
     setFilteredData(filteredResults);
-
   }, [searchText]);
 
   // Function to handle date change
@@ -185,9 +197,9 @@ function Patients() {
     if (filteredDate) {
       const filteredResults = patientData.filter((patient) => {
         // Parse the date string into a Date object
-        const patientDateRaw = patient?.dateCreated
+        const patientDateRaw = patient?.dateCreated;
 
-        const patientDate = new Date(patientDateRaw)
+        const patientDate = new Date(patientDateRaw);
 
         // Extract the date components
         const patientYear = patientDate.getFullYear();
@@ -211,16 +223,14 @@ function Patients() {
     } else {
       setFilteredData(patientData);
     }
-  }
+  };
   useEffect(() => {
     dateFilter();
   }, [filteredDate]);
 
-
   const handleSearchChange = (event) => {
     setSearchText(event.target.value);
   };
-
 
   const formatDate = (date) => {
     const day = date.getDate().toString().padStart(2, "0");
@@ -235,45 +245,63 @@ function Patients() {
       onKeyDown={(e) => e.preventDefault()} // Prevent typing in the date field
       className="custom-datepicker-input flex gap-6 flex-v-center"
     >
-      {filteredDate ? formatDate(selectedDate) : "Select Date"} {/* Update this line */}
+      {filteredDate ? formatDate(selectedDate) : "Select Date"}{" "}
+      {/* Update this line */}
       <RiCalendar2Fill />
     </button>
   );
 
   return (
     <div className="w-100 m-t-80 p-20">
-
-      {!loading ? (<div className="">
-        <h3>Patients Management</h3>
-        <div>
-          <div className="flex w-100 space-between gap-8 m-t-20">
-            {stats.map((stat, index) => (
-              <div className="w-20" key={index}>
-                <StatCard data={stat} number={summary[index]} icon={stat.icon} />
-              </div>
-            ))}
+      {!loading ? (
+        <div className="">
+          <h3>Patients Management</h3>
+          <div>
+            <div className="flex w-100 gap-8 m-t-20">
+              {stats.map((stat, index) => (
+                <div
+                  style={{
+                    backgroundColor:
+                      selectedTab == stat.type ? "#D5FFD5" : "white",
+                  }}
+                  onClick={() => setSelectedTab(stat.type)}
+                  className="w-20"
+                  key={index}
+                >
+                  <StatCard
+                    data={stat}
+                    number={summary[index]}
+                    icon={stat.icon}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="flex flex-v-center w-100 space-between">
-          <div className="flex gap-7 m-t-40">
-            <p>Assigned Waiting Patients</p>|
-            <DatePicker
-              selected={selectedDate}
-              onChange={handleDateChange}
-              dateFormat="dd-MM-yyyy"
-              maxDate={new Date()}
-              customInput={<CustomInput />}
-              icon={<RiCalendar2Fill />}
-            />
-          </div>
-
-          <div className="flex flex-v-end space-between  w-50 m-t-20 gap-10 ">
-            <div></div>
-            <div className="w-50">
-              <SearchInput type="text" onChange={handleSearchChange} value={searchText} name="searchText" />
+          <div className="flex flex-v-center w-100 space-between">
+            <div className="flex gap-7 m-t-40">
+              <p>Assigned Waiting Patients</p>|
+              <DatePicker
+                selected={selectedDate}
+                onChange={handleDateChange}
+                dateFormat="dd-MM-yyyy"
+                maxDate={new Date()}
+                customInput={<CustomInput />}
+                icon={<RiCalendar2Fill />}
+              />
             </div>
 
-            {/* <div className="dropdown-input w-25 ">
+            <div className="flex flex-v-end space-between  w-50 m-t-20 gap-10 ">
+              <div></div>
+              <div className="w-50">
+                <SearchInput
+                  type="text"
+                  onChange={handleSearchChange}
+                  value={searchText}
+                  name="searchText"
+                />
+              </div>
+
+              {/* <div className="dropdown-input w-25 ">
               {" "}
               <select>
                 <option value="">Name</option>
@@ -282,47 +310,53 @@ function Patients() {
                 <option value="Ward D">Ward D</option>
               </select>
             </div> */}
+            </div>
           </div>
-        </div>
-        <div className="tabs m-t-20 bold-text">
-          <div
-            className={`tab-item ${selectedTab === "patients" ? "active" : ""}`}
-            onClick={() => setSelectedTab("patients")}
-          >
-            Patients To See
-          </div>
-          <div
-            className={`tab-item ${selectedTab === "admitted" ? "active" : ""}`}
-            onClick={() => setSelectedTab("admitted")}
-          >
-            Patients Currently Admitted
-          </div>
-
-        </div>
-        <div className="">
-          {
-            selectedTab === "patients" ? (
+          {/* <div className="tabs m-t-20 bold-text">
+            <div
+              className={`tab-item ${
+                selectedTab === "patients" ? "active" : ""
+              }`}
+              onClick={() => setSelectedTab("patients")}
+            >
+              Patients To See
+            </div>
+            <div
+              className={`tab-item ${
+                selectedTab === "admitted" ? "active" : ""
+              }`}
+              onClick={() => setSelectedTab("admitted")}
+            >
+              Patients Currently Admitted
+            </div>
+          </div> */}
+          <div className="">
+            {selectedTab === "patients" ? (
               <PatientsTable
                 data={filteredData}
                 setCurrentPage={setCurrentPage}
                 currentPage={currentPage}
                 totalPages={totalPages}
-                
               />
-            ) : (
+            ) : selectedTab === "admittedPatients" ? (
               <AdmitCheck
                 data={admittedPatients}
                 setCurrentPage={setCurrentPage}
                 currentPage={currentPage}
                 totalPages={totalPages}
-                
               />
-            )
-          }
+            ) : selectedTab === "hmoPatients" ? (
+              <HMOPatientListTable patients={hmoPatientsList} />
+            ) : selectedTab === "allPatients" ? (
+              <AllPatientsTable patients={allPatientsList} />
+            ) : (
+              ""
+            )}
+          </div>
         </div>
-      </div>) : (<div>loading....</div>)}
-
-
+      ) : (
+        <div>loading....</div>
+      )}
     </div>
   );
 }

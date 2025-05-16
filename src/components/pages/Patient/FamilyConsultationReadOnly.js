@@ -372,493 +372,482 @@ const FamilyConsultationReadOnly = () => {
           )}
         </div>
       </div>
-      <main className="flex-row-gap-start exact-grid">
-        <section className="left-panel">
-          <div className="field-row">
-            <label>Date Of Visit</label>
-            <input
-              onChange={handleChange}
-              name="dateOfVisit"
-              className="input-field"
-              type="date"
-              value={formData.dateOfVisit}
-            />
-          </div>
-
-          <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
-            <div className="bg-white rounded-lg shadow-lg w-full max-w-6xl p-6 relative overflow-auto max-h-[90vh]">
-              {/* <h2 className="text-xl font-bold mb-4">Vitals Records</h2> */}
-              <VitalsRecords vitals={vitals} />
-            </div>
-          </div>
-          {/* {view && (
-            <div className="field-column">
-              <label>Patient's Diagnosis</label>
-              <textarea
-                className="input-field"
-                rows={10}
-                name="diagosis"
-                value={diagnosis}
-                readOnly
+      <div className="w-100">
+      <h2 style={{ textAlign: "center" }} className="w-70">
+          Family Planning
+        </h2>
+        <main className="flex-row-gap-start exact-grid">
+          <section className="left-panel">
+            <div className="field-row">
+              <label>Date Of Visit</label>
+              <input
                 onChange={handleChange}
-              ></textarea>
-            </div>
-          )} */}
-          {treatmentId && dataFromLab && (
-            <div className="field-column">
-              <label>Patient's Lab Results</label>
-              <LabRequestTable data={dataFromLab} isFamily={true} />
-            </div>
-          )}
-
-          {/* {view && (
-            <div className="field-column">
-              <label>Patient's Care Plan</label>
-              <textarea
+                name="dateOfVisit"
                 className="input-field"
-                rows={10}
-                name="diagosis"
-                value={carePlan}
-                onChange={handleChange}
-              ></textarea>
+                type="date"
+                value={formData.dateOfVisit}
+              />
             </div>
-          )} */}
-
-          {/* <div className="section-box">
-            <div className="input-row">
-              <div className="field-row">
-                <label>Referral Type</label>
-                <input
-                  onChange={(e) =>
-                    setNewLab({ ...newLab, test: e.target.value })
-                  }
-                  className="input-field"
-                  value={newLab.test}
-                />
+            <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
+              <div className="bg-white rounded-lg shadow-lg w-full max-w-6xl p-6 relative overflow-auto max-h-[90vh]">
+                {/* <h2 className="text-xl font-bold mb-4">Vitals Records</h2> */}
+                <VitalsRecords vitals={vitals} />
               </div>
-              <div className="field-row">
-                <label>Centre</label>
-                <input
-                  onChange={(e) =>
-                    setNewLab({ ...newLab, location: e.target.value })
-                  }
-                  className="input-field"
-                  value={newLab.location}
-                />
-              </div>
-
-              <button className="btn small green" onClick={handleLabAdd}>
-                Add Lab
-              </button>
             </div>
-
-            <table className="readonly-table">
-              <thead>
-                <tr>
-                  <th>S/N</th>
-                  <th>Lab Request</th>
-                  <th>Test Location</th>
-                </tr>
-              </thead>
-              <tbody>
-                {labRequests.map((lab, i) => (
-                  <tr key={i}>
-                    <td>{i + 1}</td>
-                    <td>{lab.test}</td>
-                    <td>{lab.location}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div> */}
-
-          <div className="field-column">
-            <label>Additional Notes</label>
-            <textarea
-              className="input-field"
-              rows={4}
-              value={additionalNotes}
-              onChange={(e) => setAdditionalNotes(e.target.value)}
-            ></textarea>
-          </div>
-
-          {treatmentId && (
-            <MedicationTable
-              data={{
-                treatmentType: "FamilyMedicine",
-                treatmentId: treatmentId,
-              }}
-            />
-          )}
-
-          {/* {view && (
-            <table className="readonly-table">
-              <thead>
-                <tr>
-                  <th>s/n</th>
-                  <th>Medication</th>
-                  <th>Dosage</th>
-                  <th>Frequency</th>
-                  <th>Duration (days)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {familyMedcineTreatmentDataById?.medications.map(
-                  (med, index) => (
-                    <tr key={med.id}>
-                      <td>{index + 1}</td>
-                      <td style={{ maxWidth: "180px", whiteSpace: "normal" }}>
-                        {med.pharmacyInventory?.productName}
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          value={med.quantity}
-                          className="input-field"
-                          style={{ width: "50px" }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          value={med.frequency}
-                          className="input-field"
-                          style={{ width: "50px" }}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          value={med.duration}
-                          className="input-field"
-                          style={{ width: "50px" }}
-                        />
-                      </td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
-          )} */}
-
-          {/* <div className="section-box">
-            <div className="input-row">
-              <div className="field-row">
-                <label>Drug Name</label>
-                <input
+            {/* {view && (
+              <div className="field-column">
+                <label>Patient's Diagnosis</label>
+                <textarea
                   className="input-field"
-                  value={newPrescription.name}
-                  onChange={(e) =>
-                    setNewPrescription({
-                      ...newPrescription,
-                      name: e.target.value,
-                    })
-                  }
-                />
+                  rows={10}
+                  name="diagosis"
+                  value={diagnosis}
+                  readOnly
+                  onChange={handleChange}
+                ></textarea>
               </div>
-              <div className="field-row">
-                <label>Drug Quatity</label>
-                <input
-                  type="number"
-                  placeholder="Qty"
+            )} */}
+            {treatmentId && dataFromLab && (
+              <div className="field-column">
+                <label>Patient's Lab Results</label>
+                <LabRequestTable data={dataFromLab} isFamily={true} />
+              </div>
+            )}
+            {/* {view && (
+              <div className="field-column">
+                <label>Patient's Care Plan</label>
+                <textarea
                   className="input-field"
-                  value={newPrescription.quantity}
-                  onChange={(e) =>
-                    setNewPrescription({
-                      ...newPrescription,
-                      quantity: e.target.value,
-                    })
-                  }
-                />
+                  rows={10}
+                  name="diagosis"
+                  value={carePlan}
+                  onChange={handleChange}
+                ></textarea>
               </div>
-              <div className="field-row">
-                <label>Drug Frequency</label>
-                <input
-                  type="number"
-                  placeholder="Freq"
-                  className="input-field"
-                  value={newPrescription.freq}
-                  onChange={(e) =>
-                    setNewPrescription({
-                      ...newPrescription,
-                      freq: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="field-row">
-                <label>Drug Duration</label>
-                <input
-                  className="input-field"
-                  type="number"
-                  placeholder="Duration"
-                  value={newPrescription.duration}
-                  onChange={(e) =>
-                    setNewPrescription({
-                      ...newPrescription,
-                      duration: e.target.value,
-                    })
-                  }
-                />
-              </div>
+            )} */}
+            {/* <div className="section-box">
               <div className="input-row">
-                <button
-                  className="btn small green"
-                  onClick={handlePrescriptionAdd}
-                >
-                  Add Prescription
+                <div className="field-row">
+                  <label>Referral Type</label>
+                  <input
+                    onChange={(e) =>
+                      setNewLab({ ...newLab, test: e.target.value })
+                    }
+                    className="input-field"
+                    value={newLab.test}
+                  />
+                </div>
+                <div className="field-row">
+                  <label>Centre</label>
+                  <input
+                    onChange={(e) =>
+                      setNewLab({ ...newLab, location: e.target.value })
+                    }
+                    className="input-field"
+                    value={newLab.location}
+                  />
+                </div>
+                <button className="btn small green" onClick={handleLabAdd}>
+                  Add Lab
                 </button>
               </div>
-            </div>
-            <label>Prescription</label>
-            <table className="readonly-table">
-              <thead>
-                <tr>
-                  <th>S/N</th>
-                  <th>Name</th>
-                  <th>Quantity</th>
-                  <th>Freq/Day</th>
-                  <th>Duration (Days)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {prescriptions.map((p, i) => (
-                  <tr key={i}>
-                    <td>{i + 1}</td>
-                    <td>{p.name}</td>
-                    <td>{p.quantity}</td>
-                    <td>{p.freq}</td>
-                    <td>{p.duration}</td>
+              <table className="readonly-table">
+                <thead>
+                  <tr>
+                    <th>S/N</th>
+                    <th>Lab Request</th>
+                    <th>Test Location</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div> */}
-          {/* <div className="field-column">
-            <label>Care Plan</label>
-            <textarea
-              className="input-field"
-              rows={4}
-              value={carePlan}
-              onChange={(e) => setcarePlan(e.target.value)}
-            ></textarea>
-          </div> */}
-          {/* <div className="modal-overlay"> */}
-          {treatmentModal && (
-            <AddTreatmentOld
-              createTreatment={createTreatmet}
-              repeatedDiagnosis={repeatedDiagnosis}
-              setRepeatedDiagnosis={setRepeatedDiagnosis}
-              closeModal={toggleTreatmentModal}
-              visit={lastVisit}
-              data={data}
-              id={patientId}
-              fetchData={fetchData}
-            />
-          )}
-          {/* {!view && (
-            <div>
-              <AddTreatment
+                </thead>
+                <tbody>
+                  {labRequests.map((lab, i) => (
+                    <tr key={i}>
+                      <td>{i + 1}</td>
+                      <td>{lab.test}</td>
+                      <td>{lab.location}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div> */}
+            <div className="field-column">
+              <label>Additional Notes</label>
+              <textarea
+                className="input-field"
+                rows={4}
+                value={additionalNotes}
+                onChange={(e) => setAdditionalNotes(e.target.value)}
+              ></textarea>
+            </div>
+            {treatmentId && (
+              <MedicationTable
+                data={{
+                  treatmentType: "FamilyMedicine",
+                  treatmentId: treatmentId,
+                }}
+              />
+            )}
+            {/* {view && (
+              <table className="readonly-table">
+                <thead>
+                  <tr>
+                    <th>s/n</th>
+                    <th>Medication</th>
+                    <th>Dosage</th>
+                    <th>Frequency</th>
+                    <th>Duration (days)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {familyMedcineTreatmentDataById?.medications.map(
+                    (med, index) => (
+                      <tr key={med.id}>
+                        <td>{index + 1}</td>
+                        <td style={{ maxWidth: "180px", whiteSpace: "normal" }}>
+                          {med.pharmacyInventory?.productName}
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            value={med.quantity}
+                            className="input-field"
+                            style={{ width: "50px" }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            value={med.frequency}
+                            className="input-field"
+                            style={{ width: "50px" }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            value={med.duration}
+                            className="input-field"
+                            style={{ width: "50px" }}
+                          />
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
+            )} */}
+            {/* <div className="section-box">
+              <div className="input-row">
+                <div className="field-row">
+                  <label>Drug Name</label>
+                  <input
+                    className="input-field"
+                    value={newPrescription.name}
+                    onChange={(e) =>
+                      setNewPrescription({
+                        ...newPrescription,
+                        name: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="field-row">
+                  <label>Drug Quatity</label>
+                  <input
+                    type="number"
+                    placeholder="Qty"
+                    className="input-field"
+                    value={newPrescription.quantity}
+                    onChange={(e) =>
+                      setNewPrescription({
+                        ...newPrescription,
+                        quantity: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="field-row">
+                  <label>Drug Frequency</label>
+                  <input
+                    type="number"
+                    placeholder="Freq"
+                    className="input-field"
+                    value={newPrescription.freq}
+                    onChange={(e) =>
+                      setNewPrescription({
+                        ...newPrescription,
+                        freq: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="field-row">
+                  <label>Drug Duration</label>
+                  <input
+                    className="input-field"
+                    type="number"
+                    placeholder="Duration"
+                    value={newPrescription.duration}
+                    onChange={(e) =>
+                      setNewPrescription({
+                        ...newPrescription,
+                        duration: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="input-row">
+                  <button
+                    className="btn small green"
+                    onClick={handlePrescriptionAdd}
+                  >
+                    Add Prescription
+                  </button>
+                </div>
+              </div>
+              <label>Prescription</label>
+              <table className="readonly-table">
+                <thead>
+                  <tr>
+                    <th>S/N</th>
+                    <th>Name</th>
+                    <th>Quantity</th>
+                    <th>Freq/Day</th>
+                    <th>Duration (Days)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {prescriptions.map((p, i) => (
+                    <tr key={i}>
+                      <td>{i + 1}</td>
+                      <td>{p.name}</td>
+                      <td>{p.quantity}</td>
+                      <td>{p.freq}</td>
+                      <td>{p.duration}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div> */}
+            {/* <div className="field-column">
+              <label>Care Plan</label>
+              <textarea
+                className="input-field"
+                rows={4}
+                value={carePlan}
+                onChange={(e) => setcarePlan(e.target.value)}
+              ></textarea>
+            </div> */}
+            {/* <div className="modal-overlay"> */}
+            {treatmentModal && (
+              <AddTreatmentOld
+                createTreatment={createTreatmet}
                 repeatedDiagnosis={repeatedDiagnosis}
                 setRepeatedDiagnosis={setRepeatedDiagnosis}
                 closeModal={toggleTreatmentModal}
                 visit={lastVisit}
                 data={data}
-                getTreatmentData={getTreatmentData}
-                treatmentData={treatmentData}
                 id={patientId}
                 fetchData={fetchData}
               />
-            </div>
-          )} */}
-
-          {showModal && (
-            <ReferPatient
-              repeatedDiagnosis={repeatedDiagnosis}
-              setRepeatedDiagnosis={setRepeatedDiagnosis}
-              closeModal={toggleModal}
-              visit={lastVisit}
-              vital={vitals}
-              familyMedcine={treatmentId}
-              id={patientId}
-              // treatment={data[0] || null}
-            />
-          )}
-
-          {/* <Treatments data={patient?.treatments} visit={visit || null} id={patientId} />; */}
-          {false && (
-            <div className="footer-button">
-              <button
-                onClick={() => {
-                  setIsOpen(!isOpen);
-                }}
-                className="btn green"
-              >
-                Follow-up Appointment
-              </button>
-            </div>
-          )}
-          {isOpen &&
-            false(
-              <div className="">
-                {/* <div className="appointment-card modal-content"> */}
-                <div className="appointment-card">
-                  {/* <button className="close-btn" onClick={onClose}>
-                  ×
-                </button> */}
-                  <div className="appointment-icon">
-                    <div className="circle-icon">🔔</div>
-                  </div>
-                  <h3 className="greeting-text">
-                    Hello Dr.{docInfo.firstName} {docInfo.lastName}
-                  </h3>
-                  <h4 className="title">
-                    Schedule a followup Appointment here
-                  </h4>
-
-                  <form className="appointment-form">
-                    <input
-                      type="text"
-                      name="visitPurpose"
-                      placeholder="Purpose for Visit"
-                      className="full-input"
-                      required
-                    />
-
-                    <div className="input-row">
-                      <input
-                        type="date"
-                        name="appointDate"
-                        className="half-input"
-                        required
-                        onChange={handleChange}
-                      />
-                      <input
-                        type="time"
-                        name="appointTime"
-                        className="half-input"
-                        required
-                        onChange={handleChange}
-                      />
-                    </div>
-
-                    <textarea
-                      name="description"
-                      placeholder="Additional Notes (Diagnosis)"
-                      className="notes-area"
-                      onChange={handleChange}
-                    ></textarea>
-
-                    {/* <button type="submit" className="submit-btn">
-                    Create Appointment
-                  </button> */}
-                  </form>
-                </div>
+            )}
+            {/* {!view && (
+              <div>
+                <AddTreatment
+                  repeatedDiagnosis={repeatedDiagnosis}
+                  setRepeatedDiagnosis={setRepeatedDiagnosis}
+                  closeModal={toggleTreatmentModal}
+                  visit={lastVisit}
+                  data={data}
+                  getTreatmentData={getTreatmentData}
+                  treatmentData={treatmentData}
+                  id={patientId}
+                  fetchData={fetchData}
+                />
+              </div>
+            )} */}
+            {showModal && (
+              <ReferPatient
+                repeatedDiagnosis={repeatedDiagnosis}
+                setRepeatedDiagnosis={setRepeatedDiagnosis}
+                closeModal={toggleModal}
+                visit={lastVisit}
+                vital={vitals}
+                familyMedcine={treatmentId}
+                id={patientId}
+                // treatment={data[0] || null}
+              />
+            )}
+            {/* <Treatments data={patient?.treatments} visit={visit || null} id={patientId} />; */}
+            {false && (
+              <div className="footer-button">
+                <button
+                  onClick={() => {
+                    setIsOpen(!isOpen);
+                  }}
+                  className="btn green"
+                >
+                  Follow-up Appointment
+                </button>
               </div>
             )}
-        </section>
-
-        <section className="right-panel">
-          <div className="field-row">
-            <label>Last confinement</label>
-            <div className="readonly-box">
-              {formatDate(records?.lastConfinement)}
-            </div>
-          </div>
-          <div className="field-row">
-            <label>Type of delivery</label>
-            <div className="readonly-box">
-              {deliveryTypes[records?.deliveryType]}
-            </div>
-          </div>
-          <div className="field-column">
-            <label>Delivery Complications?</label>
-            <div className="readonly-box">{records?.details ? "Yes" : "No"}</div>
-          </div>
-          <div className="field-column">
-            <label>Provide Details</label>
-            <div className="readonly-box">
-              {records?.details || "No details provided"}
-            </div>
-          </div>
-          <div className="field-column">
-            <label>Breast feeding?</label>
-            <div className="readonly-box">
-              {records?.breastFeeding !== undefined ? (records.breastFeeding ? "Yes" : "No") : "N/A"}
-            </div>
-          </div>
-          <div className="field-column">
-            <label>Menstrual resumed?</label>
-            <div className="readonly-box">
-              {records?.menstrualResumed !== undefined ? (records.menstrualResumed ? "Yes" : "No") : "N/A"}
-            </div>
-          </div>
-          <div className="group-box">
-            <label>Investigation</label>
-            <div className="group-options">
-              {records?.familyMedicineInvestigations?.length > 0 ? (
-                records.familyMedicineInvestigations.map((rec, index) => (
-                  <span key={index} className="checked">
-                    {investigations[rec.id] || "Unknown Investigation"}
-                  </span>
-                ))
-              ) : (
-                <span>No investigations recorded</span>
+            {isOpen &&
+              false(
+                <div className="">
+                  {/* <div className="appointment-card modal-content"> */}
+                  <div className="appointment-card">
+                    {/* <button className="close-btn" onClick={onClose}>
+                    ×
+                  </button> */}
+                    <div className="appointment-icon">
+                      <div className="circle-icon">🔔</div>
+                    </div>
+                    <h3 className="greeting-text">
+                      Hello Dr.{docInfo.firstName} {docInfo.lastName}
+                    </h3>
+                    <h4 className="title">
+                      Schedule a followup Appointment here
+                    </h4>
+                    <form className="appointment-form">
+                      <input
+                        type="text"
+                        name="visitPurpose"
+                        placeholder="Purpose for Visit"
+                        className="full-input"
+                        required
+                      />
+                      <div className="input-row">
+                        <input
+                          type="date"
+                          name="appointDate"
+                          className="half-input"
+                          required
+                          onChange={handleChange}
+                        />
+                        <input
+                          type="time"
+                          name="appointTime"
+                          className="half-input"
+                          required
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <textarea
+                        name="description"
+                        placeholder="Additional Notes (Diagnosis)"
+                        className="notes-area"
+                        onChange={handleChange}
+                      ></textarea>
+                      {/* <button type="submit" className="submit-btn">
+                      Create Appointment
+                    </button> */}
+                    </form>
+                  </div>
+                </div>
               )}
+          </section>
+          <section className="right-panel">
+            <div className="field-row">
+              <label>Last confinement</label>
+              <div className="readonly-box">
+                {formatDate(records?.lastConfinement)}
+              </div>
             </div>
-          </div>
-          <div className="group-box">
-            <label>Family Plan Methods</label>
-            <div className="group-options">
-              <span className="checked">
-                {plans[records?.familyPlanMethod] || "No family plan method selected"}
-              </span>
+            <div className="field-row">
+              <label>Type of delivery</label>
+              <div className="readonly-box">
+                {deliveryTypes[records?.deliveryType]}
+              </div>
             </div>
-          </div>
-          <div className="field-column">
-            <label>Consent</label>
-            <div className="readonly-box">
-              {records?.consent !== undefined ? (records.consent ? "Yes" : "No") : "N/A"}
+            <div className="field-column">
+              <label>Delivery Complications?</label>
+              <div className="readonly-box">{records?.details ? "Yes" : "No"}</div>
             </div>
-          </div>
-          <div className="field-row">
-            <label>Date commence</label>
-            <div className="readonly-box">
-              {formatDate(records?.dateCommence) || "No date provided"}
+            <div className="field-column">
+              <label>Provide Details</label>
+              <div className="readonly-box">
+                {records?.details || "No details provided"}
+              </div>
             </div>
-          </div>
-          <div className="field-row">
-            <label>Next visit</label>
-            <div className="readonly-box">—</div>
-          </div>
-          <div className="field-column">
-            <label>Instructions</label>
-            <div className="readonly-box">
-              {records?.instructions || "No instructions provided"}
+            <div className="field-column">
+              <label>Breast feeding?</label>
+              <div className="readonly-box">
+                {records?.breastFeeding !== undefined ? (records.breastFeeding ? "Yes" : "No") : "N/A"}
+              </div>
             </div>
-          </div>
-          <div className="field-column">
-            <label>Remarks</label>
-            <div className="readonly-box">
-              {records?.remarks || "No remarks provided"}
+            <div className="field-column">
+              <label>Menstrual resumed?</label>
+              <div className="readonly-box">
+                {records?.menstrualResumed !== undefined ? (records.menstrualResumed ? "Yes" : "No") : "N/A"}
+              </div>
             </div>
-          </div>
-          <div className="field-column">
-            <label>Attach documents</label>
-            <div className="readonly-box">
-              {records?.familyMedicineDocuments?.length > 0 ? (
-                records.familyMedicineDocuments.map((doc, i) => (
-                  <a key={i} href={doc.docPath || "#"} className="doc-link">
-                    {doc.docName || "Unnamed Document"}
-                  </a>
-                ))
-              ) : (
-                <span>No documents attached</span>
-              )}
+            <div className="group-box">
+              <label>Investigation</label>
+              <div className="group-options">
+                {records?.familyMedicineInvestigations?.length > 0 ? (
+                  records.familyMedicineInvestigations.map((rec, index) => (
+                    <span key={index} className="checked">
+                      {investigations[rec.id] || "Unknown Investigation"}
+                    </span>
+                  ))
+                ) : (
+                  <span>No investigations recorded</span>
+                )}
+              </div>
             </div>
-          </div>
-        </section>
-      </main>
+            <div className="group-box">
+              <label>Family Plan Methods</label>
+              <div className="group-options">
+                <span className="checked">
+                  {plans[records?.familyPlanMethod] || "No family plan method selected"}
+                </span>
+              </div>
+            </div>
+            <div className="field-column">
+              <label>Consent</label>
+              <div className="readonly-box">
+                {records?.consent !== undefined ? (records.consent ? "Yes" : "No") : "N/A"}
+              </div>
+            </div>
+            <div className="field-row">
+              <label>Date commence</label>
+              <div className="readonly-box">
+                {formatDate(records?.dateCommence) || "No date provided"}
+              </div>
+            </div>
+            <div className="field-row">
+              <label>Next visit</label>
+              <div className="readonly-box">—</div>
+            </div>
+            <div className="field-column">
+              <label>Instructions</label>
+              <div className="readonly-box">
+                {records?.instructions || "No instructions provided"}
+              </div>
+            </div>
+            <div className="field-column">
+              <label>Remarks</label>
+              <div className="readonly-box">
+                {records?.remarks || "No remarks provided"}
+              </div>
+            </div>
+            <div className="field-column">
+              <label>Attach documents</label>
+              <div className="readonly-box">
+                {records?.familyMedicineDocuments?.length > 0 ? (
+                  records.familyMedicineDocuments.map((doc, i) => (
+                    <a key={i} href={doc.docPath || "#"} className="doc-link">
+                      {doc.docName || "Unnamed Document"}
+                    </a>
+                  ))
+                ) : (
+                  <span>No documents attached</span>
+                )}
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
       {!view && !treatmentId && (
           <div className="action-row">
             {/* <button type="button" className="btn grey">

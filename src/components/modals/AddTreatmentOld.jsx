@@ -341,7 +341,7 @@ function AddTreatment({
   return (
     <div className="overlay">
       <RiCloseFill className="close-btn pointer" onClick={closeModal} />
-      <div className="modal-box max-w-700">
+      <div className="modal-box max-w-1000">
         <div className="p-40">
           <h3 className="bold-text">Add Treatment</h3>
 
@@ -479,6 +479,8 @@ function AddTreatment({
                             )
                           }
                         >
+                          <option value={""}>--Select--</option>
+
                           {drugMeasurementUnits.map((freq) => (
                             <option key={freq.id} value={freq.id}>
                               {freq.name}
@@ -499,6 +501,8 @@ function AddTreatment({
                             )
                           }
                         >
+                          <option value={""}>--Select--</option>
+
                           {administrationFrequencies.map((freq) => (
                             <option key={freq.id} value={freq.id}>
                               {freq.name}
@@ -534,6 +538,8 @@ function AddTreatment({
                             )
                           }
                         >
+                          <option value={""}>--Select--</option>
+
                           {routesOfAdministration.map((route) => (
                             <option key={route.id} value={route.id}>
                               {route.name}
@@ -633,7 +639,7 @@ function AddTreatment({
                             )
                           }
                         >
-                          <option value={""}>--Select Route--</option>
+                          <option value={""}>--Select--</option>
                           {drugMeasurementUnits.map((freq) => (
                             <option key={freq.id} value={freq.id}>
                               {freq.name}
@@ -654,7 +660,7 @@ function AddTreatment({
                             )
                           }
                         >
-                          <option value={""}>--Select Route--</option>
+                          <option value={""}>--Select--</option>
                           {administrationFrequencies.map((freq) => (
                             <option key={freq.id} value={freq.id}>
                               {freq.name}
@@ -690,12 +696,12 @@ function AddTreatment({
                             )
                           }
                         >
-                          <option value={""}>--Select Route--</option>
-                          {routesOfAdministration.map((route) => (
+                          <option value={""}>--Select--</option>
+                          {/* {routesOfAdministration.map((route) => (
                             <option key={route.id} value={route.id}>
                               {route.name}
                             </option>
-                          ))}
+                          ))} */}
                         </select>
                       </td>
                       {/* <td >

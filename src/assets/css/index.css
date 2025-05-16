@@ -64,7 +64,7 @@
 .stat-card {
   flex-direction: column;
   height: 100px;
-  background-color: white;
+  /* background-color: white; */
   top: 245px;
   border-radius: 5px;
   box-shadow: 1px 4px 11px 0px #cebde440;

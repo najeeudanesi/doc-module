@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./AntenatalTable.css";
 import { put } from "../../../utility/fetch";
 import toast from "react-hot-toast";
-
+import moment from "moment";
 const AntenatalVisitTable = ({
   id,
   patientId,
@@ -385,7 +385,7 @@ const AntenatalVisitTable = ({
                 ) : (
                   <>
                     <td>{index + 1}</td>
-                    <td>{item.date}</td>
+                    <td>{moment(item.date).format('DD-MM-YYYY')}</td>
                     <td>{item.gestationalAgeWeeks}</td>
                     <td>{item.bp}</td>
                     <td>{item.pr}</td>
@@ -401,7 +401,7 @@ const AntenatalVisitTable = ({
                     <td>{item.pcv}</td>
                     <td>
                       <div className="flex gap-1">
-                        {item.urine?.prot} / {item.urine?.glu}
+                        <p style={{ border:'1px solid', borderRight:'1px solid', borderLeft:'none',borderTop:'none',borderBottom:'none',padding:'0px 1px'}}>{item.urine?.prot}</p> <p style={{padding:'0px 1px'}}> {item.urine?.glu}</p>
                       </div>
                     </td>
                     <td>{item.remark}</td>

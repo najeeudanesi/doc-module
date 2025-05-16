@@ -2,9 +2,9 @@ import React from "react";
 
 function StatCard({ data, number, icon }) {
   return (
-    <div className="">
+    <div  className="">
       <div className="stat-card">
-        <div className="flex flex-v-center  gap-6">
+        <div className="flex flex-v-center  gap-6"  >
           <div className="rounded-bg text-green">{icon}</div>
           <div>
             <h3 className="bold-text">{number}</h3>

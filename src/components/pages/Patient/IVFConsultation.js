@@ -115,13 +115,28 @@ const IVFConsultation = () => {
           spermTestResult: "Normal",
         },
         // inMateProfile: "" || formData.intimateProfile,
-        pelvicScanDocuments: [], // handle file uploads separately
+        pelvicScanDocuments: [
+          {
+            docName: "",
+            docPath: "",
+          },
+        ], // handle file uploads separately
       },
       previousInvestigation: {
         anyPreviousInvestigation: formData.previousInvestigation === "Yes",
         details: formData.previousInvestigationDetails,
-        hsgDocuments: [], // handle file uploads separately
-        afmDocuments: [], // handle file uploads separately
+        hsgDocuments: [
+          {
+            docName: "",
+            docPath: "",
+          },
+        ], // handle file uploads separately
+        afmDocuments: [
+          {
+            docName: "",
+            docPath: "",
+          },
+        ], // handle file uploads separately
       },
       physicalExam: {
         breastExam: "N/A" || formData.breastScan,
