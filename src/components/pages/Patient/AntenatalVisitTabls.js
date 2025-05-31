@@ -21,8 +21,8 @@ const AntenatalVisitTable = ({
     });
   }, [visits]);
 
-  const handleSubmit = async () => {
-    // e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     console.log(formData.antenatalVisits[formData.antenatalVisits.length - 1]);
 
@@ -56,7 +56,7 @@ const AntenatalVisitTable = ({
         +formData.antenatalVisits[formData.antenatalVisits.length - 1]?.sfhCm,
       fetalHeartRate:
         +formData.antenatalVisits[formData.antenatalVisits.length - 1]
-          ?.festalHeartRate,
+          ?.fetalHeartRate,
     };
     // return;
     // console.log("FormData:", formData);
@@ -89,17 +89,17 @@ const AntenatalVisitTable = ({
 
   const [antenatalEntry, setAntenatalEntry] = useState({
     visitNo: 1,
-    date: "",
-    gestationalAgeWeeks: "",
+    date: null,
+    gestationalAgeWeeks: 0,
     bp: "",
-    pr: "",
-    weightKg: "",
+    pr: 0,
+    weightKg: 0,
     oedma: "",
-    sfhCm: "",
+    sfhCm: 0,
     presentation: "",
     lie: "",
     position: "",
-    festalHeartRate: "",
+    fetalHeartRate: 0,
     ve: "",
     tt: "",
     pcv: "",
@@ -119,16 +119,16 @@ const AntenatalVisitTable = ({
     setAntenatalEntry({
       visitNo: 1,
       date: "",
-      gestationalAgeWeeks: "",
+      gestationalAgeWeeks: 0,
       bp: "",
-      pr: "",
-      weightKg: "",
+      pr: 0,
+      weightKg: 0,
       oedma: "",
-      sfhCm: "",
+      sfhCm: 0,
       presentation: "",
       lie: "",
       position: "",
-      festalHeartRate: "",
+      fetalHeartRate: 0,
       ve: "",
       tt: "",
       pcv: "",
@@ -141,6 +141,9 @@ const AntenatalVisitTable = ({
     const newVisits = [...formData.antenatalVisits];
     newVisits.splice(index, 1);
     setFormData({ antenatalVisits: newVisits });
+    catchAddedVisits([...newVisits]);
+
+    console.log(newVisits);
   };
 
   const startEdit = (index) => {
@@ -160,6 +163,7 @@ const AntenatalVisitTable = ({
 
     console.log(updatedVisits);
     setEditIndex(null);
+    catchAddedVisits(updatedVisits);
   };
 
   return (
@@ -174,22 +178,43 @@ const AntenatalVisitTable = ({
             <tr>
               <th>Visit#</th>
               <th>Date</th>
-              <th>GA (Weeks)</th>
+              <th>GA (weeks)</th>
               <th>BP (mmHg)</th>
-              <th>PR (Bpm)</th>
+              <th>PR (bpm)</th>
               <th>Weight (kg)</th>
               <th>Oedema</th>
-              <th>SFHCM (cm)</th>
+              <th>SFH (cm)</th>
               <th>Presentation</th>
               <th>Lie</th>
               <th>Position</th>
-              <th>Foetal Heart Rate (Bpm)</th>
+              <th>FHR (bpm)</th>
               <th>VE</th>
               <th>TT</th>
               <th>PCV (%)</th>
-              <th>Urine (Prot/Glu)</th>
+              <th colSpan={2}>Urine (Prot/Glu)</th>
               <th>Remarks</th>
               <th>Actions</th>
+            </tr>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th> </th>
+              <th> </th>
+              <th> </th>
+              <th></th>
+              <th> </th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th> </th>
+              <th></th>
+              <th></th>
+              <th> </th>
+              <th> (Prot)</th>
+              <th> (Glu)</th>
+              <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -224,7 +249,7 @@ const AntenatalVisitTable = ({
                         onChange={(e) =>
                           setEditEntry({
                             ...editEntry,
-                            gestationalAgeWeeks: e.target.value,
+                            gestationalAgeWeeks: +e.target.value,
                           })
                         }
                       />
@@ -241,7 +266,7 @@ const AntenatalVisitTable = ({
                       <input
                         value={editEntry.pr}
                         onChange={(e) =>
-                          setEditEntry({ ...editEntry, pr: e.target.value })
+                          setEditEntry({ ...editEntry, pr: +e.target.value })
                         }
                       />
                     </td>
@@ -251,7 +276,7 @@ const AntenatalVisitTable = ({
                         onChange={(e) =>
                           setEditEntry({
                             ...editEntry,
-                            weightKg: e.target.value,
+                            weightKg: +e.target.value,
                           })
                         }
                       />
@@ -268,12 +293,13 @@ const AntenatalVisitTable = ({
                       <input
                         value={editEntry.sfhCm}
                         onChange={(e) =>
-                          setEditEntry({ ...editEntry, sfhCm: e.target.value })
+                          setEditEntry({ ...editEntry, sfhCm: +e.target.value })
                         }
                       />
                     </td>
                     <td>
-                      <input
+                      <select
+                        className="input-field"
                         value={editEntry.presentation}
                         onChange={(e) =>
                           setEditEntry({
@@ -281,18 +307,32 @@ const AntenatalVisitTable = ({
                             presentation: e.target.value,
                           })
                         }
-                      />
+                      >
+                        <option value="">--Select--</option>
+                        <option value={"Cephalic"}>Cephalic</option>
+                        <option value={"Breech"}>Breech</option>
+                        <option value={"Shoulder"}>Shoulder</option>
+                        <option value={"Palpable"}>Palpable</option>
+                      </select>
                     </td>
                     <td>
-                      <input
+                      <select
+                        className="input-field"
                         value={editEntry.lie}
                         onChange={(e) =>
                           setEditEntry({ ...editEntry, lie: e.target.value })
                         }
-                      />
+                      >
+                        <option value="">--Select--</option>
+                        <option value={"Longitudinal"}>Longitudinal</option>
+                        <option value={"Transverse"}>Transverse</option>
+                        <option value={"Oblique"}>Oblique</option>
+                        <option value={"Palpable"}>Palpable</option>
+                      </select>
                     </td>
                     <td>
-                      <input
+                      <select
+                        className="input-field"
                         value={editEntry.position}
                         onChange={(e) =>
                           setEditEntry({
@@ -300,15 +340,21 @@ const AntenatalVisitTable = ({
                             position: e.target.value,
                           })
                         }
-                      />
+                      >
+                        <option value="">--Select--</option>
+                        <option value={"Longitudinal"}>Longitudinal</option>
+                        <option value={"Transverse"}>Transverse</option>
+                        <option value={"Oblique"}>Oblique</option>
+                        <option value={"Palpable"}>Palpable</option>
+                      </select>
                     </td>
                     <td>
                       <input
-                        value={editEntry.festalHeartRate}
+                        value={editEntry.fetalHeartRate}
                         onChange={(e) =>
                           setEditEntry({
                             ...editEntry,
-                            festalHeartRate: e.target.value,
+                            fetalHeartRate: +e.target.value,
                           })
                         }
                       />
@@ -338,32 +384,32 @@ const AntenatalVisitTable = ({
                       />
                     </td>
                     <td>
-                      <div className="flex gap-1">
-                        <input
-                          value={editEntry.urine?.prot}
-                          onChange={(e) =>
-                            setEditEntry({
-                              ...editEntry,
-                              urine: {
-                                ...editEntry.urine,
-                                prot: e.target.value,
-                              },
-                            })
-                          }
-                        />
-                        <input
-                          value={editEntry.urine?.glu}
-                          onChange={(e) =>
-                            setEditEntry({
-                              ...editEntry,
-                              urine: {
-                                ...editEntry.urine,
-                                glu: e.target.value,
-                              },
-                            })
-                          }
-                        />
-                      </div>
+                      <input
+                        value={editEntry.urine?.prot}
+                        onChange={(e) =>
+                          setEditEntry({
+                            ...editEntry,
+                            urine: {
+                              ...editEntry.urine,
+                              prot: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </td>
+                    <td>
+                      <input
+                        value={editEntry.urine?.glu}
+                        onChange={(e) =>
+                          setEditEntry({
+                            ...editEntry,
+                            urine: {
+                              ...editEntry.urine,
+                              glu: e.target.value,
+                            },
+                          })
+                        }
+                      />
                     </td>
                     <td>
                       <input
@@ -385,7 +431,7 @@ const AntenatalVisitTable = ({
                 ) : (
                   <>
                     <td>{index + 1}</td>
-                    <td>{moment(item.date).format('DD-MM-YYYY')}</td>
+                    <td>{moment(item.date).format("DD-MM-YYYY")}</td>
                     <td>{item.gestationalAgeWeeks}</td>
                     <td>{item.bp}</td>
                     <td>{item.pr}</td>
@@ -395,15 +441,12 @@ const AntenatalVisitTable = ({
                     <td>{item.presentation}</td>
                     <td>{item.lie}</td>
                     <td>{item.position}</td>
-                    <td>{item.festalHeartRate}</td>
+                    <td>{item.fetalHeartRate}</td>
                     <td>{item.ve}</td>
                     <td>{item.tt}</td>
                     <td>{item.pcv}</td>
-                    <td>
-                      <div className="flex gap-1">
-                        <p style={{ border:'1px solid', borderRight:'1px solid', borderLeft:'none',borderTop:'none',borderBottom:'none',padding:'0px 1px'}}>{item.urine?.prot}</p> <p style={{padding:'0px 1px'}}> {item.urine?.glu}</p>
-                      </div>
-                    </td>
+                    <td>{item.urine?.prot}</td>
+                    <td>{item.urine?.glu}</td>
                     <td>{item.remark}</td>
                     <td>
                       {index < formData.antenatalVisits.length && (
@@ -512,6 +555,59 @@ const AntenatalVisitTable = ({
                 />
               </td>
               <td>
+                <select
+                  style={{ width: "100px" }}
+                  className="input-field"
+                  value={antenatalEntry.presentation}
+                  onChange={(e) =>
+                    setAntenatalEntry({
+                      ...antenatalEntry,
+                      presentation: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">--Select--</option>
+                  <option value={"Cephalic"}>Cephalic</option>
+                  <option value={"Breech"}>Breech</option>
+                  <option value={"Shoulder"}>Shoulder</option>
+                  <option value={"Palpable"}>Palpable</option>
+                </select>
+              </td>
+              <td>
+                <select
+                  className="input-field"
+                  value={antenatalEntry.lie}
+                  style={{ width: "100px" }}
+                  onChange={(e) =>
+                    setAntenatalEntry({ ...antenatalEntry, lie: e.target.value })
+                  }
+                >
+                  <option value="">--Select--</option>
+                  <option value={"Longitudinal"}>Longitudinal</option>
+                  <option value={"Transverse"}>Transverse</option>
+                  <option value={"Oblique"}>Oblique</option>
+                  <option value={"Palpable"}>Palpable</option>
+                </select>
+              </td>
+              <td>
+                <select
+                  style={{ width: "100px" }}
+                  className="input-field"
+                  value={antenatalEntry.position}
+                  onChange={(e) =>
+                    setAntenatalEntry({
+                      ...antenatalEntry,
+                      position: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">--Select--</option>
+                  <option value={"ROA"}>ROA</option>
+                  <option value={"NOA"}>NOA</option>
+                  <option value={"ND"}>ND</option>
+                </select>
+              </td>
+              {/* <td>
                 <input
                   value={antenatalEntry.presentation}
                   onChange={(e) =>
@@ -524,6 +620,7 @@ const AntenatalVisitTable = ({
               </td>
               <td>
                 <input
+                  style={{ width: "60px" }}
                   value={antenatalEntry.lie}
                   onChange={(e) =>
                     setAntenatalEntry({
@@ -543,21 +640,22 @@ const AntenatalVisitTable = ({
                     })
                   }
                 />
-              </td>
+              </td> */}
               <td>
                 <input
                   type="number"
-                  value={antenatalEntry.festalHeartRate}
+                  value={antenatalEntry.fetalHeartRate}
                   onChange={(e) =>
                     setAntenatalEntry({
                       ...antenatalEntry,
-                      festalHeartRate: +e.target.value,
+                      fetalHeartRate: +e.target.value,
                     })
                   }
                 />
               </td>
               <td>
                 <input
+                  style={{ width: "60px" }}
                   value={antenatalEntry.ve}
                   onChange={(e) =>
                     setAntenatalEntry({ ...antenatalEntry, ve: e.target.value })
@@ -566,6 +664,7 @@ const AntenatalVisitTable = ({
               </td>
               <td>
                 <input
+                  style={{ width: "60px" }}
                   value={antenatalEntry.tt}
                   onChange={(e) =>
                     setAntenatalEntry({ ...antenatalEntry, tt: e.target.value })
@@ -597,6 +696,10 @@ const AntenatalVisitTable = ({
                       })
                     }
                   />
+                </div>
+              </td>
+              <td>
+                <div className="flex gap-1">
                   <input
                     value={antenatalEntry.urine?.glu}
                     onChange={(e) =>
@@ -632,9 +735,11 @@ const AntenatalVisitTable = ({
         <button className="btn" type="button" onClick={addAntenatalVisit}>
           Add Visit
         </button>
-       {id && <button className="btn" type="button" onClick={handleSubmit}>
-          Update Visit
-        </button>}
+        {id && (
+          <button className="btn" type="button" onClick={handleSubmit}>
+            Update Visit
+          </button>
+        )}
       </div>
     </div>
   );

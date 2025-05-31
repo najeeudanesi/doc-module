@@ -64,6 +64,10 @@
   color: #3c7e2d;
 }
 
+.cursor-pointer{
+  cursor: pointer;
+}
+
 /* Mobile adjustments */
 @media screen and (max-width: 768px) {
   .readonly-tableR th,

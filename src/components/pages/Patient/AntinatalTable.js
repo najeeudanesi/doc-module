@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FiEdit3 } from "react-icons/fi";
+import tvIcon from "../../../assets/images/tv-Ico.png";
+
 import { get } from "../../../utility/fetch";
 import "./FamilyMedicineTable.css";
 
@@ -21,7 +23,7 @@ const AntinatalTable = () => {
     try {
       const response = await get(`/Antenatal/list/${currentPage}/10`);
       if (response?.isSuccess) {
-        setRecords( response.data.recordList);
+        setRecords(response.data.recordList);
         setTotalPages(response.data.metadata.totalPages || 1);
       }
     } catch (error) {
@@ -47,9 +49,7 @@ const AntinatalTable = () => {
         <div className="button-bar">
           <button
             className="btn-case"
-            onClick={() =>
-              navigate(`/doctor/patients/antinatal/${patientId}`)
-            }
+            onClick={() => navigate(`/doctor/patients/antinatal/${patientId}`)}
           >
             + Create a Case Note
           </button>
@@ -88,17 +88,28 @@ const AntinatalTable = () => {
                         Dr. {record.surgeon?.firstName}{" "}
                         {record.doctor?.lastName}
                       </td>
-                      <td>
+                      <td className="flex-row-gap">
                         <button
+                          onClick={() => {
+                            navigate(
+                              `/doctor/patients/antinatal/${patientId}/?treatmentId=${record.id}&edit=true`
+                            );
+                          }}
+                          className="icon-btn"
+                        >
+                          <FiEdit3 size={10} color="#109615" />
+                        </button>
+
+                        <img
+                        className="cursor-pointer"
                           onClick={() => {
                             navigate(
                               `/doctor/patients/antinatal/${patientId}/?treatmentId=${record.id}`
                             );
                           }}
-                          className="icon-btn"
-                        >
-                          <FiEdit3 size={16} color="#109615" />
-                        </button>
+                          style={{ width: "20px" }}
+                          src={tvIcon}
+                        />
                       </td>
                     </tr>
                   ))

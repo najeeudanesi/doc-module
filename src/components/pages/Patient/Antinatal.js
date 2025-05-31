@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { get, post } from "../../../utility/fetch";
+import { get, post, put } from "../../../utility/fetch";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FiArrowLeft } from "react-icons/fi";
@@ -9,10 +9,13 @@ import AddTreatmentOld from "../../modals/AddTreatmentOld";
 import MedicationTable from "./MedicationTable";
 import VitalsRecords from "../../modals/VitalsRecord";
 import AntenatalVisitTable from "./AntenatalVisitTabls";
+import DeliveryForm from "./DeliveryForm";
 
 const Antinatal = () => {
   const [searchParams] = useSearchParams();
   const treatmentId = searchParams.get("treatmentId");
+  const isEdit = searchParams.get("edit");
+
   const docInfo = JSON.parse(localStorage.getItem("USER_INFO"));
   const { patientId } = useParams();
   const [repeatedDiagnosis, setRepeatedDiagnosis] = useState("");
@@ -148,7 +151,7 @@ const Antinatal = () => {
     },
     antenatalVisits: [],
     birthPlan: {
-      plannedDateOfDelivery: "",
+      plannedDateOfDelivery: null,
       modeOfDelivery: 1,
       category: 1,
       typeOfPregnancy: "",
@@ -156,6 +159,7 @@ const Antinatal = () => {
       clinicalPelvimetry: 1,
       deliveryListReceived: true,
     },
+    id: isEdit && treatmentId,
     postnatalCare: {
       dateOfDelivery: "",
       modeOfDelivery: 1,
@@ -216,21 +220,60 @@ const Antinatal = () => {
     }
     // setIsLoading(false);
   };
+
+  const [formErrors, setFormErrors] = useState({});
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+
+  // };
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
+
     console.log("FormData:", formData);
 
+    // console.log(pp)
+
+    // const errors = validateFormData(formData);
+
+    // console.log(errors);
+    // if (Object.keys(errors).length > 0) {
+    //   setFormErrors(errors);
+    //   {
+    //     Object.entries(errors).map(([key, message]) => {
+    //       let kk = ("Validation Errors:", getDisplayFieldName(key));
+    //       toast.error(`Validation Errors: ${message}`);
+    //     });
+    //   }
+    //   console.log("Validation Errors:", errors);
+    //   // Prevent form submission
+    // } else {
+    //   setFormErrors({});
+    //   // toast.success("Form data is valid:", formData);
+    //   // Proceed with form submission (e.g., API call)
+    // }
+    // console.log(formData);
+
+    // return;
+    let response = null;
     try {
-      const response = await post(
-        `/Antenatal`,
-        formData // send formData directly
-      );
+      !isEdit
+        ? (response = await post(
+            `/Antenatal`,
+            formData // send formData directly
+          ))
+        : (response = await put(
+            `/Antenatal/${treatmentId}`,
+            { ...formData } // send formData directly
+          ));
 
-      if (response?.data.isSuccess) {
-        toast.success("Submitted successfully");
+      //
 
-        // navigate(`/doctor/patients/patient-details/${patientId}`);
-      }
+      console.log(response)
+
+      toast.success(isEdit?"updated successfully":"Submitted successfully");
+
+      navigate(`/doctor/patients/patient-details/${patientId}`);
 
       console.log("API Response:", response);
     } catch (error) {
@@ -303,7 +346,7 @@ const Antinatal = () => {
 
           birthPlan: {
             plannedDateOfDelivery:
-              response?.data.birthPlan?.plannedDateOfDelivery || "",
+              response?.data.birthPlan?.plannedDateOfDelivery || null,
             modeOfDelivery: response?.data.birthPlan?.modeOfDelivery || 1,
             category: response?.data.birthPlan?.category || 1,
             typeOfPregnancy: response?.data.birthPlan?.typeOfPregnancy || "",
@@ -315,22 +358,22 @@ const Antinatal = () => {
               response?.data.birthPlan?.deliveryListReceived ?? true,
           },
 
-          postnatalCare: {
-            dateOfDelivery: response?.data.postnatalCare?.dateOfDelivery || "",
-            modeOfDelivery: response?.data.postnatalCare?.modeOfDelivery || 1,
-            episiotomy: response?.data.postnatalCare?.episiotomy ?? true,
-            complication: response?.data.postnatalCare?.complication || "",
-            sexOfBaby: response?.data.postnatalCare?.sexOfBaby || "",
-            weightOfBabyKg: response?.data.postnatalCare?.weightOfBabyKg || 0,
-            breastfeedingWell:
-              response?.data.postnatalCare?.breastfeedingWell ?? true,
-            conditionOfBaby:
-              response?.data.postnatalCare?.conditionOfBaby || "",
-            conditionOfMother:
-              response?.data.postnatalCare?.conditionOfMother || "",
-            familyPlanningChoice:
-              response?.data.postnatalCare?.familyPlanningChoice || "",
-          },
+          // postnatalCare: {
+          //   dateOfDelivery: response?.data.postnatalCare?.dateOfDelivery || "",
+          //   modeOfDelivery: response?.data.postnatalCare?.modeOfDelivery || 1,
+          //   episiotomy: response?.data.postnatalCare?.episiotomy ?? true,
+          //   complication: response?.data.postnatalCare?.complication || "",
+          //   sexOfBaby: response?.data.postnatalCare?.sexOfBaby || "",
+          //   weightOfBabyKg: response?.data.postnatalCare?.weightOfBabyKg || 0,
+          //   breastfeedingWell:
+          //     response?.data.postnatalCare?.breastfeedingWell ?? true,
+          //   conditionOfBaby:
+          //     response?.data.postnatalCare?.conditionOfBaby || "",
+          //   conditionOfMother:
+          //     response?.data.postnatalCare?.conditionOfMother || "",
+          //   familyPlanningChoice:
+          //     response?.data.postnatalCare?.familyPlanningChoice || "",
+          // },
 
           appointmentId: response?.data.appointmentId || 0,
           doctorId: response?.data.doctor?.id || 0,
@@ -352,11 +395,71 @@ const Antinatal = () => {
     setTreatmentModal(!treatmentModal);
   };
 
-  const createTreatmet = async (load) => {
+  // const createTreatmet = async (load) => {
+  //   let payload = {
+  //     dateOfVisit: "2025-05-01T05:09:59.302Z",
+  //     appointmentId: +localStorage.getItem("appointmentId"),
+  //     diagnosis: "string",
+  //     isAdmitted: false,
+  //     patientId: +patientId,
+  //     medications: [
+  //       {
+  //         pharmacyInventoryId: 1,
+  //         quantity: 1,
+  //         frequency: 2,
+  //         duration: 0,
+  //       },
+  //     ],
+  //     otherMedications: [
+  //       {
+  //         name: "fhhkjkkkhk",
+  //         quantity: 0,
+  //         frequency: 0,
+  //         duration: 0,
+  //       },
+  //     ],
+  //     followUpAppointment: {
+  //       id: 0,
+  //       appointDate: "1920/09/1",
+  //       appointTime: "23:09",
+  //       description: "string",
+  //       doctorEmployeeId: 0,
+  //       nurseEmployeeId: 0,
+  //       isAdmitted: true,
+  //       patientId: 0,
+  //       serviceId: 0,
+  //       isEmergency: true,
+  //       careType: 0,
+  //     },
+  //     carePlan: "string",
+  //     familyMedicineId: 0,
+  //     oG_IVFId: 0,
+  //     oG_BirthRecordId: 0,
+  //     orthopedicId: 0,
+  //     generalSurgeryId: 0,
+  //     pediatricId: 0,
+  //     generalPracticeId: 0,
+  //     antenatalId: +treatmentId || 0,
+  //     ...load,
+  //   };
+
+  //   try {
+  //     await post(`/ServiceTreatment`, payload);
+  //     // await fetchData();
+  //     toast.success("Treatment added successfully");
+  //     // closeModal();
+  //     toggleTreatmentModal();
+  //   } catch (error) {
+  //     toast.error("Error adding treatment");
+  //     console.log(error);
+  //   }
+  // };
+
+  const createTreatment = async (load) => {
     let payload = {
       dateOfVisit: "2025-05-01T05:09:59.302Z",
       appointmentId: +localStorage.getItem("appointmentId"),
-      diagnosis: "string",
+      diagnosis: "some diagnosis",
       isAdmitted: false,
       patientId: +patientId,
       medications: [
@@ -369,26 +472,26 @@ const Antinatal = () => {
       ],
       otherMedications: [
         {
-          name: "fhhkjkkkhk",
-          quantity: 0,
-          frequency: 0,
-          duration: 0,
+          name: "Paracetamol",
+          quantity: 1,
+          frequency: 2,
+          duration: 3,
         },
       ],
       followUpAppointment: {
         id: 0,
-        appointDate: "1920/09/1",
-        appointTime: "23:09",
-        description: "string",
-        doctorEmployeeId: 0,
-        nurseEmployeeId: 0,
-        isAdmitted: true,
-        patientId: 0,
-        serviceId: 0,
-        isEmergency: true,
+        appointDate: "2025-06-01",
+        appointTime: "12:00",
+        description: "Follow up check",
+        doctorEmployeeId: 1,
+        nurseEmployeeId: 2,
+        isAdmitted: false,
+        patientId: +patientId,
+        serviceId: 1,
+        isEmergency: false,
         careType: 0,
       },
-      carePlan: "string",
+      carePlan: "Monitor vitals daily",
       familyMedicineId: 0,
       oG_IVFId: 0,
       oG_BirthRecordId: 0,
@@ -400,16 +503,467 @@ const Antinatal = () => {
       ...load,
     };
 
+    const errors = validateTreatmentPayload(payload);
+
+    if (errors.length) {
+      errors.forEach((err) => toast.error(err));
+      console.log("Payload validation errors:", errors);
+      return;
+    }
+
     try {
       await post(`/ServiceTreatment`, payload);
-      // await fetchData();
       toast.success("Treatment added successfully");
-      // closeModal();
       toggleTreatmentModal();
     } catch (error) {
       toast.error("Error adding treatment");
       console.log(error);
     }
+  };
+
+  const validateTreatmentPayload = (payload) => {
+    const errors = [];
+
+    const checkString = (key, value) => {
+      if (typeof value !== "string" || !value.trim()) {
+        errors.push(`${key} is required and must be a non-empty string`);
+      }
+    };
+
+    const checkNumber = (key, value) => {
+      if (typeof value !== "number") {
+        errors.push(`${key} is required and must be a number`);
+      }
+    };
+
+    const checkBoolean = (key, value) => {
+      if (typeof value !== "boolean") {
+        errors.push(`${key} must be a boolean value`);
+      }
+    };
+
+    const checkArray = (key, value) => {
+      if (!Array.isArray(value) || value.length === 0) {
+        errors.push(`${key} must be a non-empty array`);
+      }
+    };
+
+    checkString("dateOfVisit", payload.dateOfVisit);
+    checkNumber("appointmentId", payload.appointmentId);
+    checkString("diagnosis", payload.diagnosis);
+    checkBoolean("isAdmitted", payload.isAdmitted);
+    checkNumber("patientId", payload.patientId);
+
+    checkArray("medications", payload.medications);
+    payload.medications.forEach((med, i) => {
+      checkNumber(
+        `medications[${i}].pharmacyInventoryId`,
+        med.pharmacyInventoryId
+      );
+      if (med.quantity <= 0)
+        errors.push(`medications[${i}].quantity must be > 0`);
+      if (med.frequency <= 0)
+        errors.push(`medications[${i}].frequency must be > 0`);
+      checkNumber(`medications[${i}].duration`, med.duration);
+    });
+
+    checkArray("otherMedications", payload.otherMedications);
+    payload.otherMedications.forEach((med, i) => {
+      checkString(`otherMedications[${i}].name`, med.name);
+      checkNumber(`otherMedications[${i}].quantity`, med.quantity);
+      checkNumber(`otherMedications[${i}].frequency`, med.frequency);
+      checkNumber(`otherMedications[${i}].duration`, med.duration);
+    });
+
+    const followUp = payload.followUpAppointment;
+    if (typeof followUp !== "object" || !followUp) {
+      errors.push("followUpAppointment is required");
+    } else {
+      checkString("followUpAppointment.appointDate", followUp.appointDate);
+      checkString("followUpAppointment.appointTime", followUp.appointTime);
+      checkString("followUpAppointment.description", followUp.description);
+      checkNumber(
+        "followUpAppointment.doctorEmployeeId",
+        followUp.doctorEmployeeId
+      );
+      checkNumber(
+        "followUpAppointment.nurseEmployeeId",
+        followUp.nurseEmployeeId
+      );
+      checkBoolean("followUpAppointment.isAdmitted", followUp.isAdmitted);
+      checkNumber("followUpAppointment.patientId", followUp.patientId);
+      checkNumber("followUpAppointment.serviceId", followUp.serviceId);
+      checkBoolean("followUpAppointment.isEmergency", followUp.isEmergency);
+      checkNumber("followUpAppointment.careType", followUp.careType);
+    }
+
+    checkString("carePlan", payload.carePlan);
+
+    const idFields = [
+      "familyMedicineId",
+      "oG_IVFId",
+      "oG_BirthRecordId",
+      "orthopedicId",
+      "generalSurgeryId",
+      "pediatricId",
+      "generalPracticeId",
+      "antenatalId",
+    ];
+
+    idFields.forEach((field) => {
+      checkNumber(field, payload[field]);
+    });
+
+    return errors;
+  };
+
+  const isEmpty = (value) => {
+    if (value === null || value === undefined) {
+      return true;
+    }
+    if (typeof value === "string" && value.trim() === "") {
+      return true;
+    }
+    if (typeof value === "number" && isNaN(value)) {
+      return true;
+    }
+    if (Array.isArray(value) && value.length === 0) {
+      return true;
+    }
+    if (
+      typeof value === "object" &&
+      Object.keys(value).length === 0 &&
+      !(value instanceof Date)
+    ) {
+      return true;
+    }
+    return false;
+  };
+
+  // Helper function to validate a date string (e.g., "YYYY-MM-DD")
+  const isValidDate = (dateString) => {
+    // Basic regex for YYYY-MM-DD
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!regex.test(dateString)) return false;
+
+    const date = new Date(dateString);
+    // Check if the date object is valid and the year, month, day match the input
+    return (
+      date instanceof Date &&
+      !isNaN(date) &&
+      date.getFullYear() === parseInt(dateString.substring(0, 4)) &&
+      date.getMonth() + 1 === parseInt(dateString.substring(5, 7)) &&
+      date.getDate() === parseInt(dateString.substring(8, 10))
+    );
+  };
+
+  const getDisplayFieldName = (key) => {
+    // A simple conversion for common cases, or use a lookup map for complex names
+    const parts = key.split(/(?=[A-Z])/); // Split by uppercase letters
+    return parts
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+  };
+
+  const validateFormData = (formData) => {
+    console.log(formData);
+    let errors = {};
+
+    // Basic type checking and emptiness for top-level fields
+    if (typeof formData.patientId !== "number" || isNaN(formData.patientId)) {
+      errors.patientId = "Patient ID must be a number.";
+      console.log(errors);
+    }
+    if (
+      isEmpty(formData.maritalStatus) ||
+      typeof formData.maritalStatus !== "string"
+    ) {
+      errors.maritalStatus = "Marital Status is required and must be a string.";
+      console.log(errors);
+    }
+    if (
+      isEmpty(formData.educationStatus) ||
+      typeof formData.educationStatus !== "string"
+    ) {
+      errors.educationStatus =
+        "Education Status is required and must be a string.";
+      console.log(errors);
+    }
+    // Add similar checks for other top-level string fields
+    if (
+      isEmpty(formData.pastMedicalHistory) ||
+      typeof formData.pastMedicalHistory !== "string"
+    ) {
+      errors.pastMedicalHistory = "Past Medical History must be a string.";
+      console.log(errors);
+    }
+    if (
+      isEmpty(formData.pastSurgicalHistory) ||
+      typeof formData.pastSurgicalHistory !== "string"
+    ) {
+      errors.pastSurgicalHistory = "Past Surgical History must be a string.";
+    }
+    if (
+      isEmpty(formData.familyHistory) ||
+      typeof formData.familyHistory !== "string"
+    ) {
+      errors.familyHistory = "Family History must be a string.";
+      console.log(errors);
+    }
+
+    // Numerical fields (gravida, para, alive, male, female)
+    ["gravida", "para", "alive", "male", "female"].forEach((field) => {
+      console.log(formData[field]);
+      if (
+        formData[field] == "" ||
+        (typeof formData[field] !== "string" &&
+          isNaN(parseInt(formData[field])))
+      ) {
+        errors[field] = `${
+          field.charAt(0).toUpperCase() + field.slice(1)
+        } must be a number or empty.`;
+      }
+    });
+
+    // obstetricHistories (array of objects)
+    if (
+      !Array.isArray(formData.obstetricHistories) ||
+      formData.obstetricHistories.length < 1
+    ) {
+      errors.obstetricHistories = "Obstetric Histories must not be empty.";
+    } else {
+      console.log(formData.obstetricHistories);
+      formData.obstetricHistories.forEach((history, index) => {
+        // Example: If obstetric history objects have specific required fields
+
+        [
+          "age",
+
+          "durationOfLabour",
+          "fatalOutCome",
+          "modeOfDelivery",
+          "otherIllness",
+          "gestationalAgeWeek",
+          "sex",
+          "year",
+        ].forEach((field) => {
+          console.log(history[field]);
+          console.log(history);
+          console.log(field);
+          if (
+            (typeof history[field] !== "string" && history[field] == "") ||
+            history[field] < 0
+          ) {
+            errors[field] = `${
+              field.charAt(0).toUpperCase() + field.slice(1)
+            } must not be or empty.`;
+          }
+        });
+
+        // errors[
+        //   `obstetricHistories[${index}]`
+        // ] = `Entry ${index} in Obstetric Histories must be an object.`;
+        // Add more specific validations for fields within each history object if needed
+        // e.g., if (isEmpty(history.deliveryDate)) errors[`obstetricHistories[${index}].deliveryDate`] = 'Delivery date is required.';
+      });
+    }
+
+    // presentPregnancyHistory
+    if (
+      typeof formData.presentPregnancyHistory !== "object" ||
+      formData.presentPregnancyHistory === null
+    ) {
+      errors.presentPregnancyHistory =
+        "Present Pregnancy History must be an object.";
+    } else {
+      const pph = formData.presentPregnancyHistory;
+      if (
+        isEmpty(pph.lastMenstrualPeriod) ||
+        !isValidDate(pph.lastMenstrualPeriod)
+      ) {
+        errors.lastMenstrualPeriod =
+          "Last Menstrual Period is required and must be a valid date (YYYY-MM-DD).";
+      }
+      if (
+        isEmpty(pph.expectedDateOfDelivery) ||
+        !isValidDate(pph.expectedDateOfDelivery)
+      ) {
+        errors.expectedDateOfDelivery =
+          "Expected Date of Delivery is required and must be a valid date (YYYY-MM-DD).";
+      }
+
+      // bookingTest
+      if (typeof pph.bookingTest !== "object" || pph.bookingTest === null) {
+        errors.bookingTest = "Booking Test must be an object.";
+      } else {
+        const bt = pph.bookingTest;
+        // console.log(bt)
+        // All booking test fields are strings and can be empty. Just check type.
+        ["pcv", "glu", "prot", "vdrl", "hiv", "hbv", "bcv"].forEach((field) => {
+          console.log(bt);
+          console.log(bt[field]);
+          console.log(field);
+          if (typeof bt[field] !== "string" || bt[field] == "") {
+            errors[
+              `bookingTest.${field}`
+            ] = `${field.toUpperCase()} must not be a empty.`;
+          }
+        });
+      }
+
+      if (typeof pph.bloodGroup !== "string" || pph.bloodGroup == "") {
+        errors.bloodGroup = "Blood Group must be a string.";
+      }
+      if (typeof pph.genoType !== "string" || pph.genoType == "") {
+        errors.genoType = "Genotype must be a string.";
+      }
+      if (typeof pph.weightKg !== "number" || pph.weightKg < 0) {
+        errors.weightKg = "Weight must be a non-negative number.";
+      }
+      if (typeof pph.heightCm !== "number" || pph.heightCm < 0) {
+        errors.heightCm = "Height must be a non-negative number.";
+      }
+      if (typeof pph.bmi !== "number" || pph.bmi < 0) {
+        errors.bmi = "BMI must be a non-negative number.";
+      }
+    }
+
+    // antenatalVisits (array of objects) - similar to obstetricHistories
+    if (!Array.isArray(formData.antenatalVisits)) {
+      console.log(formData.antenatalVisits);
+
+      errors.antenatalVisits = "Antenatal Visits must be an array.";
+    } else {
+      if (formData.antenatalVisits.length == 0) {
+        // alert("Iamempty");
+      } else {
+        formData.antenatalVisits.forEach((visit, index) => {
+          console.log(formData.antenatalVisits);
+
+          // if (typeof visit !== "object" || visit === null) {
+          //   errors[
+          //     `antenatalVisits[${index}]`
+          //   ] = `Entry ${index} in Antenatal Visits must be an object.`;
+          // }
+
+          [
+            "bp",
+            "date",
+            "festalHeartRate",
+            "gestationalAgeWeeks",
+            "lie",
+            "oedma",
+            "pcv",
+            "position",
+            "pr",
+            "presentation",
+            "remark",
+            "sfhCm",
+            "tt",
+            "urine",
+            "ve",
+            "visitNo",
+            "weightKg",
+          ].forEach((field) => {
+            console.log(visit[field]);
+            console.log(visit);
+            console.log(field);
+            if (visit[field] == "") {
+              errors[field] = `${
+                field.charAt(0).toUpperCase() + field.slice(1)
+              } must not be or empty.`;
+            }
+          });
+          // Add specific validations for fields within each visit object if needed
+        });
+      }
+    }
+
+    // birthPlan
+    if (typeof formData.birthPlan !== "object" || formData.birthPlan === null) {
+      errors.birthPlan = "Birth Plan must be an object.";
+    } else {
+      const bp = formData.birthPlan;
+      if (
+        isEmpty(bp.plannedDateOfDelivery) ||
+        !isValidDate(bp.plannedDateOfDelivery)
+      ) {
+        errors.plannedDateOfDelivery =
+          "Planned Date of Delivery is required and must be a valid date (YYYY-MM-DD).";
+      }
+      if (typeof bp.modeOfDelivery !== "number" || bp.modeOfDelivery <= 0) {
+        errors.modeOfDelivery = "Mode of Delivery must be selected.";
+      }
+      if (typeof bp.category !== "number" || bp.category <= 0) {
+        errors.category = "Category must be selected.";
+      }
+      if (typeof bp.typeOfPregnancy !== "string" || bp.typeOfPregnancy == "") {
+        errors.typeOfPregnancy = "Type of Pregnancy must be a selected.";
+      }
+      if (typeof bp.episiotomyNeeded !== "boolean") {
+        errors.episiotomyNeeded = "Episiotomy Needed must be a boolean.";
+      }
+      if (
+        typeof bp.clinicalPelvimetry !== "number" ||
+        bp.clinicalPelvimetry <= 0
+      ) {
+        errors.clinicalPelvimetry = "Clinical Pelvimetry must be selected.";
+      }
+      if (typeof bp.deliveryListReceived !== "boolean") {
+        errors.deliveryListReceived =
+          "Delivery List Received must be a boolean.";
+      }
+    }
+
+    // postnatalCare
+    // if (typeof formData.postnatalCare !== 'object' || formData.postnatalCare === null) {
+    //   errors.postnatalCare = 'Postnatal Care must be an object.';
+    // } else {
+    //   const pnc = formData.postnatalCare;
+    //   if (isEmpty(pnc.dateOfDelivery) || !isValidDate(pnc.dateOfDelivery)) {
+    //     errors.dateOfDelivery = 'Date of Delivery is required and must be a valid date (YYYY-MM-DD).';
+    //   }
+    //   if (typeof pnc.modeOfDelivery !== 'number' || pnc.modeOfDelivery <= 0) {
+    //     errors.postnatalCareModeOfDelivery = 'Mode of Delivery must be selected.';
+    //   }
+    //   if (typeof pnc.episiotomy !== 'boolean') {
+    //     errors.postnatalCareEpisiotomy = 'Episiotomy must be a boolean.';
+    //   }
+    //   if (typeof pnc.complication !== 'string') {
+    //     errors.complication = 'Complication must be a string.';
+    //   }
+    //   if (typeof pnc.sexOfBaby !== 'string') {
+    //     errors.sexOfBaby = 'Sex of Baby must be a string.';
+    //   }
+    //   if (typeof pnc.weightOfBabyKg !== 'number' || pnc.weightOfBabyKg < 0) {
+    //     errors.weightOfBabyKg = 'Weight of Baby must be a non-negative number.';
+    //   }
+    //   if (typeof pnc.breastfeedingWell !== 'boolean') {
+    //     errors.breastfeedingWell = 'Breastfeeding Well must be a boolean.';
+    //   }
+    //   if (typeof pnc.conditionOfBaby !== 'string') {
+    //     errors.conditionOfBaby = 'Condition of Baby must be a string.';
+    //   }
+    //   if (typeof pnc.conditionOfMother !== 'string') {
+    //     errors.conditionOfMother = 'Condition of Mother must be a string.';
+    //   }
+    //   if (typeof pnc.familyPlanningChoice !== 'string') {
+    //     errors.familyPlanningChoice = 'Family Planning Choice must be a string.';
+    //   }
+    // }
+
+    // appointmentId and doctorId
+    if (
+      typeof formData.appointmentId !== "number" ||
+      isNaN(formData.appointmentId)
+    ) {
+      errors.appointmentId = "Appointment ID must be a number.";
+    }
+    if (typeof formData.doctorId !== "number" || isNaN(formData.doctorId)) {
+      errors.doctorId = "Doctor ID must be a number.";
+    }
+
+    return errors;
   };
 
   const catchAddedVisits = (data) => {
@@ -461,7 +1015,7 @@ const Antinatal = () => {
         `/appointment/get-appointment-bypatientId/${patientId}/`
       );
       setLastVisit(response.data[response.data.length - 1]);
-      console.log(response.data)
+      console.log(response.data);
     } catch (e) {
       console.log(e);
     }
@@ -486,12 +1040,13 @@ const Antinatal = () => {
           </div>
         )}
       </div>
-      <form onSubmit={handleSubmit}>
+      <div>
         <div>
           <div className="section-box">
             <h2 style={{ textAlign: "center" }} className="w-100">
               Antenatal
             </h2>
+            <VitalsRecords vitals={vitals} viewMode={false} />
 
             <div className="flex-row-gap-start m-t-20">
               <div className="w-100">
@@ -895,7 +1450,6 @@ const Antinatal = () => {
                 </div> */}
                 {/* <h2>1. Make an accordion of them </h2> */}
               </div>
-              {/* <VitalsRecords vitals={vitals} /> */}
             </div>
             <Accordion title="Present Pregnancy History">
               <div className="form-grid">
@@ -932,14 +1486,12 @@ const Antinatal = () => {
                 <div className="field-column">
                   <label>Gestational Age (GA)</label>
                   <input
-                    type="date"
-                    value={
-                      formData.presentPregnancyHistory?.expectedDateOfDelivery
-                    }
+                    type="text"
+                    value={formData.presentPregnancyHistory?.gestationalAge}
                     onChange={(e) =>
                       handleChange(e, [
                         "presentPregnancyHistory",
-                        "expectedDateOfDelivery",
+                        "gestationalAge",
                       ])
                     }
                   />
@@ -1132,6 +1684,7 @@ const Antinatal = () => {
                       handleChange(e, ["birthPlan", "modeOfDelivery"])
                     }
                   >
+                    <option value="">--Select--</option>
                     <option value={1}>Vaginal</option>
                     <option value={2}>Cesarean - elective</option>
                     <option value={3}>Assisted - emergency</option>
@@ -1146,6 +1699,7 @@ const Antinatal = () => {
                     value={formData.birthPlan.category}
                     onChange={(e) => handleChange(e, ["birthPlan", "category"])}
                   >
+                    <option value="">--Select--</option>
                     <option value={1}>Primpara</option>
                     <option value={2}>Multipara</option>
                     <option value={2}>Grandmultipara</option>
@@ -1160,6 +1714,7 @@ const Antinatal = () => {
                       handleChange(e, ["birthPlan", "typeOfPregnancy"])
                     }
                   >
+                    <option value="">--Select--</option>
                     <option value={"Singleton"}>Singleton</option>
                     <option value={"Twins"}>Twins</option>
                     <option value={"Triplets"}>Triplets</option>
@@ -1195,6 +1750,7 @@ const Antinatal = () => {
                       handleChange(e, ["birthPlan", "clinicalPelvimetry"])
                     }
                   >
+                    <option value="">--Select--</option>
                     <option value={1}>Adequate</option>
                     <option value={2}>Inadequate</option>
                     <option value={2}>Borderline</option>
@@ -1214,7 +1770,7 @@ const Antinatal = () => {
                 </div>
               </div>
             </Accordion>
-            <Accordion title=" Postnatal Care">
+            {/* <Accordion title=" Postnatal Care">
               <div className="form-grid">
                 <div className="field-column">
                   <label>Date of Delivery</label>
@@ -1342,10 +1898,32 @@ const Antinatal = () => {
                   Submit
                 </button>
               )}
-            </Accordion>
+            </Accordion> */}
+
+            {!treatmentId && (
+              <button
+                className="submit-btn"
+                type="submit"
+                style={{ marginTop: "20px" }}
+                onClick={handleSubmit}
+              >
+                Submit
+              </button>
+            )}
+
+            {isEdit && (
+              <button
+                className="submit-btn"
+                type="submit"
+                style={{ marginTop: "20px" }}
+                onClick={() => handleSubmit(isEdit)}
+              >
+                Update Record
+              </button>
+            )}
           </div>
         </div>
-      </form>
+      </div>
 
       {treatmentId && dataFromLab && (
         <div className="field-column">
@@ -1365,7 +1943,7 @@ const Antinatal = () => {
 
       {treatmentModal && (
         <AddTreatmentOld
-          createTreatment={createTreatmet}
+          createTreatment={createTreatment}
           repeatedDiagnosis={repeatedDiagnosis}
           setRepeatedDiagnosis={setRepeatedDiagnosis}
           closeModal={toggleTreatmentModal}
@@ -1388,6 +1966,8 @@ const Antinatal = () => {
           // treatment={data[0] || null}
         />
       )}
+
+      {/* <DeliveryForm/> */}
     </div>
   );
 };

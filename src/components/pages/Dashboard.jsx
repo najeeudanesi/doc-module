@@ -9,176 +9,152 @@ import OutAndInpatientGraph from "../UI/OutAndInpatientGraph";
 import { get } from "../../utility/fetch";
 
 function Dashboard() {
-  const user = localStorage.getItem("name")
-  const [assignedPatients, setAssignedPatients] = useState(0)
-  const [outPatients, setOutpatients] = useState(0)
-  const [waiting, setWaiting] = useState(0)
-  const [admitted, setAdmitted] = useState(0)
-  const [hmoPatients, setHmoPatients] = useState(0)
-  const [gender, setGender] = useState({})
-  const [summary, setSummary] = useState([0, 0, 0, 0, 0])
+  const user = localStorage.getItem("name");
+  const [assignedPatients, setAssignedPatients] = useState(0);
+  const [allPatientCount, setAllPatientCount] = useState(0);
+
+  const [outPatients, setOutpatients] = useState(0);
+  const [waiting, setWaiting] = useState(0);
+  const [admitted, setAdmitted] = useState(0);
+  const [hmoPatients, setHmoPatients] = useState(0);
+  const [gender, setGender] = useState({});
+  const [summary, setSummary] = useState([0, 0, 0, 0, 0]);
   const [graph, setGraph] = useState({
-    "inPatientPercentage": 0,
-    "outPatientPercentage": 0,
-    "dailyAverageCount": [
+    inPatientPercentage: 0,
+    outPatientPercentage: 0,
+    dailyAverageCount: [
       {
-        "date": "Mar 21",
-        "inPatientCount": 0,
-        "outPatientCount": 0
-      },]
-  })
-  const [loading, setLoading] = useState(false)
+        date: "Mar 21",
+        inPatientCount: 0,
+        outPatientCount: 0,
+      },
+    ],
+  });
+  const [loading, setLoading] = useState(false);
 
   //done
   const getGraphDetails = async () => {
     try {
-      const response = await fetch("https://edogoverp.com/medicals/api/dashboard/AllOutPatientAndInPatientCount");
+      const response = await fetch(
+        "https://edogoverp.com/medicals/api/dashboard/AllOutPatientAndInPatientCount"
+      );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log(data)
+      console.log(data);
       setGraph(data);
     } catch (e) {
       console.log("Error: ", e);
     }
   };
 
-
+  const getAllPatientCount = async () => {
+    try {
+      const data = await get(`/dashboard/AllPatientCount`, { status: 1 });
+      setAllPatientCount(data);
+      console.log(data);
+    } catch (e) {
+      console.log("Error: ", e);
+    }
+  };
 
   const getGender = async () => {
     try {
-      const data = await get(
-        `/dashboard/gender`
-      )
-      setGender(data)
-
-
+      const data = await get(`/dashboard/gender`);
+      setGender(data);
     } catch (e) {
-      console.log("Error: ", e)
-
+      console.log("Error: ", e);
     }
-
-  }
+  };
   const getAssigned = async () => {
     try {
-      const data = await get(
-        `/dashboard/assignedtodoctor`, { status: 1 }
-      )
-      setAssignedPatients(data)
-
-
+      const data = await get(`/dashboard/assignedtodoctor`, { status: 1 });
+      setAssignedPatients(data);
     } catch (e) {
-      console.log("Error: ", e)
-
+      console.log("Error: ", e);
     }
-
-  }
+  };
 
   const getOutPatients = async () => {
     try {
-      const data = await get(
-        `/dashboard/AllOutPatientAndInPatientCount`
-      )
+      const data = await get(`/dashboard/AllOutPatientAndInPatientCount`);
 
       setOutpatients(data.outpatientCount || 0);
-
-
-
     } catch (e) {
-      console.log("Error: ", e)
-      setOutpatients(0)
-
+      console.log("Error: ", e);
+      setOutpatients(0);
     }
-
-  }
+  };
 
   const getWaiting = async () => {
     try {
-      const data = await get(
-        `/dashboard/assignedtodoctor`, { status: 2 }
-      )
+      const data = await get(`/dashboard/assignedtodoctor`, { status: 2 });
 
       setWaiting(data);
-
-
     } catch (e) {
-      console.log("Error: ", e)
-
+      console.log("Error: ", e);
     }
-
-  }
+  };
   const getAdmitted = async () => {
     try {
-      const data = await get(
-        `/dashboard/doctor/admittedpatients`,
-      )
+      const data = await get(`/dashboard/doctor/admittedpatients`);
 
       setAdmitted(data);
-
-
     } catch (e) {
-      console.log("Error: ", e)
-
+      console.log("Error: ", e);
     }
-
-  }
+  };
 
   //done
   const getHmoPatients = async () => {
     try {
-      const data = await get(
-        `/dashboard/hmo-patient`
-      )
+      const data = await get(`/dashboard/hmo-patient`);
 
       setHmoPatients(data);
-
-
     } catch (e) {
-      console.log("Error: ", e)
-
+      console.log("Error: ", e);
     }
-
-  }
-
-
+  };
 
   const fetchData = async () => {
     setLoading(true);
     await getAssigned();
     await getAdmitted();
+    await getAllPatientCount();
     await getHmoPatients();
     await getOutPatients();
     await getWaiting();
     await getGraphDetails();
     await getGender();
-    setLoading(false)
-
-  }
+    setLoading(false);
+  };
 
   useEffect(() => {
     fetchData();
-  }, [])
+  }, []);
 
   useEffect(() => {
-    setSummary([assignedPatients, outPatients, waiting, admitted, hmoPatients])
-  }, [assignedPatients, outPatients, waiting, admitted, hmoPatients])
-
-
-
-
+    setSummary([assignedPatients, admitted, hmoPatients, allPatientCount]);
+  }, [assignedPatients, allPatientCount, waiting, admitted, hmoPatients]);
 
   return (
     <div className="w-100 m-t-80">
-      {loading ? (<div className="loader">loading ...</div>) : (
+      {loading ? (
+        <div className="loader">loading ...</div>
+      ) : (
         <div className="m-t-20">
           <div>Good Day</div>
           <h3 className="m-t-10">Dr. {user}</h3>
           <div className="flex w-98 gap-8 space-between m-t-10">
             {" "}
             {stats.map((stat, index) => (
-              <div className="w-20" key={index}>
-                <StatCard data={stat} number={summary[index]} icon={stat.icon} />
+              <div style={{backgroundColor:'white'}} className="w-20" key={index}>
+                <StatCard
+                  data={stat}
+                  number={summary[index]}
+                  icon={stat.icon}
+                />
               </div>
             ))}
           </div>
@@ -200,8 +176,6 @@ function Dashboard() {
           </div>
         </div>
       )}
-
-
     </div>
   );
 }

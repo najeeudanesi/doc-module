@@ -15,6 +15,7 @@ function Patients() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [assignedPatients, setAssignedPatients] = useState(0);
+  const [allPatientCount, setAllPatientCount] = useState(0);
   const [outPatients, setOutpatients] = useState(0);
   const [waiting, setWaiting] = useState(0);
   const [admitted, setAdmitted] = useState(0);
@@ -51,10 +52,23 @@ function Patients() {
     try {
       const data = await get(`/dashboard/assignedtodoctor`, { status: 1 });
       setAssignedPatients(data);
+      console.log(data);
     } catch (e) {
       console.log("Error: ", e);
     }
   };
+
+  const getAllPatientCount = async () => {
+    try {
+      const data = await get(`/dashboard/AllPatientCount`, { status: 1 });
+      setAllPatientCount(data);
+      console.log(data);
+    } catch (e) {
+      console.log("Error: ", e);
+    }
+  };
+
+  
 
   // https://edogoverp.com/medicals/api/HMO/all-patient-hmo/2?pageIndex=1&pageSize=10
 
@@ -82,15 +96,24 @@ function Patients() {
     }
   };
 
-  const getAllPatientsList = async (pageIndex = 1, pageSize = 1000) => {
+  const getAllPatientsList = async (
+    pageIndex = 1,
+    pageSize = 1000,
+    searchText = ""
+  ) => {
     try {
-      const data = await get(
-        `/patients/AllPatient/${docInfo.clinicId}?$pageIndex=${pageIndex}&pageSize=${pageSize}`
-      );
+      const params = new URLSearchParams({
+        pageIndex,
+        pageSize,
+      });
+
+      if (searchText) {
+        params.append("firstName", searchText);
+      }
+
+      const data = await get(`/patients/filter?${params.toString()}`);
       console.log(data);
       setAllPatientsList(data.data);
-
-      // setOutpatients(data.outpatientCount || 0);
     } catch (e) {
       console.log("Error: ", e);
     }
@@ -130,7 +153,7 @@ function Patients() {
     setLoading(true);
     try {
       let res = await get(
-        `/patients/admitted-patients-service?pageNumber=${currentPage}&pageSize=10`
+        `/patients/admitted-patients-service?pageNumber=${currentPage}&pageSize=1000`
       );
       setAdmittedPatients(res?.data);
       setTotalPages(res?.pageCount);
@@ -152,6 +175,8 @@ function Patients() {
   const fetchData = async () => {
     setLoading(true);
     await getAssigned();
+    await getAllPatientCount();
+    
     await getHMOPatientsByClientId();
     await getAllPatientsList();
     await getAdmitted();
@@ -165,11 +190,12 @@ function Patients() {
   useEffect(() => {
     setSummary([
       assignedPatients,
-      admitted,
+      // admitted,
+      admittedPatients.length,
       hmoPatientsList?.length,
-      allPatientsList.length,
+      allPatientCount,
     ]);
-  }, [assignedPatients, outPatients, waiting, admitted, hmoPatients]);
+  }, [assignedPatients, allPatientCount, waiting, admitted, hmoPatients,admittedPatients]);
 
   useEffect(() => {
     if (searchText === "") {
@@ -230,6 +256,23 @@ function Patients() {
 
   const handleSearchChange = (event) => {
     setSearchText(event.target.value);
+    // alert('')
+
+    // if (selectedTab === "patients") {
+    //   getAllPatientsList(1,1000, event.target.value)
+
+    // }
+    // if (selectedTab === "admittedPatients") {
+    //   getAllAdmittedPatients(1,1000, event.target.value)
+
+    // }
+    // if (selectedTab === "hmoPatients") {
+    //   getAllPatientsList(1,1000, event.target.value)
+
+    // }
+    if (selectedTab === "allPatients") {
+      getAllPatientsList(1, 1000, event.target.value);
+    }
   };
 
   const formatDate = (date) => {
@@ -290,18 +333,20 @@ function Patients() {
               />
             </div>
 
-            <div className="flex flex-v-end space-between  w-50 m-t-20 gap-10 ">
-              <div></div>
-              <div className="w-50">
-                <SearchInput
-                  type="text"
-                  onChange={handleSearchChange}
-                  value={searchText}
-                  name="searchText"
-                />
-              </div>
+            {(selectedTab === "allPatients" ||
+              selectedTab === "patients") && (
+              <div className="flex flex-v-end space-between  w-50 m-t-20 gap-10 ">
+                <div></div>
+                <div className="w-50">
+                  <SearchInput
+                    type="text"
+                    onChange={handleSearchChange}
+                    value={searchText}
+                    name="searchText"
+                  />
+                </div>
 
-              {/* <div className="dropdown-input w-25 ">
+                {/* <div className="dropdown-input w-25 ">
               {" "}
               <select>
                 <option value="">Name</option>
@@ -310,7 +355,8 @@ function Patients() {
                 <option value="Ward D">Ward D</option>
               </select>
             </div> */}
-            </div>
+              </div>
+            )}
           </div>
           {/* <div className="tabs m-t-20 bold-text">
             <div
