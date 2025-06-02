@@ -17,12 +17,14 @@ import Orthopedic from '../components/pages/Patient/Orthopedic';
 import GeneralPractice from '../components/pages/Patient/GeneralPracticee';
 import Treatments from '../components/pages/Patient/Treatments';
 import Antinatal from '../components/pages/Patient/Antinatal';
+import MedicalDashboard from '../components/pages/medical-dashboard';
+import Pediatrics from '../components/pages/Patient/Pediatrics';
 
 export default () => (
     <Routes>
         <Route path="/dashboard" element={<AuthRoute><Dashboard /></AuthRoute>} />
         <Route path="/patients" element={<AuthRoute><Patients /></AuthRoute>} />
-        <Route path="/facility" element={<AuthRoute><Facility /></AuthRoute>} />
+        <Route path="/appointments" element={<AuthRoute><MedicalDashboard /></AuthRoute>} />
         <Route path="/customer-engagement" element={<AuthRoute><CustomerEngagement /></AuthRoute>} />
         {/* <Route path="/patients/patient-details/:patientId" element={<AuthRoute><PatientDetails/></AuthRoute>} /> */}
         <Route path="/patients/patient-details/:patientId" element={<AuthRoute><PatientDetailsNew /></AuthRoute>} />
@@ -33,6 +35,7 @@ export default () => (
         <Route path="/patients/orthopedic-consultation/:patientId" element={<AuthRoute><Orthopedic /></AuthRoute>} />
         <Route path="/patients/general-practice/:patientId" element={<AuthRoute><GeneralPractice /></AuthRoute>} />
         <Route path="/patients/antinatal/:patientId" element={<AuthRoute><Antinatal /></AuthRoute>} />
+        <Route path="/patients/pediatrics/:patientId" element={<AuthRoute><Pediatrics /></AuthRoute>} />
        
         {/* Render the NotFound component for unmatched routes */}
         <Route path="*" element={<NotFound />} />

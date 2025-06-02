@@ -4,6 +4,7 @@ import {  RiEdit2Fill } from "react-icons/ri";
 import notification from "../../../utility/notification";
 import axios from "axios";
 import DetailedNurseNotes from "../../modals/DetailedNurseNotes";
+import { useNavigate } from "react-router-dom";
 
 function AdmitCheck({ data, setCurrent, totalPages, currentPage }) {
 
@@ -16,6 +17,8 @@ function AdmitCheck({ data, setCurrent, totalPages, currentPage }) {
   const [beds, setBeds] = useState([]);
   const [bedList, setBedsList] = useState([]);
   const [patientName, setPatientName] = useState("");
+
+  const navigate = useNavigate();
 
 
   const handlePageChange = (newPage) => {
@@ -168,81 +171,47 @@ function AdmitCheck({ data, setCurrent, totalPages, currentPage }) {
         <table className="bordered-table">
           <thead className="border-top-none">
             <tr className="border-top-none">
-              <th className="center-text">Date</th>
-
-              <th className="center-text">Time Of Admission</th>
-              <th className="center-text">Age</th>
-              <th className="center-text">Diagnosis</th>
-              <th className="center-text">Patient</th>
-              <th className="center-text">Bed Occupying</th>
-              {/* <th className="center-text">Action</th> */}
-
-
+              <th>#</th>
+              <th>Patient Name</th>
+              <th>Appointment Date</th>
+              <th>Time</th>
+              <th>Status</th>
+              <th>Description</th>
+              <th>Tracking</th>
             </tr>
           </thead>
+
           <tbody className="white-bg view-det-pane">
-            {combinedData?.map((row) => {
-              const patientName = findPatientName(row.patientId);
-              const bed = isPatientOccupyingBed(row.patientId);
+            {data.map((row, index) => {
+              const status = row.isCanceled ? 'Cancelled' :
+                row.isDischarged ? 'Discharged' :
+                  row.isAdmitted ? 'Admitted' : 'Scheduled';
+
+              const statusClass = row.isCanceled ? 'text-danger' :
+                row.isDischarged ? 'text-success' :
+                  row.isAdmitted ? 'text-warning' : 'text-primary';
+
               return (
-                <tr className="hovers pointer" onClick={selectRecord(row)} key={row?.id}>
-                  <td>{new Date(row?.dateOfVisit).toLocaleDateString()}</td>
-                  <td>
-                    {new Date(row?.createdAt?.split('.')[0]).toLocaleTimeString('en-US', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      second: '2-digit',
-                      hour12: true, // 12-hour format
-                    })}
-                  </td>
-                  <td>{row?.age} years</td>
-                  <td>
-                    {row?.diagnosis}
-                  </td>
-                  <td>{patientName ? patientName : ''}</td>
-                  <td>{bed ? bed : ''}</td>
-                  {/* <td> <RiEdit2Fill size={20} onClick={selectRecord(row)} style={{ color: 'green', cursor: 'pointer' }} /></td> */}
-
+                <tr
+                  key={index}
+                  className="pointer"
+                  onClick={() => {
+                    localStorage.setItem("appointmentId", row.id);
+                    navigate(`/doctor/patients/patient-details/${row.patientId}`);
+                  }}
+                >
+                  <td>{index + 1}</td>
+                  <td>{row.patientName}</td>
+                  <td>{row.appointDate}</td>
+                  <td>{row.appointTime}</td>
+                  <td className={statusClass}>{row?.status}</td>
+                  <td>{row.description || 'No description'}</td>
+                  <td>{row.tracking}</td>
                 </tr>
-              )
+              );
             })}
-
           </tbody>
         </table>
-      </div>
-      <div>
-        <div className="pagination flex space-between  col-4 m-t-20">
-          <div className="flex gap-8">
-            <div className="bold-text">Page</div> <div className=" m-r-20">{currentPage}/{totalPages}</div>
-          </div>
-          <div className="flex gap-8">
-            <button
-              className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              {"Previous"}
-            </button>
-
-            {generatePageNumbers().map((page, index) => (
-              <button
-                key={`page-${index}`}
-                className={`pagination-btn ${currentPage === page ? 'bg-green text-white' : ''}`}
-                onClick={() => handlePageChange(page)}
-              >
-                {page}
-              </button>
-            ))}
-
-            <button
-              className={`pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`}
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              {"Next"}
-            </button>
-          </div>
-        </div>
       </div>
 
       {

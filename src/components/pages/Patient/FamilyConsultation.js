@@ -10,6 +10,7 @@ const FamilyConsultation = () => {
   const [formData, setFormData] = useState({});
   const [vitals, setvitals] = useState([]);
   const [investigationArray, setInvestigationArray] = useState([]);
+  const docId = sessionStorage.getItem("userId");
 
   const docInfo = JSON.parse(localStorage.getItem("USER_INFO"));
 
@@ -91,7 +92,7 @@ const FamilyConsultation = () => {
       appointmentId: +localStorage.getItem("appointmentId"),
       instructions: formData.instructions || "",
       remarks: formData.remark || "",
-      doctorId: docInfo?.employeeId || 0,
+      doctorId: parseInt(docId) || 0,
       consent: formData.consent === "Yes",
       familyMedicineDocuments: [
         {

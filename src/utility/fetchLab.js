@@ -5,7 +5,7 @@ import axios from "axios";
 // import Cookies from "universal-cookie";
 
 // import { decodeToken, logout } from "../utility/auth";
-console.log(localStorage.getItem("toks"));
+console.log(sessionStorage.getItem("token"));
 
 const getToken = () => {
   // console.log(localStorage.getItem("token"));

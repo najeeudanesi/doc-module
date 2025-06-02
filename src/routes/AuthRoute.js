@@ -10,17 +10,26 @@ const parseJwt = (token) => {
 };
 const AuthRoute = ({ children }) => {
     const token = sessionStorage.getItem("token");
+    const exp = sessionStorage.getItem("expTokenDate");
     const decodedJwt = parseJwt(token);
 
+    console.log("Token:", token);
+    console.log("Expiration:", exp);
+    console.log("Current Time:", Date.now());
 
 
     if (!token) {
+        console.error("No token found. Redirecting to login.");
         return <Navigate to="/" replace />;
     }
-    if (decodedJwt?.exp * 1000 < Date.now()) {
-        logout();
-        return <Navigate to="/" replace />;
-    }
+
+    const expDate = new Date(exp);
+
+    // if (expDate < Date.now()) {
+    //     console.error("Token expired. Logging out and redirecting to login.");
+    //     logout();
+    //     return <Navigate to="/" replace />;
+    // }
     return children;
 };
 

@@ -18,7 +18,7 @@ const GeneralPracticeForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const treatmentId = searchParams.get("treatmentId");
-  const docInfo = JSON.parse(localStorage.getItem("USER_INFO"));
+  const docInfo = JSON.parse(sessionStorage.getItem("userId"));
   const [formData, setFormData] = useState({});
   const [repeatedDiagnosis, setRepeatedDiagnosis] = useState("");
   const [treatmentModal, setTreatmentModal] = useState(false);
@@ -66,7 +66,7 @@ const GeneralPracticeForm = () => {
       physicalExamination: formData.physicalExamination,
       investigation: formData.investigation,
       appointmentId: +localStorage.getItem("appointmentId"),
-      doctorId: +docInfo.employeeId,
+      doctorId: +docInfo,
     };
 
     console.log("Payload:", payload);

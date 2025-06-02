@@ -11,6 +11,7 @@ import { Toaster } from 'react-hot-toast';
 import { MyProvider } from './contexts';
 import PageLayout from './components/layouts/PageLayout';
 import NotFound from './components/pages/NotFound';
+import ResetPassword from './components/layouts/ResetPassword';
 
 // Define a component for the 404 page
 
@@ -22,6 +23,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Homepage />} />
             <Route path="/doctor/*" element={<PageLayout />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+
             {/* Render the NotFound component for unmatched routes */}
             <Route path="*" element={<NotFound />} />
           </Routes>

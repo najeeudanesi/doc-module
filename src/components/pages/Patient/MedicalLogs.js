@@ -14,6 +14,8 @@ import GeneralSurgery from "./GeneralSurgery";
 import GeneralSurgeryTable from "./GeneralSurgeryTable";
 import GeneralPractice from "./GeneralPracticeTable";
 import AntinatalTable from "./AntinatalTable";
+import Pediatrics from "./Pediatrics";
+import PediatricsTable from "./PediatricsTable";
 
 const MedicalLog = ({ patient }) => {
   const [selectedSection, setSelectedSection] = useState("familymedcine");
@@ -66,10 +68,12 @@ const MedicalLog = ({ patient }) => {
         return <OrthopedicTable patient={patient} />;
       case "generalsurgery":
         return <GeneralSurgeryTable patient={patient} />;
-        case "atenatal":
-          return <AntinatalTable patient={patient} />;
-        case "generalPractie":
-          return <GeneralPractice patient={patient} />;
+      case "atenatal":
+        return <AntinatalTable patient={patient} />;
+      case "generalPractie":
+        return <GeneralPractice patient={patient} />;
+      case "pediatrics":
+        return <PediatricsTable patient={patient} />;
 
       default:
         return <div>Select a section</div>;
@@ -84,8 +88,8 @@ const MedicalLog = ({ patient }) => {
     { key: "atenatal", label: " O&G Antenatal/Post-natal" },
     { key: "generalsurgery", label: "General Surgery" },
     { key: "generalPractie", label: "General Practice" },
-    // { key: "pediatrics", label: "Pediatrics" },
-    
+    { key: "pediatrics", label: "Pediatrics" },
+
   ];
 
   return (

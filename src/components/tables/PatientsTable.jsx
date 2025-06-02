@@ -5,48 +5,63 @@ import { formatDate } from "../../utility/general";
 function PatientsTable({ data }) {
   const navigate = useNavigate();
 
+  // Filter accepted appointments
+  const acceptedAppointments = data?.filter(row => 
+    row.status?.toLowerCase() === 'accepted'
+  ) || [];
+
+  if (!acceptedAppointments || acceptedAppointments.length === 0) {
+    return (
+      <div className="w-100">
+        <div className="w-100 none-flex-item m-t-40">
+          <h4 className="text-center">No accepted appointments found</h4>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-100 ">
+    <div className="w-100">
       <div className="w-100 none-flex-item m-t-40">
         <table className="bordered-table">
           <thead className="border-top-none">
             <tr className="border-top-none">
-              <th>Patient ID</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Age</th>
-
-              <th>Assigned Nurse</th>
-              <th>Date Created</th>
+              <th>#</th>
+              <th>Patient Name</th>
+              <th>Appointment Date</th>
+              <th>Time</th>
+              <th>Status</th>
+              <th>Description</th>
+              <th>Tracking</th>
             </tr>
           </thead>
 
           <tbody className="white-bg view-det-pane">
-            {data.map((row, index) => {
-              const lastVisit =
-                row.visits && row.visits.length > 0
-                  ? row.visits[row.visits.length - 1]
-                  : null;
+            {acceptedAppointments.map((row, index) => {
+              const status = row.isCanceled ? 'Cancelled' :
+                row.isDischarged ? 'Discharged' :
+                  row.isAdmitted ? 'Admitted' : 'Scheduled';
+
+              const statusClass = row.isCanceled ? 'text-danger' :
+                row.isDischarged ? 'text-success' :
+                  row.isAdmitted ? 'text-warning' : 'text-primary';
 
               return (
                 <tr
                   key={index}
                   className="pointer"
                   onClick={() => {
-                    localStorage.setItem("appointmentId", row.appointmentId);
-
-                    navigate(
-                      `/doctor/patients/patient-details/${row.patientId}`
-                    );
+                    localStorage.setItem("appointmentId", row.id);
+                    navigate(`/doctor/patients/patient-details/${row.patientId}`);
                   }}
                 >
                   <td>{index + 1}</td>
-                  <td>{row.firstName}</td>
-                  <td>{row.lastName}</td>
-                  <td>{row.age}</td>
-
-                  <td>{row.assignedNurse}</td>
-                  <td>{row.dateCreated}</td>
+                  <td>{row.patientName}</td>
+                  <td>{row.appointDate}</td>
+                  <td>{row.appointTime}</td>
+                  <td className={statusClass}>{row?.status}</td>
+                  <td>{row.description || 'No description'}</td>
+                  <td>{row.tracking}</td>
                 </tr>
               );
             })}

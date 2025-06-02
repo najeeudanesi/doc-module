@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import PatientsTable from "../tables/PatientsTable";
 import StatCard from "../UI/StatCard";
-import { get } from "../../utility/fetch";
+import { get } from "../../utility/fetchWeb";
 import { RiCalendar2Fill } from "react-icons/ri";
 import { stats } from "./mockdata/PatientData";
 import SearchInput from "../UI/SearchInput";
@@ -28,12 +28,13 @@ function Patients() {
   const [admittedPatients, setAdmittedPatients] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const doctorId = sessionStorage.getItem("userId");
 
   const getTableData = async () => {
     try {
-      const data = await get(`/patients/assignedtodoctor`);
-      setPatientData(data.data);
-      setFilteredData(data.data); // Initialize filtered data with all patient data
+      // const data = await get(`/patients/assignedtodoctor`);
+      // setPatientData(data.data);
+      // setFilteredData(data.data); // Initialize filtered data with all patient data
 
 
       ;
@@ -77,16 +78,25 @@ function Patients() {
 
   const getWaiting = async () => {
     try {
-      const data = await get(
-        `/dashboard/assignedtodoctor`, { status: 1 }
-      )
-
-      setWaiting(data);
-
-
+      const data = await get(`/Appointment/doctor/${doctorId}`)
+      console.log("Waiting patients: ", data?.data)
+      if (data?.status === "success") {
+        // Filter for admitted patients
+        const admittedPatients = data?.data?.filter(
+          patient => patient.isAdmitted === true
+        );
+        setAdmittedPatients(admittedPatients || []);
+        
+        // Keep original patient data for other purposes
+        setPatientData(data?.data || []);
+      } else {
+        setAdmittedPatients([]);
+        setPatientData([]);
+      }
     } catch (e) {
-      console.log("Error: ", e)
-
+      console.log("Error: ", e);
+      setAdmittedPatients([]);
+      setPatientData([]);
     }
 
   }
@@ -136,9 +146,9 @@ function Patients() {
     }
   };
 
-  useEffect(() => {
-    getAllAdmittedPatients(currentPage)
-  }, [currentPage]);
+  // useEffect(() => {
+  //   getAllAdmittedPatients(currentPage)
+  // }, [currentPage]);
 
   useEffect(() => {
     fetchData();
@@ -146,10 +156,7 @@ function Patients() {
 
   const fetchData = async () => {
     setLoading(true)
-    await getAssigned();
-    await getAdmitted();
-    await getHmoPatients();
-    await getOutPatients();
+    
     await getWaiting();
     await getTableData()
     setLoading(false)
@@ -303,11 +310,11 @@ function Patients() {
           {
             selectedTab === "patients" ? (
               <PatientsTable
-                data={filteredData}
+                data={patientData}
                 setCurrentPage={setCurrentPage}
                 currentPage={currentPage}
                 totalPages={totalPages}
-                
+
               />
             ) : (
               <AdmitCheck
@@ -315,7 +322,7 @@ function Patients() {
                 setCurrentPage={setCurrentPage}
                 currentPage={currentPage}
                 totalPages={totalPages}
-                
+
               />
             )
           }

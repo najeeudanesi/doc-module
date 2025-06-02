@@ -18,7 +18,7 @@ const Orthopedic = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const treatmentId = searchParams.get("id");
-  const docInfo = JSON.parse(localStorage.getItem("USER_INFO"));
+  const docInfo = JSON.parse(sessionStorage.getItem("userId"));
 
   const [repeatedDiagnosis, setRepeatedDiagnosis] = useState("");
   const [vitals, setvitals] = useState();
@@ -195,7 +195,7 @@ const Orthopedic = () => {
 
       treatmentSchedule: formData.treatmentSchedule,
       appointmentId: +localStorage.getItem("appointmentId"),
-      doctorId: docInfo.employeeId,
+      doctorId: docInfo,
     };
 
     console.log("Payload:", payload);

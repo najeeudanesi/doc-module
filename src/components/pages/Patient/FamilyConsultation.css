@@ -6,6 +6,7 @@
   input[type="radio"],
   input[type="checkbox"] {
     accent-color: var(--primary-green);
+    margin-right: 8px;
   }
 /* .consultation-container {
     font-family: Arial, sans-serif;
