@@ -23,7 +23,7 @@ const IVFConsultation = () => {
   const [IVFTreatmentList, setIVFTreatmentList] = useState([]);
   const [IVFTreatmentMethodList, setIVFTreatmentMethodList] = useState([]);
 
-  const docInfo = JSON.parse(localStorage.getItem("USER_INFO"));
+  const docInfo = (sessionStorage.getItem("userId"));
   const [repeatedDiagnosis, setRepeatedDiagnosis] = useState("");
   const [vitals, setvitals] = useState();
 
@@ -124,9 +124,9 @@ const IVFConsultation = () => {
         afmDocuments: [], // handle file uploads separately
       },
       physicalExam: {
-        breastExam: "N/A" || formData.breastScan,
-        pelvic: "N/A" || formData.pelvicScanPhysical,
-        vagina: "N/A" || formData.vaginalScan,
+        breastExam:formData.breastScan  ||  "N/A" ,
+        pelvic:formData.pelvicScanPhysical  ||  "N/A" ,
+        vagina:formData.vaginalScan  ||  "N/A" ,
       },
 
       investigations: [
@@ -150,7 +150,7 @@ const IVFConsultation = () => {
       oG_IVF_IVPMethodId: +formData.oG_IVF_IVPMethodId, // set based on your logic
       treatmentSchedule: formData.treatmentSchedule,
       appointmentId: +localStorage.getItem("appointmentId"),
-      doctorId: docInfo.employeeId,
+      doctorId: parseInt(docInfo),
     };
 
     try {

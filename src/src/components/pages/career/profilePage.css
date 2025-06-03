@@ -1,0 +1,381 @@
+/* Base Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  background-color: #f8f8f8;
+}
+
+.profile-page__container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Top Header Styles (No changes from previous version) */
+.profile-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  /* background-color: #fff; */
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.profile-top-header__profile-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-top-header__profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-top-header__text-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-top-header__name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.profile-top-header__hospital {
+  font-size: 13px;
+  color: #666;
+}
+
+.profile-top-header__right-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile-top-header__preview-button {
+  background-color: #f0f0f0;
+  color: #555;
+  border: 1px solid #ddd;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.profile-top-header__preview-button:hover {
+  background-color: #e0e0e0;
+}
+
+.profile-top-header__user-icon {
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+}
+
+/* Page Body Wrapper (Now only Main Content) */
+.profile-page__body-wrapper {
+  display: flex; /* Still flex, but only one main child */
+  flex: 1;
+  padding: 20px;
+  max-width: 900px; /* Adjust max-width for accordion layout */
+  margin: 20px auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Main Content Area - now houses accordions */
+.profile-main-content-accordion {
+  flex: 1;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-main-content-accordion__title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.profile-main-content-accordion__instruction {
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+/* Accordion Container */
+.profile-accordion-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Space between accordion items */
+}
+
+.profile-accordion__item {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden; /* Ensures border-radius applies to content */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  background-color: #fff;
+}
+
+.profile-accordion__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  transition: background-color 0.2s;
+}
+
+.profile-accordion__header:hover {
+  background-color: #f0f0f0;
+}
+
+.profile-accordion__header--open {
+  background-color: #e9ffe9; /* Light green for open header */
+  color: #28a745; /* Green text for open header */
+  border-bottom: 1px solid #d4edda;
+  font-weight: 600;
+}
+
+.profile-accordion__header--open .profile-accordion__icon {
+    color: #28a745; /* Green icon for open header */
+}
+
+.profile-accordion__header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-accordion__icon {
+  font-size: 20px;
+  color: #888; /* Default icon color */
+}
+
+.profile-accordion__content {
+  padding: 20px;
+  border-top: 1px solid #f0f0f0; /* Separator for content */
+  background-color: #fff;
+}
+
+.profile-accordion__section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #eee;
+}
+
+.profile-accordion__placeholder {
+    font-size: 15px;
+    color: #777;
+    text-align: center;
+    padding: 30px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px dashed #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+}
+
+.profile-accordion__add-new-btn {
+    background-color: #28a745; /* Solid green for Add new */
+    color: white;
+    border: 1px solid #28a745;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+}
+.profile-accordion__add-new-btn:hover {
+    background-color: #218838;
+}
+
+/* Education Section Specific Styles (reused from previous, applies within accordion content) */
+.profile-education__card {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  background-color: #fdfdfd;
+  margin-bottom: 10px; /* Space between education entries */
+}
+.profile-education__card:last-child {
+  margin-bottom: 0;
+}
+
+.profile-education__details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+.profile-education__degree {
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+
+.profile-education__institution,
+.profile-education__distinction,
+.profile-education__years,
+.profile-education__country {
+  color: #555;
+  margin-bottom: 3px;
+}
+
+.profile-education__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.profile-education__view-certificate {
+  background-color: #e9ffe9;
+  color: #28a745;
+  border: 1px solid #c3e6cb;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.profile-education__view-certificate:hover {
+  background-color: #d4edda;
+}
+
+.profile-education__edit-icon {
+  font-size: 18px;
+  color: #28a745;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.profile-education__edit-icon:hover {
+  color: #218838;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-page__body-wrapper {
+    padding: 15px;
+    margin-top: 15px;
+  }
+
+  .profile-top-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .profile-top-header__right-section {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .profile-accordion__header {
+    font-size: 15px;
+    padding: 12px 15px;
+  }
+  .profile-accordion__icon {
+    font-size: 18px;
+  }
+  .profile-accordion__content {
+    padding: 15px;
+  }
+  .profile-accordion__section-title {
+    font-size: 17px;
+  }
+  .profile-education__card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .profile-education__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-top-header__name {
+    font-size: 15px;
+  }
+  .profile-top-header__hospital {
+    font-size: 12px;
+  }
+  .profile-main-content-accordion__title {
+    font-size: 18px;
+  }
+  .profile-main-content-accordion__instruction {
+    font-size: 12px;
+  }
+  .profile-accordion__header {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  .profile-accordion__icon {
+    font-size: 16px;
+  }
+  .profile-education__degree {
+    font-size: 14px;
+  }
+  .profile-education__institution,
+  .profile-education__distinction,
+  .profile-education__years,
+  .profile-education__country {
+    font-size: 13px;
+  }
+  .profile-education__view-certificate {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  .profile-accordion__add-new-btn {
+      font-size: 12px;
+      padding: 6px 12px;
+  }
+}

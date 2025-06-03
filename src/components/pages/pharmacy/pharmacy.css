@@ -1,0 +1,339 @@
+/* Base Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  background-color: #f8f8f8; /* Light gray background */
+}
+
+.pharm-page__container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Header Section */
+.pharm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 15px; /* Space between header elements when wrapping */
+}
+
+.pharm-header__title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.pharm-header__controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.pharm-header__search-filter {
+  display: flex;
+  gap: 15px;
+}
+
+.pharm-header__search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pharm-header__search-input {
+  padding: 8px 12px 8px 35px; /* Left padding for icon */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 180px; /* Adjust width as needed */
+}
+
+.pharm-header__search-input:focus {
+  border-color: #28a745;
+}
+
+.pharm-header__search-icon {
+  position: absolute;
+  left: 12px;
+  color: #888;
+  font-size: 14px;
+}
+
+.pharm-header__filter-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #fff;
+  font-size: 14px;
+  color: #555;
+  transition: background-color 0.2s;
+}
+
+.pharm-header__filter-dropdown:hover {
+  background-color: #f0f0f0;
+}
+
+.pharm-header__filter-icon {
+  font-size: 12px;
+}
+
+.pharm-header__add-button {
+  background-color: #28a745; /* Green */
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.pharm-header__add-button:hover {
+  background-color: #218838; /* Darker green */
+}
+
+.pharm-header__add-icon,
+.pharm-header__download-icon {
+  font-size: 14px;
+}
+
+/* Tabs Section */
+.pharm-tabs__container {
+  padding: 0 25px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.pharm-tabs__button {
+  background: none;
+  border: none;
+  padding: 15px 20px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: #666;
+  border-bottom: 3px solid transparent; /* For active state */
+  transition: border-bottom-color 0.2s, color 0.2s;
+  outline: none;
+}
+
+.pharm-tabs__button--active {
+  color: #28a745; /* Green for active tab */
+  border-bottom-color: #28a745;
+}
+
+.pharm-tabs__button:hover:not(.pharm-tabs__button--active) {
+  color: #333;
+}
+
+/* Table Section */
+.pharm-table__wrapper {
+  margin: 20px 25px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  overflow-x: auto; /* Enable horizontal scrolling for small screens */
+}
+
+.pharm-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pharm-table__head {
+  background-color: #e9ffe9; /* Light green header background */
+}
+
+.pharm-table__row-header {
+  text-align: left;
+}
+
+.pharm-table__header-cell {
+  padding: 15px 20px;
+  color: #28a745; /* Green text for headers */
+  font-size: 13px;
+  font-weight: bold;
+  white-space: nowrap;
+  border-bottom: 1px solid #d4edda;
+}
+
+.pharm-table__header-cell--clinic {
+  min-width: 250px; /* Give more space to clinic/hospital */
+}
+
+.pharm-table__body tr {
+  border-bottom: 1px solid #eee; /* Light gray border between rows */
+}
+
+.pharm-table__body tr:last-child {
+  border-bottom: none; /* No border for the last row */
+}
+
+.pharm-table__body tr:hover {
+  background-color: #f9f9f9; /* Subtle hover effect on rows */
+}
+
+.pharm-table__cell {
+  padding: 12px 20px;
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap; /* Prevent text wrapping unless necessary */
+}
+
+.pharm-table__cell--clinic {
+  color: #555; /* Slightly lighter text for clinic */
+}
+
+.pharm-table__status {
+  display: inline-flex; /* Use flex to align indicator and text */
+  align-items: center;
+  gap: 6px; /* Space between indicator and text */
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pharm-table__status-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ffc107; /* Orange for "Message" status */
+}
+
+/* Specific status text colors/styles if needed (e.g., for "Completed", "Pending") */
+.pharm-table__status--completed {
+    /* Example: color for completed status, no indicator */
+    color: #28a745;
+}
+
+.pharm-table__status--pending {
+    /* Example: color for pending status, no indicator */
+    color: #6c757d;
+}
+
+
+.pharm-table__cell--action {
+  text-align: center;
+  width: 60px; /* Fixed width for action column */
+}
+
+.pharm-table__edit-button {
+  background-color: #e9ffe9; /* Very light green background for button */
+  border: 1px solid #c3e6cb; /* Light green border */
+  border-radius: 50%; /* Make it circular */
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  outline: none;
+}
+
+.pharm-table__edit-button:hover {
+  background-color: #c3e6cb; /* Darker green on hover */
+  border-color: #a4d4b3;
+}
+
+.pharm-table__edit-icon {
+  font-size: 14px;
+  color: #28a745; /* Green icon color */
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .pharm-header__controls {
+    flex-direction: column;
+    align-items: flex-end;
+    width: 100%;
+  }
+  .pharm-header__search-filter {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .pharm-header__add-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .pharm-page__container,
+  .pharm-header,
+  .pharm-tabs__container,
+  .pharm-table__wrapper {
+    padding: 15px; /* Reduce padding for smaller screens */
+    margin: 15px;
+  }
+  .pharm-header__title {
+    font-size: 20px;
+  }
+  .pharm-header__search-input {
+    width: 100%;
+  }
+  .pharm-header__search-filter {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .pharm-table__header-cell,
+  .pharm-table__cell {
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+}
+
+.pharm-table__wrapper { /* */
+  margin: 20px 25px; /* */
+  background-color: #fff; /* */
+  border-radius: 8px; /* */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* */
+  overflow-x: auto; /* THIS IS THE KEY PROPERTY */
+}
+
+.pharm-table { /* */
+  width: 100%; /* Ensure table takes full width of its container */
+  border-collapse: collapse; /* */
+}
+
+/* Ensure header cells prevent wrapping to trigger scroll */
+.pharm-table__header-cell { /* */
+  padding: 15px 20px; /* */
+  color: #28a745; /* */
+  font-size: 13px; /* */
+  font-weight: bold; /* */
+  white-space: nowrap; /* Prevents text from wrapping, forcing horizontal expansion */
+  border-bottom: 1px solid #d4edda; /* */
+}
+
+/* Specific columns might need min-width */
+.pharm-table__header-cell--clinic { /* */
+  min-width: 250px; /* Explicitly set minimum width for this column */
+}
+
+.pharm-table__cell { /* */
+  padding: 12px 20px; /* */
+  font-size: 14px; /* */
+  color: #333; /* */
+  white-space: nowrap; /* Apply to data cells as well if they contain long content */
+}

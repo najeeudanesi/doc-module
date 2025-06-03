@@ -1,0 +1,580 @@
+/* Base Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  background-color: #f8f8f8; /* Light gray background */
+}
+
+.lab-page__container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Header Section */
+.lab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 15px; /* Space between header elements when wrapping */
+}
+
+.lab-header__title-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.lab-header__menu-icon {
+  font-size: 20px;
+  color: #555;
+  cursor: pointer;
+}
+
+.lab-header__title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.lab-header__controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.lab-header__search-filter {
+  display: flex;
+  gap: 15px;
+}
+
+.lab-header__search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lab-header__search-input {
+  padding: 8px 12px 8px 35px; /* Left padding for icon */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 180px; /* Adjust width as needed */
+}
+
+.lab-header__search-input:focus {
+  border-color: #28a745;
+}
+
+.lab-header__search-icon {
+  position: absolute;
+  left: 12px;
+  color: #888;
+  font-size: 14px;
+}
+
+.lab-header__filter-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #fff;
+  font-size: 14px;
+  color: #555;
+  transition: background-color 0.2s;
+}
+
+.lab-header__filter-dropdown:hover {
+  background-color: #f0f0f0;
+}
+
+.lab-header__filter-icon {
+  font-size: 12px;
+}
+
+.lab-header__request-button {
+  background-color: #28a745; /* Green */
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.lab-header__request-button:hover {
+  background-color: #218838; /* Darker green */
+}
+
+.lab-header__request-icon,
+.lab-header__download-icon {
+  font-size: 14px;
+}
+
+/* Tabs Section */
+.lab-tabs__container {
+  padding: 0 25px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.lab-tabs__button {
+  background: none;
+  border: none;
+  padding: 15px 20px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: #666;
+  border-bottom: 3px solid transparent; /* For active state */
+  transition: border-bottom-color 0.2s, color 0.2s;
+  outline: none;
+}
+
+.lab-tabs__button--active {
+  color: #28a745; /* Green for active tab */
+  border-bottom-color: #28a745;
+}
+
+.lab-tabs__button:hover:not(.lab-tabs__button--active) {
+  color: #333;
+}
+
+/* Table Section */
+.lab-table__wrapper {
+  margin: 20px 25px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  overflow-x: auto; /* Enable horizontal scrolling for small screens */
+}
+
+.lab-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lab-table__head {
+  background-color: #e9ffe9; /* Light green header background */
+}
+
+.lab-table__row-header {
+  text-align: left;
+}
+
+.lab-table__header-cell {
+  padding: 15px 20px;
+  color: #28a745; /* Green text for headers */
+  font-size: 13px;
+  font-weight: bold;
+  white-space: nowrap;
+  border-bottom: 1px solid #d4edda;
+}
+
+.lab-table__body tr {
+  border-bottom: 1px solid #eee; /* Light gray border between rows */
+}
+
+.lab-table__body tr:last-child {
+  border-bottom: none; /* No border for the last row */
+}
+
+.lab-table__body tr:hover {
+  background-color: #f9f9f9; /* Subtle hover effect on rows */
+}
+
+.lab-table__cell {
+  padding: 12px 20px;
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap; /* Prevent text wrapping unless necessary */
+}
+
+.lab-table__cell--lab-centre {
+  min-width: 250px; /* Give more space to lab centre */
+}
+
+.lab-table__status {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.lab-table__status--completed {
+  background-color: #d4edda; /* Light green */
+  color: #155724; /* Dark green */
+}
+
+.lab-table__status--pending {
+  background-color: #fff3cd; /* Light yellow */
+  color: #856404; /* Dark yellow */
+}
+
+.lab-table__cell--action {
+  text-align: center;
+  width: 60px; /* Fixed width for action column */
+}
+
+.lab-table__edit-button {
+  background-color: #e9ffe9; /* Very light green background for button */
+  border: 1px solid #c3e6cb; /* Light green border */
+  border-radius: 50%; /* Make it circular */
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  outline: none;
+}
+
+.lab-table__edit-button:hover {
+  background-color: #c3e6cb; /* Darker green on hover */
+  border-color: #a4d4b3;
+}
+
+.lab-table__edit-icon {
+  font-size: 14px;
+  color: #28a745; /* Green icon color */
+}
+
+/* Modal Styles */
+.lab-modal__overlay {
+  overflow-y: auto;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black backdrop */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Ensure modal is on top */
+}
+
+.lab-modal__content {
+  background-color: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  animation: fadeInScale 0.3s ease-out; /* Simple animation */
+  overflow-y: auto;
+
+}
+
+.lab-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.lab-modal__title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.lab-modal__close-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s;
+  outline: none;
+}
+
+.lab-modal__close-button:hover {
+  color: #333;
+}
+
+.lab-modal__body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #555;
+  overflow-y: auto;
+}
+
+.lab-modal__detail-item {
+  margin-bottom: 10px; /* Space between detail items */
+}
+
+.lab-modal__detail-item strong {
+  color: #333; /* Darker for labels */
+}
+
+.lab-modal__footer {
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 10px;
+}
+
+.lab-modal__footer-button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.lab-modal__footer-button--cancel {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  color: #555;
+}
+
+.lab-modal__footer-button--cancel:hover {
+  background-color: #e0e0e0;
+}
+
+/* Keyframe for modal animation */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .lab-header__controls {
+    flex-direction: column;
+    align-items: flex-end;
+    width: 100%;
+  }
+  .lab-header__search-filter {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .lab-header__request-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .lab-page__container,
+  .lab-header,
+  .lab-tabs__container,
+  .lab-table__wrapper {
+    padding: 15px; /* Reduce padding for smaller screens */
+    margin: 15px;
+  }
+  .lab-header__title {
+    font-size: 20px;
+  }
+  .lab-header__search-input {
+    width: 100%;
+  }
+  .lab-header__search-filter {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .lab-table__header-cell,
+  .lab-table__cell {
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+}
+
+/* Base container for the entire report */
+.lr-report-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  padding: 25px;
+  max-width: 900px; /* Max width to match typical report look */
+  margin: 20px auto; /* Center the component and add margin */
+  font-family: Arial, sans-serif;
+  box-sizing: border-box; /* Include padding in element's total width and height */
+}
+
+/* Header Section Styles */
+.lr-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end; /* Align date/time to bottom of patient name */
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 10px; /* Space between flex items if they wrap */
+}
+
+.lr-header-section__left {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between name and "Lab Report" */
+}
+
+.lr-header-section__patient-name {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.lr-header-section__report-label {
+  font-size: 14px;
+  color: #666;
+  padding: 4px 8px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.lr-header-section__right {
+  display: flex;
+  gap: 10px; /* Space between date and time */
+  font-size: 14px;
+  color: #666;
+}
+
+/* Subject Section Styles */
+.lr-subject-section {
+  display: flex;
+  background-color: #e6f7ff; /* Light blue background for subject */
+  border: 1px solid #cceeff;
+  padding: 12px 15px;
+  border-radius: 6px;
+  margin-bottom: 25px;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap; /* Allow wrapping */
+}
+
+.lr-subject-section__label {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+  min-width: 80px; /* Ensure label has enough space */
+}
+
+.lr-subject-section__text {
+  font-size: 15px;
+  color: #0056b3; /* Darker blue for subject text */
+  flex: 1; /* Allow text to take up remaining space */
+}
+
+/* Lab Findings Section Styles */
+.lr-findings-section {
+  margin-bottom: 30px;
+}
+
+.lr-findings-section__title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  border-bottom: 1px dashed #e0e0e0; /* Dashed line under title */
+}
+
+.lr-findings-section__text-content {
+  line-height: 1.6;
+  color: #444;
+  font-size: 14px;
+}
+
+.lr-findings-section__paragraph {
+  margin-bottom: 15px; /* Space between paragraphs */
+}
+
+.lr-findings-section__paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* Image Section Styles */
+.lr-images-section {
+  display: flex;
+  gap: 20px; /* Space between the two images */
+  justify-content: center; /* Center images if less than full width */
+  flex-wrap: wrap; /* Allow images to stack on smaller screens */
+}
+
+.lr-images-section__image-wrapper {
+  flex: 1; /* Each image wrapper takes equal space */
+  min-width: 280px; /* Minimum width before wrapping */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden; /* Ensure image corners are rounded */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.lr-images-section__image {
+  width: 100%;
+  height: auto;
+  display: block; /* Remove extra space below image */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .lr-report-container {
+    padding: 15px;
+    margin: 15px auto;
+  }
+
+  .lr-header-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .lr-header-section__right {
+    margin-top: 10px; /* Add space below date/time when stacked */
+  }
+
+  .lr-subject-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .lr-subject-section__label {
+    min-width: unset; /* Remove min-width on smaller screens */
+  }
+
+  .lr-images-section {
+    flex-direction: column; /* Stack images vertically */
+    gap: 15px;
+  }
+
+  .lr-images-section__image-wrapper {
+    min-width: unset; /* Allow images to take full width */
+  }
+}

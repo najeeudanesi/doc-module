@@ -1,0 +1,66 @@
+.ivm-form-container {
+  padding: 40px;
+  background: #f8f8f8;
+  min-height: 100vh;
+}
+
+.ivm-form {
+  background: white;
+  padding: 30px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+}
+
+.section-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.field-group label {
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #109615;
+}
+
+input, select, textarea {
+  padding: 10px;
+  border: 1px solid #109615;
+  border-radius: 6px;
+  background-color: #f0fff0;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.action-row {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.btn {
+  padding: 12px 20px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.btn.green {
+  background-color: #109615;
+  color: white;
+}
+
+.btn.grey {
+  background-color: #ddd;
+  color: #444;
+}

@@ -4,6 +4,7 @@ import Select from "react-select";
 import InputField from "../UI/InputField";
 import TextArea from "../UI/TextArea";
 import { post, get } from "../../utility/fetch";
+import { get as gets, post as posts } from "../../utility/fetch2";
 import toast from "react-hot-toast";
 import { BsTrash } from "react-icons/bs";
 import SpeechToTextButton from "../UI/SpeechToTextButton";
@@ -36,38 +37,24 @@ function ReferPatient({
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [hmo, setHmo] = useState(null);
   const [selectedLab, setSelectedLab] = useState(null);
-  const [services, setServices] = useState(null);
+  const [servicesGeneral, setServicesGeneral] = useState([]);
   const [service, setService] = useState({});
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState({});
-  const [labType, setLabType] = useState([
-    {
-      value: 1,
-      label: "Internal Lab",
-    },
 
-    {
-      value: 2,
-      label: "External Lab",
-    },
-  ]);
+  const [labs, setLabs] = useState([]);
+  const [laboratoryService, setLaboratoryService] = useState([]);
 
-  const dummyLabCategories = [
-    { value: 1, label: "Blood Test" },
-    { value: 2, label: "Urine Test" },
-    { value: 3, label: "X-Ray" },
-    { value: 4, label: "CT Scan" },
-  ];
 
   useEffect(() => {
-    setCategoryOptions(dummyLabCategories);
     fetchPatientHMO();
-    getCategories();
+    fetchLabs();
+    fetchGeneralService();
   }, []);
 
   useEffect(() => {
     if (category) {
-      getCategoriesService();
+      fetchLabService(selectedLab?.value);
     }
   }, [category, selectedLab]);
 
@@ -85,108 +72,105 @@ function ReferPatient({
     }
   };
 
+  const fetchLabs = async () => {
+    try {
+      const response = await gets(`/healthcareprovider/list/1/10000`);
+      // Filter for laboratory providers and format for react-select
+      const laboratoryProviders = response.resultList
+        .filter(lab => lab.healthCareProviderCategory?.name === "Laboratory")
+        .map(lab => ({
+          value: lab.id,
+          label: lab.name,
+          location: lab.location,
+          phone: lab.phone,
+          email: lab.email
+        }));
+      setLabs(laboratoryProviders);
+    } catch (error) {
+      console.error("Error fetching laboratories:", error);
+      setLabs([]);
+    }
+  };
+
+  const fetchLabService = async (id) => {
+    try {
+      const response = await gets(`/internallabservice/list/healthcareprovider/${id}/1/10000`);
+      // Filter for laboratory providers and format for react-select
+      const laboratoryService = response.data.recordList
+        .map(service => ({
+          value: service.id,
+          label: service.name,
+          cost: service.cost
+        }));
+      setLaboratoryService(laboratoryService);
+    } catch (error) {
+      console.error("Error fetching laboratories:", error);
+      setLaboratoryService([]);
+    }
+  };
+
+  const fetchGeneralService = async () => {
+    try {
+      const response = await gets(`/generallabservice/list`);
+      // Filter for laboratory providers and format for react-select
+      const laboratoryService = response.data
+        .map(service => ({
+          value: service.id,
+          label: service.name,
+        }));
+      setServicesGeneral(laboratoryService);
+    } catch (error) {
+      console.error("Error fetching laboratories:", error);
+      setLaboratoryService([]);
+    }
+  };
+
   console.log(vital, "visit", visit);
 
-  const getCategories = async () => {
-    const token = sessionStorage.getItem("token");
-
-    if (!token) {
-      console.error("Token not found in session storage");
-      return;
-    }
-
-    const options = {
-      method: "GET",
-      headers: {
-        Authorization: `${token}`,
-      },
-    };
-
-    try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}/healthfinanceapi/api/category/list/1/1000`,
-        options
-      );
-
-      const tempServices = res?.data?.resultList
-        ?.filter(
-          (service) =>
-            service.name === "Lab Service" || service.name === "Lab Services"
-        )
-        .map((category) => ({
-          label: category?.name,
-          value: parseFloat(category?.id),
-        }));
-
-      tempServices?.unshift({ label: "Select Service", value: "" });
-
-      setCategories(tempServices);
-    } catch (error) {
-      console.error("Error fetching services:", error);
-    }
-  };
-
-  const getCategoriesService = async () => {
-    const token = sessionStorage.getItem("token");
-
-    if (!token) {
-      console.error("Token not found in session storage");
-      return;
-    }
-
-    const options = {
-      method: "GET",
-      headers: {
-        Authorization: `${token}`,
-      },
-    };
-
-    try {
-      setService({});
-      setServices(null);
-      const res = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}/healthfinanceapi/api/categoryitem/list/category/${category?.value}/1/1000`,
-        options
-      );
-
-      const tempServices = res?.data?.resultList.map((service) => ({
-        label: service?.itemName,
-        value: parseFloat(service?.id),
-      }));
-
-      tempServices?.unshift({ label: "Select Service", value: "" });
-
-      setServices(tempServices);
-    } catch (error) {
-      console.error("Error fetching services:", error);
-    }
-  };
 
   const addLabRequest = () => {
-    if (selectedCategory && labCentre.trim() !== "") {
-      setTestRequests([
-        ...testRequests,
-        {
-          categoryItemId: selectedCategory.value,
-          labCentre,
-        },
-      ]);
-    } else if (labTest.trim() !== "" && labCentre.trim() !== "") {
-      setOtherTestRequests([
-        ...otherTestRequests,
-        {
-          labTest,
-          labCentre,
-        },
-      ]);
-    } else {
-      toast.error("Please fill in all required fields");
+    if (!selectedLab) {
+      toast.error("Please select a laboratory");
       return;
     }
 
-    setLabCentre("");
-    setLabTest("");
-    setSelectedCategory(null);
+    if (!service?.value) {
+      toast.error("Please select a lab service");
+      return;
+    }
+
+    const newRequest = {
+      categoryItemId: service.value,
+      labCentre: selectedLab.label,
+      serviceName: service.label,
+      cost: service.cost
+    };
+
+    setTestRequests([...testRequests, newRequest]);
+    setService(null); // Reset service selection
+  };
+
+  // Add new function to handle general service addition
+  const addGeneralLabRequest = () => {
+    if (!selectedLab) {
+      toast.error("Please select a laboratory");
+      return;
+    }
+
+    if (!selectedCategory?.value) {
+      toast.error("Please select a general service");
+      return;
+    }
+
+    const newRequest = {
+      categoryItemId: selectedCategory.value,
+      labCentre: selectedLab.label,
+      serviceName: selectedCategory.label,
+      isGeneralService: true // Flag to identify general service
+    };
+
+    setTestRequests([...testRequests, newRequest]);
+    setSelectedCategory(null); // Reset general service selection
   };
 
   const removeLabRequest = (index, isOther = false) => {
@@ -202,7 +186,7 @@ function ReferPatient({
   };
 
   const referPatient = async () => {
-    if (testRequests.length === 0 && otherTestRequests.length === 0) {
+    if (testRequests.length === 0) {
       toast.error("Please add at least one test request");
       return;
     }
@@ -213,65 +197,26 @@ function ReferPatient({
 
     setLoading(true);
 
-    const selectedVital = vital.find((v) => v.appointmentId === visit.id);
-
     const payload = {
-      labRequestType: selectedLab?.value,
-      internalLab:
-        testRequests?.length > 0
-          ? {
-              diagnosis,
-              isFamilyMedicine: familyMedcine ? true : false,
-              dateOfVisit: new Date(visit?.appointDate).toISOString(),
-              appointmentId: visit?.id,
-              hmoId: hmo?.hmoProviderId || 0,
-              hmoPackageId: hmo?.hmoPackageId || 0,
-              testRequests,
-              additionalNote,
-              familyMedicineId: +familyMedcine || 0,
-              oG_IVFId: ivf,
-              oG_BirthRecordId: 0,
-              orthopedicId: orthopedic || 0,
-              generalSurgeryId: generalSurgery || 0,
-              antenatalId: antenatal||0,
-              pediatricId: 0,
-              generalPracticeId: generalPractice||0,
-            }
-          : null,
-      externalLab:
-        otherTestRequests?.length > 0
-          ? {
-            diagnosis,
-            isFamilyMedicine: familyMedcine ? true : false,
-            dateOfVisit: new Date(visit?.appointDate).toISOString(),
-            appointmentId: visit?.id,
-            hmoId: hmo?.hmoProviderId || 0,
-            hmoPackageId: hmo?.hmoPackageId || 0,
-            testRequests,
-            additionalNote,
-            familyMedicineId: +familyMedcine || 0,
-            oG_IVFId: ivf,
-            oG_BirthRecordId: 0,
-            orthopedicId: orthopedic || 0,
-            generalSurgeryId: generalSurgery || 0,
-            antenatalId: antenatal||0,
-            pediatricId: 0,
-            generalPracticeId: 0,
-            }
-          : null,
+      patientId: parseInt(id),
+      severity: 1, // You can add a severity selector if needed
+      diagnosis,
+      additionalNote,
+      doctorId: parseInt(sessionStorage.getItem("userId")),
+      labHealthCareProviderId: selectedLab?.value,
+      appointmentId: parseInt(visit?.id),
+      testRequests: testRequests.map(test => ({
+        generalLabServiceId: test.isGeneralService ? test.categoryItemId : 0,
+        internalLabServiceId: test.isGeneralService ? 0 : test.categoryItemId
+      }))
     };
 
-    console.log(payload);
-
     try {
-      await post(
-        `/patients/${id}/vital/${selectedVital?.vitalId}/lab-request`,
-        payload
-      );
-      toast.success("Lab request added successfully");
+      await posts("/refertolab/create-lab-request", payload);
+      toast.success("Lab request sent successfully");
       closeModal();
     } catch (error) {
-      toast.error("Error adding lab request");
+      toast.error("Error sending lab request");
       console.error(error);
     }
     setLoading(false);
@@ -286,41 +231,74 @@ function ReferPatient({
           <div className="m-t-20">
             <div className="flex gap-8 flex-col">
               <div>
-                <label>Lab Type</label>
+                <label>Select Lab</label>
                 <Select
-                  options={labType}
+                  options={labs}
                   value={selectedLab}
                   onChange={setSelectedLab}
-                  placeholder="Select a Lab Type"
+                  placeholder="Select a Laboratory"
                   isClearable
+                  formatOptionLabel={lab => (
+                    <div>
+                      <div>{lab.label}</div>
+                      <div style={{ fontSize: '0.8em', color: '#666' }}>
+                        {lab.location}
+                      </div>
+                    </div>
+                  )}
                 />
               </div>
-              {selectedLab?.value === 1 && (
+              <div>
+                <label>Select General Service</label>
+                <div className="flex gap-8 align-items-end">
+                  <div className="flex-grow-1">
+                    <Select
+                      options={servicesGeneral}
+                      value={selectedCategory}
+                      onChange={setSelectedCategory}
+                      placeholder="Select a general service"
+                      isClearable
+                      formatOptionLabel={lab => (
+                        <div>
+                          <div>{lab.label}</div>
+                        </div>
+                      )}
+                    />
+                  </div>
+                  <button className="btn" onClick={addGeneralLabRequest}>
+                    + Add General Service
+                  </button>
+                </div>
+              </div>
+              {selectedLab && (
                 <div className="m-t-20">
-                  <label>Service Category</label>
-                  <Select
-                    options={categories}
-                    value={category}
-                    onChange={(selectedOption) => {
-                      setSelectedCategory(selectedOption);
-                      setCategory(selectedOption);
-                    }}
-                    placeholder="Select a Lab Category"
-                    isClearable
-                  />
-
                   <>
-                    {Array.isArray(services) && (
+                    {Array.isArray(laboratoryService) && (
                       <div className="m-t-20">
                         <label>Lab Services</label>
 
                         <Select
-                          options={services}
+                          options={laboratoryService}
                           value={service}
                           onChange={(selectedOption) => {
                             setSelectedCategory(selectedOption);
                             setService(selectedOption);
                           }}
+                          formatOptionLabel={lab => (
+                            <div>
+                              <div>{lab.label}</div>
+                              <div style={{ fontSize: '0.8em', color: '#666' }}>
+                                {lab.cost
+                                  ? `Cost: ${new Intl.NumberFormat('en-NG', {
+                                      style: 'currency',
+                                      currency: 'NGN',
+                                      currencyDisplay: 'symbol',
+                                    }).format(lab.cost)}`
+                                  : 'No cost available'}
+                              </div>
+                            </div>
+                          )}
+                          
                           placeholder="Select a Lab Service"
                           isClearable
                         />
@@ -329,31 +307,7 @@ function ReferPatient({
                   </>
                 </div>
               )}
-
-              {selectedLab?.value === 2 && (
-                <>
-                  <p className="text-sm m-t-20">
-                    Dont see a category? Specify the name of the lab test
-                  </p>
-                  <InputField
-                    label="Lab Test"
-                    name="labTest"
-                    value={labTest}
-                    disabled={selectedCategory ? true : false}
-                    onChange={(e) => setLabTest(e.target.value)}
-                  />
-                </>
-              )}
-              <div>
-                <div className="flex gap-8">
-                  <InputField
-                    label="Lab Centre"
-                    name="labCentre"
-                    value={labCentre}
-                    onChange={(e) => setLabCentre(e.target.value)}
-                  />
-                </div>
-              </div>
+             
             </div>
             <div className="flex flex-h-end">
               <button className="btn m-t-10" onClick={addLabRequest}>
@@ -364,28 +318,32 @@ function ReferPatient({
 
           {testRequests.length > 0 && (
             <>
-              <h4 className="m-t-20">Category Test Requests</h4>
+              <h4 className="m-t-20">Test Requests</h4>
               <table className="bordered-table-2 m-t-10">
                 <thead>
                   <tr>
-                    <th className="w-20">s/n</th>
-                    <th className="w-40">Service</th>
-                    <th className="w-40">Lab Centre</th>
-                    <th className="w-20">Action</th>
+                    <th className="w-10">S/N</th>
+                    <th className="w-30">Service</th>
+                    <th className="w-30">Lab Centre</th>
+                    <th className="w-20">Cost</th>
+                    <th className="w-10">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {testRequests.map((request, index) => (
                     <tr key={index}>
                       <td>{index + 1}</td>
-                      <td>
-                        {
-                          services?.find(
-                            (opt) => opt.value === request.categoryItemId
-                          )?.label
-                        }
-                      </td>
+                      <td>{request.serviceName}</td>
                       <td>{request.labCentre}</td>
+                      <td>
+                        {request.cost
+                          ? new Intl.NumberFormat('en-NG', {
+                            style: 'currency',
+                            currency: 'NGN',
+                            currencyDisplay: 'symbol',
+                          }).format(request.cost)
+                          : 'N/A'}
+                      </td>
                       <td>
                         <BsTrash
                           className="text-red pointer"
@@ -457,8 +415,8 @@ function ReferPatient({
             Refer Patient to Lab
           </button>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
 

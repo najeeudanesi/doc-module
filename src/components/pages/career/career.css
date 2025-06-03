@@ -1,0 +1,390 @@
+/* Base Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  background-color: #f8f8f8;
+}
+
+.cp-page__container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Top Header Styles */
+.cp-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  flex-wrap: wrap; /* Allow wrapping */
+  gap: 15px;
+}
+
+.cp-top-header__profile-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cp-top-header__profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cp-top-header__text-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.cp-top-header__name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.cp-top-header__hospital {
+  font-size: 13px;
+  color: #666;
+}
+
+.cp-top-header__right-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.cp-top-header__preview-button {
+    background-color: #f0f0f0;
+    color: #555;
+    border: 1px solid #ddd;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.cp-top-header__preview-button:hover {
+    background-color: #e0e0e0;
+}
+
+.cp-top-header__user-icon {
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+}
+
+
+/* Page Body Wrapper (Sidebar + Main Content) */
+.cp-page__body-wrapper {
+  display: flex;
+  flex: 1;
+  padding: 20px;
+  gap: 20px;
+  max-width: 1400px; /* Limit overall width */
+  /* margin: 20px auto; */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Left Sidebar - Tab Navigation */
+.cp-sidebar {
+  flex-basis: 250px; /* Fixed width for sidebar */
+  flex-shrink: 0;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cp-sidebar__title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.cp-sidebar__instruction {
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+.cp-sidebar__nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cp-sidebar__nav-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  margin-bottom: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 15px;
+  color: #555;
+  font-weight: 500;
+}
+
+.cp-sidebar__nav-item:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.cp-sidebar__nav-item--active {
+  background-color: #e9ffe9; /* Light green for active */
+  color: #28a745; /* Green text for active */
+  font-weight: 600;
+}
+
+.cp-sidebar__nav-item--active .cp-sidebar__nav-icon {
+    color: #28a745; /* Green icon for active */
+}
+
+.cp-sidebar__nav-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cp-sidebar__nav-icon {
+  font-size: 18px;
+  color: #888; /* Default icon color */
+}
+
+.cp-sidebar__nav-checkmark {
+  font-size: 16px;
+  color: #28a745; /* Green checkmark */
+}
+
+/* Main Content Area */
+.cp-main-content {
+  flex: 1; /* Takes remaining space */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+    overflow-x: auto;
+
+}
+
+.cp-content__section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Allow wrapping */
+  gap: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed #eee;
+  margin-bottom: 20px;
+}
+
+.cp-content__section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.cp-content__section-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cp-content__action-button {
+  background-color: #e9ffe9; /* Light green */
+  color: #28a745; /* Green text */
+  border: 1px solid #c3e6cb;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background-color 0.2s;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.cp-content__action-button:hover {
+  background-color: #d4edda;
+}
+
+.cp-content__action-button--add {
+    background-color: #28a745; /* Solid green for Add new */
+    color: white;
+    border-color: #28a745;
+}
+.cp-content__action-button--add:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+.cp-content__placeholder {
+    font-size: 15px;
+    color: #777;
+    text-align: center;
+    padding: 30px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px dashed #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+
+/* Table Styles */
+.cp-table__wrapper {
+  overflow-x: auto; /* Enable horizontal scroll */
+  border: 1px solid #eee; /* Light border around table */
+  border-radius: 8px;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.02); /* Inner subtle shadow */
+}
+
+.cp-table {
+  width: 100%;
+  min-width: 600px; /* Ensure table is wide enough to force scroll if needed */
+  border-collapse: collapse;
+}
+
+.cp-table__head {
+  background-color: #e9ffe9; /* Light green header */
+}
+
+.cp-table__header-cell {
+  padding: 12px 15px;
+  color: #28a745; /* Green header text */
+  font-size: 13px;
+  font-weight: bold;
+  text-align: left;
+  white-space: nowrap; /* Prevent wrapping */
+  border-bottom: 1px solid #d4edda;
+}
+
+.cp-table__header-cell--institution {
+  min-width: 250px; /* Give more space to institution column */
+}
+
+.cp-table__row {
+  border-bottom: 1px solid #eee;
+}
+.cp-table__row:last-child {
+  border-bottom: none;
+}
+
+.cp-table__cell {
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+}
+
+.cp-table__cell--action {
+  text-align: center;
+  width: 60px;
+}
+
+.cp-table__edit-icon {
+  font-size: 16px;
+  color: #28a745;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.cp-table__edit-icon:hover {
+  color: #218838;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .cp-page__body-wrapper {
+    flex-direction: column; /* Stack sidebar and main content */
+    padding: 15px;
+    margin-top: 15px;
+  }
+
+  .cp-sidebar,
+  .cp-main-content {
+    flex-basis: auto; /* Remove fixed basis */
+    width: 100%; /* Take full width */
+    margin-bottom: 15px; /* Add space between stacked sections */
+  }
+
+  .cp-sidebar__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .cp-sidebar__nav-item {
+    flex-basis: 48%; /* Two items per row */
+    justify-content: center;
+    padding: 10px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .cp-top-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .cp-top-header__right-section {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .cp-sidebar__nav-item {
+    flex-basis: 100%; /* Stack items vertically */
+  }
+  .cp-content__section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .cp-content__section-actions {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+    .cp-top-header__title, .cp-content__section-title {
+        font-size: 18px;
+    }
+    .cp-sidebar__title {
+        font-size: 18px;
+    }
+    .cp-table__header-cell, .cp-table__cell {
+        font-size: 12px;
+        padding: 8px 10px;
+    }
+    .cp-content__action-button {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+}

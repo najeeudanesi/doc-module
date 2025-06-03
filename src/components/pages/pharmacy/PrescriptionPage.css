@@ -1,0 +1,350 @@
+/* Base Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  background-color: #f8f8f8;
+}
+
+.pres-page__container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Header Styles */
+.pres-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 25px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.pres-header__back-arrow {
+  font-size: 20px;
+  color: #28a745; /* Green color for the arrow */
+  cursor: pointer;
+}
+
+.pres-header__title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+/* Main Content Wrapper */
+.pres-page__content-wrapper {
+  display: flex;
+  flex: 1; /* Allows content to take available height */
+  padding: 20px;
+  gap: 20px;
+  max-width: 1400px; /* Limit overall width */
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Left Sidebar - Patient Info */
+.pres-sidebar {
+  flex-basis: 250px; /* Fixed width for sidebar */
+  flex-shrink: 0; /* Prevent shrinking */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.pres-sidebar__patient-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.pres-sidebar__profile-pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+  border: 2px solid #eee;
+}
+
+.pres-sidebar__patient-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  width: 100%; /* Ensure border spans width */
+}
+
+.pres-sidebar__admission-label {
+  font-size: 13px;
+  color: #666;
+  margin-top: 10px;
+}
+
+.pres-sidebar__admission-date {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.pres-sidebar__admission-time {
+  font-size: 13px;
+  color: #666;
+}
+
+/* Main Content Area */
+.pres-main-content {
+  flex: 1; /* Takes remaining space */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pres-main-content__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed #eee;
+}
+
+.pres-main-content__prescription-id {
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+}
+
+.pres-main-content__prescription-date-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pres-main-content__prescription-date-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.pres-main-content__prescription-date-value {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+.pres-main-content__view-other-btn {
+  background-color: #e9ffe9; /* Light green */
+  color: #28a745; /* Green text */
+  border: 1px solid #c3e6cb;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background-color 0.2s;
+}
+
+.pres-main-content__view-other-btn:hover {
+  background-color: #d4edda;
+}
+
+/* Prescription Table */
+.pres-table__wrapper {
+  overflow-x: auto; /* Enable horizontal scroll */
+  border: 1px solid #eee; /* Light border around table */
+  border-radius: 8px;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.02); /* Inner subtle shadow */
+}
+
+.pres-table {
+  width: 100%;
+  min-width: 600px; /* Ensure table is wide enough to force scroll if needed */
+  border-collapse: collapse;
+}
+
+.pres-table__head {
+  background-color: #e9ffe9; /* Light green header */
+}
+
+.pres-table__header-cell {
+  padding: 12px 15px;
+  color: #28a745; /* Green header text */
+  font-size: 13px;
+  font-weight: bold;
+  text-align: left;
+  white-space: nowrap; /* Prevent wrapping */
+  border-bottom: 1px solid #d4edda;
+}
+
+.pres-table__header-cell--name {
+  min-width: 250px; /* Give more space to name column */
+}
+
+.pres-table__row {
+  border-bottom: 1px solid #eee;
+}
+.pres-table__row:last-child {
+  border-bottom: none;
+}
+
+.pres-table__cell {
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+}
+
+.pres-table__input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box; /* Include padding in width */
+  font-size: 14px;
+}
+
+/* Responses Section */
+.pres-responses-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.pres-response__card {
+  background-color: #fcfcfc; /* Very light background for response cards */
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pres-response__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.pres-response__author {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+}
+
+.pres-response__date-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+.pres-response__edit-icon {
+  font-size: 14px;
+  color: #28a745;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.pres-response__text-area {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #555;
+  background-color: #fcfcfc; /* Ensure background is consistent */
+}
+
+/* Right Sidebar - Action Buttons */
+.pres-action-sidebar {
+  flex-basis: 200px; /* Fixed width for action sidebar */
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pres-action-sidebar__button {
+  background-color: #e9ffe9; /* Light green */
+  color: #28a745; /* Green text */
+  border: 1px solid #c3e6cb;
+  padding: 12px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.pres-action-sidebar__button:hover {
+  background-color: #d4edda;
+  border-color: #a4d4b3;
+}
+
+.pres-action-sidebar__button-icon {
+  font-size: 14px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .pres-page__content-wrapper {
+    flex-direction: column; /* Stack sidebars and main content */
+    padding: 15px;
+  }
+
+  .pres-sidebar,
+  .pres-main-content,
+  .pres-action-sidebar {
+    flex-basis: auto; /* Remove fixed basis */
+    width: 100%; /* Take full width */
+    margin-bottom: 15px; /* Add space between stacked sections */
+  }
+
+  .pres-header {
+    padding: 10px 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  .pres-header__title {
+    font-size: 20px;
+  }
+  .pres-main-content__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .pres-main-content__prescription-date-selector {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .pres-table__header-cell,
+  .pres-table__cell {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+}

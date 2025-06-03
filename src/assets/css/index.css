@@ -612,6 +612,14 @@
   align-items: center;
 }
 
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.align-items-end {
+  align-items: flex-end;
+}
+
 .clickable-row {
   cursor: pointer;
   transition: white 0.3s ease, transform 0.3s ease;

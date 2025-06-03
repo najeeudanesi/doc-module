@@ -1,0 +1,84 @@
+.readonly-table-wrapperR {
+  overflow-x: auto;
+  width: 100%;
+  margin-top: 10px;
+  border: 1px solid #109615;
+  border-radius: 6px;
+}
+
+.readonly-tableR {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px; /* triggers horizontal scroll on small screens */
+}
+
+.readonly-tableR th,
+.readonly-tableR td {
+  border: 1px solid #109615;
+  padding: 8px 6px;
+  font-size: 0.875rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.readonly-tableR th {
+  background-color: #e6fbe6;
+  font-weight: 600;
+  color: #1f561f;
+}
+
+.readonly-tableR input,
+.readonly-tableR select {
+  padding: 6px 10px;
+  border: 1px solid #3c7e2d;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
+
+.readonly-tableR input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.readonly-tableR input:focus,
+.readonly-tableR select:focus {
+  outline: none;
+  border-color: #3c7e2d;
+  box-shadow: 0 0 0 2px rgba(60, 126, 45, 0.3);
+}
+
+.readonly-tableR button {
+  padding: 4px 8px;
+  margin: 0 2px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.readonly-tableR button:hover {
+  color: #3c7e2d;
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 768px) {
+  .readonly-tableR th,
+  .readonly-tableR td {
+    padding: 6px 4px;
+    font-size: 0.8rem;
+  }
+
+  .readonly-tableR input,
+  .readonly-tableR select {
+    font-size: 0.8rem;
+    padding: 5px 8px;
+  }
+
+  .readonly-tableR button {
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,47 @@
+.form-section {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.field-group {
+  margin-bottom: 15px;
+}
+
+.field-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.nested-field {
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+.severity-slider {
+  width: 100%;
+  margin: 10px 0;
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+
+.temperature-input {
+  width: 100px;
+  padding: 5px;
+  margin-left: 10px;
+}
+
+.warning-signs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin: 15px 0;
+}

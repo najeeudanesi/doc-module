@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { BsTrash } from "react-icons/bs";
 import { RiCloseFill } from "react-icons/ri";
 import { get, post } from "../../utility/fetch";
+import { get as gets, post as posts } from "../../utility/fetch2";
 import TextArea from "../UI/TextArea";
 import debounce from "lodash.debounce"; // Import debounce from lodash
 import SpeechToTextButton from "../UI/SpeechToTextButton";
@@ -34,6 +35,8 @@ function AddTreatment({
   const [medicationOptions, setMedicationOptions] = useState([]); // State for fetched medication options
   const [hmo, setHmo] = useState(null);
   const [sugesstPayload, setSuggPayload] = useState({ medications: [] });
+  const [labs, setLabs] = useState([]);
+  const [selectedLab, setSelectedLab] = useState(null);
 
 
   const routesOfAdministration = [
@@ -122,28 +125,48 @@ function AddTreatment({
 
 
   // Fetch Medications from API with Filter Query (Debounced)
-  const fetchMedications = async (
-    filterOn = "name",
-    filterQuery = " ",
-    pageNumber = 1,
-    itemsPerPage = 10
-  ) => {
+  const fetchMedications = async () => {
+    if (!selectedLab?.value) return;
+    
     try {
-      const response = await get(
-        `/pharmacyinventory/filter-list/${filterOn}/${filterQuery}/${pageNumber}/${itemsPerPage}`
+      const response = await gets(
+        `/pharmacyestore/list/healthcareprovider/${selectedLab.value}/1/10000`
       );
-      const data = response?.resultList;
-      console.log(response);
-      // Map the response to a format usable by React Select
+      const data = response?.data?.recordList;
+      
       const options = data?.map((med) => ({
-        value: med?.id, // or med.code if you have it
-        label: med?.productName, // Adjust this based on your response structure
+        value: med?.id,
+        label: med?.productName,
+        cost: med?.sellingPrice,
+        manufacturer: med?.manufacturer,
+        isComposite: med?.isComposite || false
       }));
 
-      setMedicationOptions(options); // Set options for the dropdown
-      setSelectedMedication(null); // Clear selection after fetching data
+      setMedicationOptions(options);
+      setSelectedMedication(null);
     } catch (error) {
       console.log(error);
+      setMedicationOptions([]);
+    }
+  };
+
+  const fetchPharmacies = async () => {
+    try {
+      const response = await gets(`/healthcareprovider/list/1/10000`);
+      // Filter for laboratory providers and format for react-select
+      const laboratoryProviders = response.resultList
+        .filter(lab => lab.healthCareProviderCategory?.name === "Pharmacy")
+        .map(lab => ({
+          value: lab.id,
+          label: lab.name,
+          location: lab.location,
+          phone: lab.phone,
+          email: lab.email
+        }));
+      setLabs(laboratoryProviders);
+    } catch (error) {
+      console.error("Error fetching laboratories:", error);
+      setLabs([]);
     }
   };
 
@@ -181,20 +204,24 @@ function AddTreatment({
   }, [medications, otherMedications]);
 
   const addMedicationFromDropdown = () => {
-    if (selectedMedication) {
+    if (selectedMedication && selectedLab) {
       setMedications((prev) => [
         ...prev,
         {
           name: selectedMedication.label,
-          pharmacyInventoryId: selectedMedication.value, // Save the medication ID (value) here
-          quantity: "",
-          frequency: "",
-          duration: "",
+          pharmacyHealthCareProviderId: selectedLab.value,
+          generalMedicineId: selectedMedication.value,
+          quantity: 0,
+          drugStrengthUnit: 1,
+          administrationFrequency: 1,
+          routeOfAdministration: 1,
+          duration: 0,
+          composite: selectedMedication.isComposite
         },
       ]);
-      setSelectedMedication(null); // Clear selection after adding
+      setSelectedMedication(null);
     } else {
-      toast.error("Please select a valid medication");
+      toast.error("Please select both a pharmacy and medication");
     }
   };
 
@@ -254,70 +281,48 @@ function AddTreatment({
     }
   };
   const addTreatment = async () => {
-    if (diagnosis === "" || carePlan === "") {
-      toast.error("Please fill in all fields");
+    if (!diagnosis || !carePlan) {
+      toast.error("Please fill in all required fields");
       return;
     }
 
-    const dateOfVisit = new Date(visit?.appointDate).toISOString();
-    // setLoading(true);
+    setLoading(true);
 
-    // Prepare the medications payload with pharmacyInventoryId
-    const formattedMedications = medications.map((med) => ({
-      pharmacyInventoryId: med.pharmacyInventoryId,
-      quantity: med.quantity,
-      strength: med.frequency,
-      administrationFrequency: +med.administrationFrequency || 1,
-      routeOfAdministration: +med.routeOfAdministration || 1,
-      duration: med.duration,
-
-      drugStrengthUnit: +med.drugStrengthUnit,
-    }));
-
-    // Prepare the otherMedications payload
-    const formattedOtherMedications = otherMedications.map((med) => ({
-      name: med.name,
-      quantity: med.quantity,
-      strength: med.frequency,
-      administrationFrequency: +med.administrationFrequency || 1,
-      routeOfAdministration: +med.routeOfAdministration || 1,
-      duration: med.duration,
-      drugStrengthUnit: +med.drugStrengthUnit || 1,
-    }));
-
-    // Construct the payload in the required format
     const payload = {
-      dateOfVisit: dateOfVisit,
-      treatmentCategoryId: +selectedCategoryId,
+      patientId: parseInt(id),
+      dateOfVisit: new Date(visit?.appointDate).toISOString(),
+      age: visit?.age || "0",
       diagnosis,
-      medications: formattedMedications,
-      otherMedications: formattedOtherMedications,
-      carePlan,
+      treatmentStatus: 0,
+      additionalNote: "",
       isAdmitted: admissionStatus === "Admitted",
-      hmoId: hmo?.hmoProviderId,
-      hmoPackageId: hmo?.hmoPackageId,
+      doctorId: parseInt(sessionStorage.getItem("userId")),
+      appointmentId: parseInt(visit?.id),
+      carePlan,
+      medications: medications.map(med => ({
+        pharmacyHealthCareProviderId: med.pharmacyHealthCareProviderId,
+        generalMedicineId: med.generalMedicineId,
+        drugStrengthUnit: parseInt(med.drugStrengthUnit),
+        quantity: parseInt(med.quantity),
+        administrationFrequency: parseInt(med.administrationFrequency),
+        routeOfAdministration: parseInt(med.routeOfAdministration),
+        duration: parseInt(med.duration),
+        composite: med.composite
+      }))
     };
 
-    console.log(payload);
-    // return
-    if (createTreatment) {
-      createTreatment && createTreatment(payload);
-      return;
-    }
-
     try {
-      await post(
-        `/patients/${id}/appoint/${localStorage.getItem(
-          "appointmentId"
-        )}/addtreatmentprescription`,
-        payload
-      );
-      await fetchData();
-      toast.success("Treatment added successfully");
+      if (createTreatment) {
+        await createTreatment(payload);
+      } else {
+        await posts("/treatment", payload);
+        await fetchData();
+        toast.success("Treatment added successfully");
+      }
       closeModal();
     } catch (error) {
       toast.error("Error adding treatment");
-      console.log(error);
+      console.error(error);
     }
     setLoading(false);
   };
@@ -336,7 +341,7 @@ function AddTreatment({
   };
 
   useEffect(() => {
-    fetchTreatmentCategory();
+    fetchPharmacies();
     fetchPatientHMO();
     fetchMedications();
   }, []);
@@ -346,27 +351,7 @@ function AddTreatment({
       <RiCloseFill className="close-btn pointer" onClick={closeModal} />
       <div className="modal-box max-w-700">
         <div className="p-40">
-          <h3 className="bold-text">Add Treatment</h3>
-
-          {/* Treatment Category */}
-          <div className="w-100 m-t-20 flex">
-            <label htmlFor="category" className="label">
-              Treatment Category
-            </label>
-            <select
-              id="category"
-              className="input-field"
-              value={selectedCategoryId}
-              onChange={(e) => setSelectedCategoryId(e.target.value)}
-            >
-              {treatmentCategories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
+          <h3 className="bold-text m-b-20">Add Treatment</h3>
           <GhostTextCompletion
             label="Patient Diagnosis"
             name="diagnosis"
@@ -386,7 +371,7 @@ function AddTreatment({
           </div>
 
           {/* Admission Status */}
-          <div className="w-100 m-t-20 flex">
+          <div className="w-100 m-t-20 m-b-20 flex">
             <label htmlFor="admission" className="label">
               Admission Status
             </label>
@@ -402,9 +387,43 @@ function AddTreatment({
           </div>
 
           {/* Medications from API */}
+          <div className="flex gap-8 flex-col">
+            <div>
+              <label>Select Pharmacy</label>
+              <Select
+                options={labs}
+                value={selectedLab}
+                onChange={setSelectedLab}
+                placeholder="Select a Pharmacy"
+                isClearable
+                formatOptionLabel={lab => (
+                  <div>
+                    <div>{lab.label}</div>
+                    <div style={{ fontSize: '0.8em', color: '#666' }}>
+                      {lab.location}
+                    </div>
+                  </div>
+                )}
+              />
+            </div>
+          </div>
           <div className="m-t-20">
             <Select
               options={medicationOptions} // Use fetched medication options
+              formatOptionLabel={lab => (
+                <div>
+                  <div>{lab.label}</div>
+                  <div style={{ fontSize: '0.8em', color: '#666' }}>
+                    {lab.cost
+                      ? `Cost: ${new Intl.NumberFormat('en-NG', {
+                        style: 'currency',
+                        currency: 'NGN',
+                        currencyDisplay: 'symbol',
+                      }).format(lab.cost)}`
+                      : 'No cost available'}
+                  </div>
+                </div>
+              )}
               value={selectedMedication}
               onChange={setSelectedMedication}
               placeholder="Select a medication"
@@ -426,11 +445,10 @@ function AddTreatment({
                     <th>s/n</th>
                     <th>Medication</th>
                     <th>Quantity</th>
-                    <th>Strength</th>
+<th>Strength</th>
                     <th>Units Of Measurement</th>
                     <th>Administration Frequency</th>
-                    <th>Duration (days)</th>
-                    <th>Route</th>
+                                        <th>Duration (days)</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -444,47 +462,18 @@ function AddTreatment({
                           type="number"
                           className="input-field-table"
                           value={med.quantity}
-                          onChange={(e) =>
-                            handleMedicationChange(
-                              index,
-                              "quantity",
-                              e.target.value,
-                              "medications"
-                            )
-                          }
-                        />
-                      </td>
-                      <td>
-                        <input
-                          // type="text"
-                          className="input-field-table"
-                          // value={med.frequency}
-                          onChange={(e) =>
-                            handleMedicationChange(
-                              index,
-                              "frequency",
-                              e.target.value,
-                              "medications"
-                            )
-                          }
+                          onChange={(e) => handleMedicationChange(index, "quantity", e.target.value)}
                         />
                       </td>
                       <td>
                         <select
                           className="input-field-table"
-                          value={med.drugStrengthUnit || ""}
-                          onChange={(e) =>
-                            handleMedicationChange(
-                              index,
-                              "drugStrengthUnit",
-                              e.target.value,
-                              "medications"
-                            )
-                          }
+                          value={med.drugStrengthUnit}
+                          onChange={(e) => handleMedicationChange(index, "drugStrengthUnit", e.target.value)}
                         >
-                          {drugMeasurementUnits.map((freq) => (
-                            <option key={freq.id} value={freq.id}>
-                              {freq.name}
+                          {drugMeasurementUnits.map((unit) => (
+                            <option key={unit.id} value={unit.id}>
+                              {unit.name}
                             </option>
                           ))}
                         </select>
@@ -492,15 +481,8 @@ function AddTreatment({
                       <td>
                         <select
                           className="input-field-table"
-                          value={med.administrationFrequency || ""}
-                          onChange={(e) =>
-                            handleMedicationChange(
-                              index,
-                              "administrationFrequency",
-                              e.target.value,
-                              "medications"
-                            )
-                          }
+                          value={med.administrationFrequency}
+                          onChange={(e) => handleMedicationChange(index, "administrationFrequency", e.target.value)}
                         >
                           {administrationFrequencies.map((freq) => (
                             <option key={freq.id} value={freq.id}>
@@ -510,32 +492,10 @@ function AddTreatment({
                         </select>
                       </td>
                       <td>
-                        <input
-                          type="number"
-                          className="input-field-table"
-                          value={med.duration}
-                          onChange={(e) =>
-                            handleMedicationChange(
-                              index,
-                              "duration",
-                              e.target.value,
-                              "medications"
-                            )
-                          }
-                        />
-                      </td>
-                      <td>
                         <select
                           className="input-field-table"
-                          value={med.routeOfAdministration || ""}
-                          onChange={(e) =>
-                            handleMedicationChange(
-                              index,
-                              "routeOfAdministration",
-                              e.target.value,
-                              "medications"
-                            )
-                          }
+                          value={med.routeOfAdministration}
+                          onChange={(e) => handleMedicationChange(index, "routeOfAdministration", e.target.value)}
                         >
                           {routesOfAdministration.map((route) => (
                             <option key={route.id} value={route.id}>
@@ -545,9 +505,17 @@ function AddTreatment({
                         </select>
                       </td>
                       <td>
+                        <input
+                          type="number"
+                          className="input-field-table"
+                          value={med.duration}
+                          onChange={(e) => handleMedicationChange(index, "duration", e.target.value)}
+                        />
+                      </td>
+                      <td>
                         <BsTrash
                           className="text-red pointer"
-                          onClick={() => removeMedication(index, "medications")}
+                          onClick={() => removeMedication(index)}
                         />
                       </td>
                     </tr>

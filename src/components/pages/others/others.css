@@ -1,0 +1,262 @@
+/* Global styles for the body and app container (optional, but good practice) */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background-color: #f8f8f8; /* Light gray background to match the image */
+}
+
+.others .app-container {
+  min-height: 100vh;
+  /* You can add display: flex; flex-direction: column; if you have a full page layout */
+}
+
+/* Header Styles */
+.others .header {
+  display: flex;
+  justify-content: space-between; /* Pushes "Funds Management" to left and actions to right */
+  align-items: center; /* Vertically aligns items in the center */
+  padding: 20px; /* Padding around the header content */
+  background-color: #fff; /* White background for the header bar */
+  border-bottom: 1px solid #eee; /* Subtle border at the bottom */
+}
+
+.others .header-title {
+  font-size: 24px; /* Size of the "Funds Management" text */
+  font-weight: bold; /* Bold text */
+  color: #333; /* Dark gray color for the text */
+  margin: 0; /* Remove default margin from h1 */
+}
+
+.others .header-actions {
+  display: flex;
+  align-items: center; /* Vertically aligns buttons and text */
+  gap: 15px; /* Space between the "Manage Service Fee" text and buttons */
+}
+
+.others .manage-fee {
+  color: #666; /* Gray color for the service fee text */
+  font-size: 14px; /* Font size for the service fee text */
+}
+
+.others .fund-wallet-btn {
+  background-color: #28a745; /* Green color for the "Fund Wallet" button */
+  color: white; /* White text color */
+  border: none; /* No border */
+  padding: 10px 20px; /* Padding inside the button */
+  border-radius: 5px; /* Slightly rounded corners */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  font-size: 14px; /* Font size of button text */
+  font-weight: bold; /* Bold button text */
+  transition: background-color 0.2s ease; /* Smooth transition for hover effect */
+}
+
+.others .fund-wallet-btn:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+
+.others .withdraw-btn {
+  background-color: transparent; /* Transparent background */
+  color: #28a745; /* Green text color */
+  border: 1px solid #28a745; /* Green border */
+  padding: 10px 20px; /* Padding inside the button */
+  border-radius: 5px; /* Slightly rounded corners */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  font-size: 14px; /* Font size of button text */
+  font-weight: bold; /* Bold button text */
+  transition: background-color 0.others .2s ease, color 0.2s ease; /* Smooth transition for hover effect */
+}
+
+.others .withdraw-btn:hover {
+  background-color: #e6ffe6; /* Very light green on hover */
+  color: #28a745; /* Keep text color green */
+}
+
+
+/* ListOfServices */
+
+
+/* Base Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background-color: #f8f8f8; /* Light gray background */
+}
+
+.msf-page__container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header Styles */
+.msf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03); /* Subtle shadow for header */
+}
+
+.msf-header__left {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Space between icon and title */
+}
+
+.msf-header__back-icon {
+  font-size: 20px;
+  color: #555;
+  cursor: pointer;
+}
+
+.msf-header__title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0; /* Remove default h1 margin */
+}
+
+.msf-header__add-button {
+  background-color: #28a745; /* Green */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between icon and text */
+  transition: background-color 0.2s ease;
+}
+
+.msf-header__add-button:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+
+.msf-header__add-icon {
+  font-size: 14px;
+}
+
+/* Main Content Area */
+.msf-content__area {
+  padding: 20px;
+  max-width: 1200px; /* Limit content width */
+  margin: 20px auto; /* Center content and add top margin */
+  width: 100%;
+  box-sizing: border-box; /* Include padding in width calculation */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.msf-content__list-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #555;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+/* Table Styles */
+.msf-table__wrapper {
+  overflow-x: auto; /* Enable horizontal scrolling for small screens */
+}
+
+.msf-table {
+  width: 100%;
+  border-collapse: collapse; /* Remove space between cells */
+}
+
+.msf-table__head {
+  background-color: #e9ffe9; /* Light green header background */
+  border-bottom: 1px solid #d4edda; /* Green border at bottom of header */
+}
+
+.msf-table__row-header {
+  text-align: left; /* Align text left in header cells */
+}
+
+.msf-table__header-cell {
+  padding: 15px 20px;
+  color: #28a745; /* Green text for headers */
+  font-size: 14px;
+  font-weight: bold;
+  white-space: nowrap; /* Prevent text wrapping in headers */
+}
+
+.msf-table__header-cell--remarks {
+  min-width: 300px; /* Give remarks column more width */
+}
+
+.msf-table__header-cell--action {
+  width: 50px; /* Smaller width for action column */
+  text-align: center; /* Center icon */
+}
+
+.msf-table__body tr {
+  border-bottom: 1px solid #eee; /* Light gray border between rows */
+}
+
+.msf-table__body tr:last-child {
+  border-bottom: none; /* No border for the last row */
+}
+
+.msf-table__row:nth-child(even) {
+  background-color: #fcfcfc; /* Subtle stripe for even rows */
+}
+
+.msf-table__cell {
+  padding: 15px 20px;
+  font-size: 14px;
+  color: #333;
+}
+
+.msf-table__cell--amount {
+  font-weight: bold; /* Bold amount */
+  white-space: nowrap; /* Prevent amount from wrapping */
+}
+
+.msf-table__cell--remarks {
+  color: #555; /* Slightly lighter text for remarks */
+}
+
+.msf-table__cell--action {
+  text-align: center;
+}
+
+.msf-table__edit-icon {
+  font-size: 16px;
+  color: #6c757d; /* Gray color for the edit icon */
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.msf-table__edit-icon:hover {
+  color: #007bff; /* Blue on hover */
+}
+
+/* Basic Responsiveness (Optional but Good Practice) */
+@media (max-width: 768px) {
+  .msf-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding-bottom: 15px;
+  }
+  .msf-header__add-button {
+    width: 100%; /* Make button full width on smaller screens */
+    justify-content: center; /* Center button text */
+  }
+  .msf-content__area {
+    margin: 10px;
+    padding: 15px;
+  }
+  .msf-table__header-cell,
+  .msf-table__cell {
+    padding: 10px 15px; /* Reduce padding in table cells */
+  }
+}
