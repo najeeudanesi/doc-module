@@ -1,195 +1,378 @@
-import React, { useState } from 'react'
-import './DeliveryForm.css'
+import React, { useEffect, useState } from "react";
+import "./DeliveryForm.css"; // link to CSS file
+import { get, post } from "../../../utility/fetch";
+import { useParams, useSearchParams } from "react-router-dom";
+import DeliveryFormDrugsTable from "./DeliveryFormDrugsTable";
+import DeliveryFormBabyVital from "./DeliveryFormBabyVital";
+import DeliveryFormMotherVital from "./DeliveryFormMotherVital";
+import toast from "react-hot-toast";
 
-export default function DeliveryForm() {
+const DeliveryForm = () => {
+  const [searchParams] = useSearchParams();
+  const treatmentId = searchParams.get("treatmentId");
+  const docInfo = JSON.parse(localStorage.getItem("USER_INFO"));
+  const { patientId } = useParams();
+  const [deliveryData, setDeliveryData] = useState(null);
+  const [watcher, setwatcher] = useState(null);
+
   const [formData, setFormData] = useState({
-    patientId: '',
-    antenatalId: '',
-    deliveryDate: '',
-    deliveryTime: '',
-    modeOfDelivery: '',
-    deliveryBabyCry: '',
-    apgarScore: '',
-    sex: '',
-    weight: '',
-    durationOfLabour: '',
+    patientId: 0,
+    antenatalId: +treatmentId,
+    deliveryDate: "",
+    deliveryTime: {},
+    modeOfDelivery: 1,
+    deliveryBabyCry: 1,
+    apgarScore: "",
+    sex: "",
+    weight: 0,
+    durationOfLabour: {},
     placentaDelivery: {
-      deliveryTime: '',
-      deliveryMode: '',
-      complete: false
+      deliveryTime: {},
+      deliveryMode: 1,
+      complete: true,
     },
     anyPPH: false,
     episiotomyGiven: false,
-    perineal: '',
-    appointmentId: '',
-    doctorId: '',
-    nurseId: ''
-  })
+    perineal: 0,
+    appointmentId: 0,
+    doctorId: 0,
+    nurseId: 0,
+  });
 
-  const [entries, setEntries] = useState([])
+  useEffect(() => {
+    getDeliveryRecords();
+  }, [watcher]);
+
+  const getDeliveryRecords = async () => {
+    const response = await get(
+      `/AntenatalDelivery/antenatalDelivery/${treatmentId}`
+    );
+    console.log(response.data);
+    // setFormData({...formData, ...response?.data});
+
+    if (response.isSuccess) {
+    setFormData({...formData, ...response?.data});
+      setDeliveryData(response.data || null);
+    }
+  };
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked } = e.target;
 
-    if (name.startsWith('placentaDelivery.')) {
-      const key = name.split('.')[1]
+    if (name.startsWith("placentaDelivery.")) {
+      const key = name.split(".")[1];
       setFormData((prev) => ({
         ...prev,
         placentaDelivery: {
           ...prev.placentaDelivery,
-          [key]: type === 'checkbox' ? checked : value
-        }
-      }))
+          [key]: type === "checkbox" ? checked : value,
+        },
+      }));
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]: type === 'checkbox' ? checked : value
-      }))
+        [name]: type === "checkbox" ? checked : value,
+      }));
     }
-  }
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    setEntries([...entries, formData])
-    setFormData({
-      patientId: '',
-      antenatalId: '',
-      deliveryDate: '',
-      deliveryTime: '',
-      modeOfDelivery: '',
-      deliveryBabyCry: '',
-      apgarScore: '',
-      sex: '',
-      weight: '',
-      durationOfLabour: '',
+  const handleSubmit = async (e) => {
+    console.log("Form submitted:", formData);
+
+    let payload = {
+      ...formData,
+      antenatalId: +treatmentId,
+      patientId: +patientId,
+      appointmentId: +localStorage.getItem("appointmentId"),
+      doctorId: docInfo?.employeeId,
+      weight: +formData?.weight,
+      perineal: +formData?.perineal,
+      deliveryBabyCry: +formData?.deliveryBabyCry,
+      modeOfDelivery: +formData?.modeOfDelivery,
       placentaDelivery: {
-        deliveryTime: '',
-        deliveryMode: '',
-        complete: false
+        ...formData?.placentaDelivery,
+        deliveryMode: +formData?.placentaDelivery?.deliveryMode,
       },
-      anyPPH: false,
-      episiotomyGiven: false,
-      perineal: '',
-      appointmentId: '',
-      doctorId: '',
-      nurseId: ''
-    })
-  }
+      // formData?.placentaDelivery.deliveryMode
+    };
+
+    console.log(payload);
+    // return;
+
+    const response = await post(
+      `/AntenatalDelivery`,
+      { ...payload } // send formData directly
+    );
+
+    console.log(response);
+    if (response?.isSuccess) {
+      toast.success(response.data.message||'Successful');
+      getDeliveryRecords();
+    } else {
+      toast.error(response.data.message || "Somethingwent wrong");
+    }
+  };
 
   return (
-    <div className="container">
+    <div className="section-box">
       <h2>Delivery Record Form</h2>
 
-      <form onSubmit={handleSubmit}>
-        <div className="grid">
-          {[
-            'patientId',
-            'antenatalId',
-            'deliveryDate',
-            'deliveryTime',
-            'modeOfDelivery',
-            'deliveryBabyCry',
-            'apgarScore',
-            'sex',
-            'weight',
-            'durationOfLabour',
-            'perineal',
-            'appointmentId',
-            'doctorId',
-            'nurseId'
-          ].map((field) => (
-            <div key={field} className="form-group">
-              <label>{field}</label>
-              <input
-                type="text"
-                name={field}
-                value={formData[field]}
-                onChange={handleChange}
-              />
-            </div>
-          ))}
+      <div className="form-grid">
+        <div className="field-column">
+          <label>
+            Delivery Date
+            <input
+              type="datetime-local"
+              name="deliveryDate"
+              value={formData?.deliveryDate}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
 
-          <div className="form-group">
-            <label>Any PPH?</label>
+        {/* <div className="field-column">
+          <label>
+            Delivery Time
+            <input
+              type="time"
+              name="deliveryTime"
+              value={formData.deliveryTime}
+              // onChange={handleChange}
+            />
+          </label>
+        </div> */}
+
+        <div className="field-column">
+          <label>Mode of Delivery</label>
+          <select
+            name="modeOfDelivery"
+            className="input-field"
+            value={formData?.modeOfDelivery}
+            onChange={handleChange}
+            // onChange={(e) => handleChange(e, ["birthPlan", "modeOfDelivery"])}
+          >
+            <option value="">--Select--</option>
+            <option value={1}>Vaginal</option>
+            <option value={2}>Cesarean - elective</option>
+            <option value={3}>Assisted - emergency</option>
+            <option value={4}>Trial of labour</option>
+            <option value={5}>VBAC</option>
+          </select>
+        </div>
+
+        {/* <div className="field-column">
+          <label>
+            Mode of Delivery
+            <input
+              type="number"
+              name="modeOfDelivery"
+              value={formData?.modeOfDelivery}
+              onChange={handleChange}
+            />
+          </label>
+        </div> */}
+
+        <div className="field-column">
+          <label>Baby Cry</label>
+
+          <select
+            name="deliveryBabyCry"
+            onChange={handleChange}
+            className="input-field"
+            value={formData?.deliveryBabyCry}
+          >
+            <option value="">Select…</option>
+            <option value="1">Good</option>
+            <option value="2">Absent</option>
+            <option value="3">Weak</option>
+          </select>
+        </div>
+
+        {/* <div className="field-column">
+          <label>
+            <input
+              type="number"
+              name="deliveryBabyCry"
+              value={formData?.deliveryBabyCry}
+              onChange={handleChange}
+            />
+          </label>
+        </div> */}
+
+        <div className="field-column">
+          <label>
+            Apgar Score
+            <input
+              type="text"
+              name="apgarScore"
+              value={formData?.apgarScore}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+
+        <div className="field-column">
+          <label>
+            Sex
+            <select
+              name="sex"
+              className="input-field"
+              value={formData?.sex}
+              onChange={handleChange}
+              // onChange={(e) => handleChange(e, ["birthPlan", "modeOfDelivery"])}
+            >
+              <option value="">--Select--</option>
+              <option value={"Male"}>Male</option>
+              <option value={"Female"}>Female</option>
+            </select>
+            {/* <input
+              type="text"
+              name="sex"
+              value={formData?.sex}
+              onChange={handleChange}
+            /> */}
+          </label>
+        </div>
+
+        <div className="field-column">
+          <label>
+            Weight (kg)
+            <input
+              type="number"
+              name="weight"
+              value={formData?.weight}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+
+        {/* <div className="field-column">
+          <label>
+            Duration of Labour
+            <input
+              type="text"
+              name="durationOfLabour"
+              value={formData?.durationOfLabour}
+              // onChange={handleChange}
+            />
+          </label>
+        </div> */}
+
+        <div className="field-column">
+          <label>
+            Perineal
+            <input
+              type="number"
+              name="perineal"
+              value={formData?.perineal}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+
+        <div className="field-column">
+          <label>
+            Any PPH
             <input
               type="checkbox"
               name="anyPPH"
-              checked={formData.anyPPH}
+              checked={formData?.anyPPH}
               onChange={handleChange}
             />
-          </div>
+          </label>
+        </div>
 
-          <div className="form-group">
-            <label>Episiotomy Given?</label>
+        <div className="field-column">
+          <label>
             <input
               type="checkbox"
               name="episiotomyGiven"
-              checked={formData.episiotomyGiven}
+              checked={formData?.episiotomyGiven}
               onChange={handleChange}
             />
+            Episiotomy Given
+          </label>
+        </div>
+      </div>
+
+      <fieldset>
+        <legend>Placenta Delivery</legend>
+        <div className="form-grid">
+          {/* <div className="field-column">
+            <label>
+              Delivery Time
+              <input
+                type="time"
+                name="placentaDelivery.deliveryTime"
+                value={formData?.placentaDelivery.deliveryTime}
+                // onChange={handleChange}
+              />
+            </label>
+          </div> */}
+
+          <div className="field-column">
+            <label>
+              Delivery Mode
+              <select
+                name="placentaDelivery.deliveryMode"
+                className="input-field"
+                value={formData?.placentaDelivery?.deliveryMode}
+                onChange={handleChange}
+                // onChange={(e) => handleChange(e, ["birthPlan", "modeOfDelivery"])}
+              >
+                <option value="">--Select--</option>
+                <option value={1}>Vaginal</option>
+                <option value={2}>Cesarean - elective</option>
+                <option value={3}>Assisted - emergency</option>
+                <option value={4}>Trial of labour</option>
+                <option value={5}>VBAC</option>
+              </select>
+              {/* <input
+                type="number"
+                name="placentaDelivery.deliveryMode"
+                value={formData?.placentaDelivery.deliveryMode}
+                onChange={handleChange}
+              /> */}
+            </label>
           </div>
 
-          <h3>Placenta Delivery</h3>
-
-          <div className="form-group">
-            <label>Delivery Time</label>
-            <input
-              type="text"
-              name="placentaDelivery.deliveryTime"
-              value={formData.placentaDelivery.deliveryTime}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Delivery Mode</label>
-            <input
-              type="text"
-              name="placentaDelivery.deliveryMode"
-              value={formData.placentaDelivery.deliveryMode}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Complete?</label>
-            <input
-              type="checkbox"
-              name="placentaDelivery.complete"
-              checked={formData.placentaDelivery.complete}
-              onChange={handleChange}
-            />
+          <div className="field-column">
+            <label>
+              <input
+                type="checkbox"
+                name="placentaDelivery.complete"
+                checked={formData?.placentaDelivery?.complete}
+                onChange={handleChange}
+              />
+              Complete
+            </label>
           </div>
         </div>
+      </fieldset>
 
-        <button type="submit" className="submit-btn">Add Record</button>
-      </form>
+      {!deliveryData && <button onClick={handleSubmit}>Submit</button>}
 
-      <h3>Entries</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            {Object.keys(formData).map((key) => (
-              <th key={key}>{key}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {entries.map((entry, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              {Object.keys(formData).map((key) => (
-                <td key={key}>
-                  {typeof entry[key] === 'object'
-                    ? JSON.stringify(entry[key])
-                    : String(entry[key])}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {deliveryData && (
+        <div>
+          <DeliveryFormDrugsTable
+            deliveryData={deliveryData}
+            setwatcher={setwatcher}
+            // tableData ={deliveryData?.drugsGiven||[]}
+          />
+          <DeliveryFormBabyVital
+            deliveryData={deliveryData}
+            setwatcher={setwatcher}
+            // tableData ={deliveryData?.drugsGiven||[]}
+          />
+          <DeliveryFormMotherVital
+            deliveryData={deliveryData}
+            setwatcher={setwatcher}
+            // tableData ={deliveryData?.drugsGiven||[]}
+          />
+        </div>
+      )}
     </div>
-  )
-}
+  );
+};
+
+export default DeliveryForm;

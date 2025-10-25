@@ -53,7 +53,7 @@ const Orthopedic = () => {
   const [labRequests, setLabRequests] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
 
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
 
   const getRecord = async () => {
     try {
@@ -83,119 +83,139 @@ const Orthopedic = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Helper functions for default values
+    const str = (v) => v ?? "";
+    const num = (v) => (v !== undefined && v !== "" ? Number(v) : 0);
+    const bool = (v) => (v === "true" ? true : v === "false" ? false : false);
+
     const payload = {
-      patientId: Number(patientId),
+      patientId: num(patientId),
 
       symptomAnalysis: {
-        affectedBodyPart: formData["symptomAnalysis.affectedBodyPart"],
-        painStartedWhen: formData["symptomAnalysis.painStartedWhen"],
+        affectedBodyPart: str(formData["symptomAnalysis.affectedBodyPart"]),
+        painStartedWhen: str(formData["symptomAnalysis.painStartedWhen"]),
         inJuryEventCaused: {
-          anyInJuryEventCaused:
-            formData[
-              "symptomAnalysis.inJuryEventCaused.anyInJuryEventCaused"
-            ] === "true",
-          details: formData["symptomAnalysis.inJuryEventCaused.details"],
+          anyInJuryEventCaused: bool(
+            formData["symptomAnalysis.inJuryEventCaused.anyInJuryEventCaused"]
+          ),
+          details: str(formData["symptomAnalysis.inJuryEventCaused.details"]),
         },
-        describePain: formData["symptomAnalysis.describePain"],
-        painSeverityLevel: Number(
-          formData["symptomAnalysis.painSeverityLevel"]
-        ),
+        describePain: str(formData["symptomAnalysis.describePain"]),
+        painSeverityLevel: num(formData["symptomAnalysis.painSeverityLevel"]),
       },
 
       painBehavior: {
-        painType: Number(formData["painBehavior.painType"]),
-        painReliever: formData["painBehavior.painReliever"],
-        painAggravator: formData["painBehavior.painAggravator"],
+        painType: num(formData["painBehavior.painType"]),
+        painReliever: str(formData["painBehavior.painReliever"]),
+        painAggravator: str(formData["painBehavior.painAggravator"]),
         associatedSymptom: {
-          stiffnessWeaknessSwelling:
-            formData[
-              "painBehavior.associatedSymptom.stiffnessWeaknessSwelling"
-            ] === "true",
-          details: formData["painBehavior.associatedSymptom.details"],
+          stiffnessWeaknessSwelling: bool(
+            formData["painBehavior.associatedSymptom.stiffnessWeaknessSwelling"]
+          ),
+          details: str(formData["painBehavior.associatedSymptom.details"]),
         },
         dailyActivityTrouble: {
-          anyDailyTrouble:
-            formData["painBehavior.dailyActivityTrouble.anyDailyTrouble"] ===
-            "true",
-          details: formData["painBehavior.dailyActivityTrouble.details"],
+          anyDailyTrouble: bool(
+            formData["painBehavior.dailyActivityTrouble.anyDailyTrouble"]
+          ),
+          details: str(formData["painBehavior.dailyActivityTrouble.details"]),
         },
       },
 
       rangeOfMotion: {
         affectedJoint: {
-          fullyMoveJoint:
-            formData["rangeOfMotion.affectedJoint.fullyMoveJoint"] === "true",
-          describeLimitation:
-            formData["rangeOfMotion.affectedJoint.describeLimitation"],
+          fullyMoveJoint: bool(
+            formData["rangeOfMotion.affectedJoint.fullyMoveJoint"]
+          ),
+          describeLimitation: str(
+            formData["rangeOfMotion.affectedJoint.describeLimitation"]
+          ),
         },
-        anySound: formData["rangeOfMotion.anySound"] === "true",
+        anySound: bool(formData["rangeOfMotion.anySound"]),
         affectedLimb: {
-          ableToPutWeight:
-            formData["rangeOfMotion.affectedLimb.ableToPutWeight"] === "true",
-          describeDifficult:
-            formData["rangeOfMotion.affectedLimb.describeDifficult"],
+          ableToPutWeight: bool(
+            formData["rangeOfMotion.affectedLimb.ableToPutWeight"]
+          ),
+          describeDifficult: str(
+            formData["rangeOfMotion.affectedLimb.describeDifficult"]
+          ),
         },
         maintainingBalance: {
-          anyDifficulty:
-            formData["rangeOfMotion.maintainingBalance.anyDifficulty"] ===
-            "true",
-          specifyWhen: formData["rangeOfMotion.maintainingBalance.specifyWhen"],
+          anyDifficulty: bool(
+            formData["rangeOfMotion.maintainingBalance.anyDifficulty"]
+          ),
+          specifyWhen: str(
+            formData["rangeOfMotion.maintainingBalance.specifyWhen"]
+          ),
         },
       },
 
       circulatorySymptoms: {
         affectedArea: {
-          anyNumbnessTinglingWeakness:
+          anyNumbnessTinglingWeakness: bool(
             formData[
               "circulatorySymptoms.affectedArea.anyNumbnessTinglingWeakness"
-            ] === "true",
-          describe: formData["circulatorySymptoms.affectedArea.describe"],
+            ]
+          ),
+          describe: str(formData["circulatorySymptoms.affectedArea.describe"]),
         },
         affectedAreaSeverity: {
-          anySwellingBruisingRedness:
+          anySwellingBruisingRedness: bool(
             formData[
               "circulatorySymptoms.affectedAreaSeverity.anySwellingBruisingRedness"
-            ] === "true",
-          describe:
-            formData["circulatorySymptoms.affectedAreaSeverity.describe"],
+            ]
+          ),
+          describe: str(
+            formData["circulatorySymptoms.affectedAreaSeverity.describe"]
+          ),
         },
         affectedAreaColor: {
-          anyColdPaleDiscolored:
+          anyColdPaleDiscolored: bool(
             formData[
               "circulatorySymptoms.affectedAreaColor.anyColdPaleDiscolored"
-            ] === "true",
-          specify: formData["circulatorySymptoms.affectedAreaColor.specify"],
+            ]
+          ),
+          specify: str(
+            formData["circulatorySymptoms.affectedAreaColor.specify"]
+          ),
         },
       },
 
       lifeStyleRisk: {
         injurySurgery: {
-          anyPrevious:
-            formData["lifeStyleRisk.injurySurgery.anyPrevious"] === "true",
-          describe: formData["lifeStyleRisk.injurySurgery.describe"],
+          anyPrevious: bool(
+            formData["lifeStyleRisk.injurySurgery.anyPrevious"]
+          ),
+          describe: str(formData["lifeStyleRisk.injurySurgery.describe"]),
         },
-        anyArthritisOsteoporosisJointIssue:
-          formData["lifeStyleRisk.anyArthritisOsteoporosisJointIssue"] ===
-          "true",
+        anyArthritisOsteoporosisJointIssue: bool(
+          formData["lifeStyleRisk.anyArthritisOsteoporosisJointIssue"]
+        ),
         demandingActivities: {
-          anySportsPhysicallyActivities:
+          anySportsPhysicallyActivities: bool(
             formData[
               "lifeStyleRisk.demandingActivities.anySportsPhysicallyActivities"
-            ] === "true",
-          specify: formData["lifeStyleRisk.demandingActivities.specify"],
+            ]
+          ),
+          specify: str(formData["lifeStyleRisk.demandingActivities.specify"]),
         },
         workEnvironment: {
-          anyLiftingRepetitiveMotion:
-            formData[
-              "lifeStyleRisk.workEnvironment.anyLiftingRepetitiveMotion"
-            ] === "true",
-          describe: formData["lifeStyleRisk.workEnvironment.describe"],
+          anyLiftingRepetitiveMotion: bool(
+            formData["lifeStyleRisk.workEnvironment.anyLiftingRepetitiveMotion"]
+          ),
+          describe: str(formData["lifeStyleRisk.workEnvironment.describe"]),
         },
       },
 
-      treatmentSchedule: formData.treatmentSchedule,
-      appointmentId: +localStorage.getItem("appointmentId"),
-      doctorId: docInfo.employeeId,
+      treatmentSchedule: str(formData.treatmentSchedule),
+      appointmentId: num(localStorage.getItem("appointmentId")),
+      doctorId: num(docInfo.employeeId),
+
+      history: str(formData.history),
+      patientComplaint: str(formData.patientComplaint),
+      physicalExamination: str(formData.physicalExamination),
+      diagnosis: str(formData.diagnosis),
+      investigation: str(formData.investigation),
     };
 
     console.log("Payload:", payload);
@@ -206,7 +226,10 @@ const Orthopedic = () => {
     try {
       const response = await post("/Orthopedic", payload);
       if (response.isSuccess) {
-        navigate(`/doctor/patients/patient-details/${patientId}`);
+        navigate(
+          `/doctor/patients/orthopedic-consultation/${patientId}/?id=${response?.data?.orthopedicId}`
+        );
+        // navigate(`/doctor/patients/patient-details/${patientId}`);
       }
       console.log("API Response:", response);
     } catch (error) {
@@ -320,6 +343,11 @@ const Orthopedic = () => {
 
       // Treatment
       treatmentSchedule: data.treatmentSchedule || "",
+      history: data.history,
+      patientComplaint: data.patientComplaint,
+      physicalExamination: data.physicalExamination,
+      diagnosis: data.diagnosis,
+      investigation: data.investigation,
     };
   };
 
@@ -373,8 +401,8 @@ const Orthopedic = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    console.log(name);
-    console.log(value);
+    // console.log(name);
+    // console.log(value);
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
@@ -385,10 +413,10 @@ const Orthopedic = () => {
     // setIsLoading(true);
     try {
       const response = await get(
-        `/patients/list/orthopedic/${treatmentId}/is-family-medicine/false/1/10/orthopedic-patients-lab-requests`
+        `/patients/list/orthopedic/${treatmentId}/1/10/lab-request`
       );
-      setDataFromLab(response.resultList);
-      console.log(response.resultList);
+      setDataFromLab(response?.data?.resultList);
+      console.log(response?.data?.resultList);
       // response.data && setRepeatedDiagnosis(response.data[0]?.diagnosis);
     } catch (e) {
       console.log(e);
@@ -507,12 +535,17 @@ const Orthopedic = () => {
       console.log(error);
     }
   };
+
   return (
     <div style={{ paddingTop: "60px" }} className="w-100">
       <div class="flex-between align-center">
-        <div class="flex" style={{ padding: "20px" }}>
+        <div
+          onClick={() => navigate(-1)}
+          class="flex"
+          style={{ padding: "20px", cursor: "pointer" }}
+        >
           <FiArrowLeft />
-          <p onClick={() => navigate(-1)}> Back</p>
+          <p> Back</p>
         </div>
 
         {treatmentId && (
@@ -526,1065 +559,1155 @@ const Orthopedic = () => {
           </div>
         )}
       </div>
-      <div class="flex-row-gap-start">
-        <div>
-          <section className="">
-            <h2 style={{ textAlign: "center" }} className="w-100">
-              Orthopedic
-            </h2>
-            <div className="section-box m-t-20">
-              {/* 1. Symptom Analysis */}
-              <div className="input-row">
-                <div className="field-row">
-                  <label>Which body part is affected</label>
-                  <input
-                    type="text"
-                    name="symptomAnalysis.affectedBodyPart"
-                    onChange={handleChange}
-                    className="input-field"
-                    value={formData["symptomAnalysis.affectedBodyPart"] || ""}
+      <h2 style={{ textAlign: "center" }} className="w-100">
+        Orthopedic
+      </h2>
+      <Accordion title="Examination">
+        <div className="field-column new">
+          <label>Patient Complaint</label>
+          <textarea
+            name="patientComplaint"
+            placeholder="Patient"
+            onChange={handleChange}
+            value={formData.patientComplaint}
+            rows={3}
+          />
+        </div>
+        <div className="field-column new">
+          <label>History</label>
+          <textarea
+            name="history"
+            placeholder="Patient"
+            onChange={handleChange}
+            value={formData.history}
+            rows={3}
+          />
+        </div>
+        <div className="field-column new">
+          <label>Physical Examination</label>
+          <textarea
+            name="physicalExamination"
+            placeholder="Patient"
+            onChange={handleChange}
+            value={formData.physicalExamination}
+            rows={3}
+          />
+        </div>
+        <div className="field-column new">
+          <label>Diagnosis</label>
+          <textarea
+            name="diagnosis"
+            placeholder="Patient"
+            onChange={handleChange}
+            value={formData.diagnosis}
+            rows={3}
+          />
+        </div>
+      </Accordion>
+      <Accordion title="Questionaire">
+        <div class="flex-row-gap-start w-100">
+          <div className="w-100">
+            <section className="">
+              <div className="section-box m-t-20">
+                {/* 1. Symptom Analysis */}
+                {/* <div className="field-column new">
+                  <label>Patient Complaint</label>
+                  <textarea
+                    placeholder="Patient"
+                    value={formData.patientComplaint}
+                    rows={3}
                   />
-                </div>
-                <div className="field-row">
-                  <label>When did pain start</label>
-                  <input
-                    type="text"
-                    name="symptomAnalysis.painStartedWhen"
-                    onChange={handleChange}
-                    className="input-field"
-                    value={formData["symptomAnalysis.painStartedWhen"] || ""}
-                  />
-                </div>
-                <div className="radio-row">
-                  <span>Was there specific injury?</span>
-                  <label>
+                </div> */}
+                <div className="input-row">
+                  <div className="field-row">
+                    <label>Which body part is affected</label>
                     <input
-                      type="radio"
-                      name="symptomAnalysis.inJuryEventCaused.anyInJuryEventCaused"
-                      value="true"
+                      type="text"
+                      name="symptomAnalysis.affectedBodyPart"
                       onChange={handleChange}
-                      checked={
-                        formData[
-                          "symptomAnalysis.inJuryEventCaused.anyInJuryEventCaused"
-                        ] === "true"
-                      }
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
+                      className="input-field"
+                      value={formData["symptomAnalysis.affectedBodyPart"] || ""}
+                    />
+                  </div>
+                  <div className="field-row">
+                    <label>When did pain start</label>
                     <input
-                      type="radio"
-                      name="symptomAnalysis.inJuryEventCaused.anyInJuryEventCaused"
-                      value="false"
+                      type="text"
+                      name="symptomAnalysis.painStartedWhen"
                       onChange={handleChange}
-                      checked={
-                        formData[
-                          "symptomAnalysis.inJuryEventCaused.anyInJuryEventCaused"
-                        ] === "false"
+                      className="input-field"
+                      value={formData["symptomAnalysis.painStartedWhen"] || ""}
+                    />
+                  </div>
+                  <div className="radio-row">
+                    <span>Was there specific injury?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="symptomAnalysis.inJuryEventCaused.anyInJuryEventCaused"
+                        value="true"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "symptomAnalysis.inJuryEventCaused.anyInJuryEventCaused"
+                          ] === "true"
+                        }
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="symptomAnalysis.inJuryEventCaused.anyInJuryEventCaused"
+                        value="false"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "symptomAnalysis.inJuryEventCaused.anyInJuryEventCaused"
+                          ] === "false"
+                        }
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="field-column">
+                    <label>Provide injury details</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="symptomAnalysis.inJuryEventCaused.details"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={
+                          formData[
+                            "symptomAnalysis.inJuryEventCaused.details"
+                          ] || ""
+                        }
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="symptomAnalysis.inJuryEventCaused.details"
+                        value={
+                          formData[
+                            "symptomAnalysis.inJuryEventCaused.details"
+                          ] || ""
+                        }
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                        name="symptomAnalysis.inJuryEventCaused.details"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={
+                          formData["symptomAnalysis.inJuryEventCaused.details"] ||
+                          ""
+                        }
+                      /> */}
+                  </div>
+                  <div className="field-column">
+                    <label>Describe pain</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="symptomAnalysis.describePain"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={formData["symptomAnalysis.describePain"] || ""}
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="symptomAnalysis.describePain"
+                        value={formData["symptomAnalysis.describePain"] || ""}
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/**/}
+                  </div>
+                  <div className="field-row">
+                    <label>Pain severity level</label>
+                    <input
+                      type="number"
+                      name="symptomAnalysis.painSeverityLevel"
+                      onChange={handleChange}
+                      className="input-field"
+                      value={
+                        formData["symptomAnalysis.painSeverityLevel"] || ""
                       }
-                    />{" "}
-                    No
-                  </label>
+                    />
+                  </div>
                 </div>
-                <div className="field-column">
-                  <label>Provide injury details</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="symptomAnalysis.inJuryEventCaused.details"
+                {/* 2. Pain Behavior */}
+                <div className="section-box m-t-10">
+                  <p>Functional Impact and Pain Behaviors</p>
+                  <div className="field-row">
+                    <label>Is pain constant?</label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="painBehavior.painType"
+                        value="1"
+                        onChange={handleChange}
+                        checked={formData["painBehavior.painType"] === "1"}
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="painBehavior.painType"
+                        value="2"
+                        onChange={handleChange}
+                        checked={formData["painBehavior.painType"] === "2"}
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="field-column">
+                    <label>What makes pain better</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="painBehavior.painReliever"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={formData["painBehavior.painReliever"] || ""}
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="painBehavior.painReliever"
+                        value={formData["painBehavior.painReliever"] || ""}
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      name="painBehavior.painReliever"
+                      onChange={handleChange}
+                      className="input-field"
+                      rows={6}
+                      value={formData["painBehavior.painReliever"] || ""}
+                    /> */}
+                  </div>
+                  <div className="field-column">
+                    <label>What makes pain worse</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="painBehavior.painAggravator"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={formData["painBehavior.painAggravator"] || ""}
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="painBehavior.painAggravator"
+                        value={formData["painBehavior.painAggravator"] || ""}
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      name="painBehavior.painAggravator"
+                      onChange={handleChange}
+                      className="input-field"
+                      rows={6}
+                      value={formData["painBehavior.painAggravator"] || ""}
+                    /> */}
+                  </div>
+                  <div className="radio-row">
+                    <span>Associated stiffness/weakness/swelling?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="painBehavior.associatedSymptom.stiffnessWeaknessSwelling"
+                        value="true"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "painBehavior.associatedSymptom.stiffnessWeaknessSwelling"
+                          ] === "true"
+                        }
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="painBehavior.associatedSymptom.stiffnessWeaknessSwelling"
+                        value="false"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "painBehavior.associatedSymptom.stiffnessWeaknessSwelling"
+                          ] === "false"
+                        }
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="field-column">
+                    <label>Provide associated symptom details</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="painBehavior.associatedSymptom.details"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={
+                          formData["painBehavior.associatedSymptom.details"] ||
+                          ""
+                        }
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="painBehavior.associatedSymptom.details"
+                        value={
+                          formData["painBehavior.associatedSymptom.details"] ||
+                          ""
+                        }
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      name="painBehavior.associatedSymptom.details"
                       onChange={handleChange}
                       className="input-field"
                       rows={6}
                       value={
-                        formData["symptomAnalysis.inJuryEventCaused.details"] ||
-                        ""
+                        formData["painBehavior.associatedSymptom.details"] || ""
                       }
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="symptomAnalysis.inJuryEventCaused.details"
-                      value={
-                        formData["symptomAnalysis.inJuryEventCaused.details"] ||
-                        ""
-                      }
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* <textarea
-                      name="symptomAnalysis.inJuryEventCaused.details"
+                    /> */}
+                  </div>
+                  <div className="radio-row">
+                    <span>Trouble with daily activities?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="painBehavior.dailyActivityTrouble.anyDailyTrouble"
+                        value="true"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "painBehavior.dailyActivityTrouble.anyDailyTrouble"
+                          ] === "true"
+                        }
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="painBehavior.dailyActivityTrouble.anyDailyTrouble"
+                        value="false"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "painBehavior.dailyActivityTrouble.anyDailyTrouble"
+                          ] === "false"
+                        }
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="field-column">
+                    <label>Provide daily trouble details</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="painBehavior.dailyActivityTrouble.details"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={
+                          formData[
+                            "painBehavior.dailyActivityTrouble.details"
+                          ] || ""
+                        }
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="painBehavior.dailyActivityTrouble.details"
+                        value={
+                          formData[
+                            "painBehavior.dailyActivityTrouble.details"
+                          ] || ""
+                        }
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      name="painBehavior.dailyActivityTrouble.details"
                       onChange={handleChange}
                       className="input-field"
                       rows={6}
                       value={
-                        formData["symptomAnalysis.inJuryEventCaused.details"] ||
+                        formData["painBehavior.dailyActivityTrouble.details"] || ""
+                      }
+                    /> */}
+                  </div>
+                </div>
+                {/* 3. Range of Motion */}
+                <div className="section-box m-t-10">
+                  <p>Mobility & Range of Motion</p>
+                  <div className="radio-row">
+                    <span>Can you fully move the joint?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="rangeOfMotion.affectedJoint.fullyMoveJoint"
+                        value="true"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "rangeOfMotion.affectedJoint.fullyMoveJoint"
+                          ] === "true"
+                        }
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="rangeOfMotion.affectedJoint.fullyMoveJoint"
+                        value="false"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "rangeOfMotion.affectedJoint.fullyMoveJoint"
+                          ] === "false"
+                        }
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="field-column">
+                    <label>Describe limitation</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="rangeOfMotion.affectedJoint.describeLimitation"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={
+                          formData[
+                            "rangeOfMotion.affectedJoint.describeLimitation"
+                          ] || ""
+                        }
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="rangeOfMotion.affectedJoint.describeLimitation"
+                        value={
+                          formData[
+                            "rangeOfMotion.affectedJoint.describeLimitation"
+                          ] || ""
+                        }
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      name="rangeOfMotion.affectedJoint.describeLimitation"
+                      onChange={handleChange}
+                      className="input-field"
+                      rows={6}
+                      value={
+                        formData[
+                          "rangeOfMotion.affectedJoint.describeLimitation"
+                        ] || ""
+                      }
+                    /> */}
+                  </div>
+                  <div className="radio-row">
+                    <span>Clicking/popping sounds?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="rangeOfMotion.anySound"
+                        value="true"
+                        onChange={handleChange}
+                        checked={formData["rangeOfMotion.anySound"] === "true"}
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="rangeOfMotion.anySound"
+                        value="false"
+                        onChange={handleChange}
+                        checked={formData["rangeOfMotion.anySound"] === "false"}
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="radio-row">
+                    <span>Can you put weight on limb?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="rangeOfMotion.affectedLimb.ableToPutWeight"
+                        value="true"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "rangeOfMotion.affectedLimb.ableToPutWeight"
+                          ] === "true"
+                        }
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="rangeOfMotion.affectedLimb.ableToPutWeight"
+                        value="false"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "rangeOfMotion.affectedLimb.ableToPutWeight"
+                          ] === "false"
+                        }
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="field-column">
+                    <label>Describe difficulty</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="rangeOfMotion.affectedLimb.describeDifficult"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={
+                          formData[
+                            "rangeOfMotion.affectedLimb.describeDifficult"
+                          ] || ""
+                        }
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="rangeOfMotion.affectedLimb.describeDifficult"
+                        value={
+                          formData[
+                            "rangeOfMotion.affectedLimb.describeDifficult"
+                          ] || ""
+                        }
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      name="rangeOfMotion.affectedLimb.describeDifficult"
+                      onChange={handleChange}
+                      className="input-field"
+                      rows={6}
+                      value={
+                        formData["rangeOfMotion.affectedLimb.describeDifficult"] ||
                         ""
                       }
                     /> */}
-                </div>
-                <div className="field-column">
-                  <label>Describe pain</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="symptomAnalysis.describePain"
+                  </div>
+                  <div className="radio-row">
+                    <span>Difficulty maintaining balance?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="rangeOfMotion.maintainingBalance.anyDifficulty"
+                        value="true"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "rangeOfMotion.maintainingBalance.anyDifficulty"
+                          ] === "true"
+                        }
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="rangeOfMotion.maintainingBalance.anyDifficulty"
+                        value="false"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "rangeOfMotion.maintainingBalance.anyDifficulty"
+                          ] === "false"
+                        }
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="field-column">
+                    <label>Specify when</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="rangeOfMotion.maintainingBalance.specifyWhen"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={
+                          formData[
+                            "rangeOfMotion.maintainingBalance.specifyWhen"
+                          ] || ""
+                        }
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="rangeOfMotion.maintainingBalance.specifyWhen"
+                        value={
+                          formData[
+                            "rangeOfMotion.maintainingBalance.specifyWhen"
+                          ] || ""
+                        }
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      name="rangeOfMotion.maintainingBalance.specifyWhen"
                       onChange={handleChange}
                       className="input-field"
                       rows={6}
-                      value={formData["symptomAnalysis.describePain"] || ""}
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="symptomAnalysis.describePain"
-                      value={formData["symptomAnalysis.describePain"] || ""}
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/**/}
+                      value={
+                        formData["rangeOfMotion.maintainingBalance.specifyWhen"] ||
+                        ""
+                      }
+                    /> */}
+                  </div>
                 </div>
-                <div className="field-row">
-                  <label>Pain severity level</label>
-                  <input
-                    type="number"
-                    name="symptomAnalysis.painSeverityLevel"
-                    onChange={handleChange}
-                    className="input-field"
-                    value={formData["symptomAnalysis.painSeverityLevel"] || ""}
+                {/* 4. Circulatory Symptoms */}
+                <div className="section-box m-t-10">
+                  <p>Neurological & Circulatory Symptoms</p>
+                  <div className="radio-row">
+                    <span>Numbness/tingling/weakness?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="circulatorySymptoms.affectedArea.anyNumbnessTinglingWeakness"
+                        value="true"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "circulatorySymptoms.affectedArea.anyNumbnessTinglingWeakness"
+                          ] === "true"
+                        }
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="circulatorySymptoms.affectedArea.anyNumbnessTinglingWeakness"
+                        value="false"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "circulatorySymptoms.affectedArea.anyNumbnessTinglingWeakness"
+                          ] === "false"
+                        }
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="field-column">
+                    <label>Describe where & how often</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="circulatorySymptoms.affectedArea.describe"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={
+                          formData[
+                            "circulatorySymptoms.affectedArea.describe"
+                          ] || ""
+                        }
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="circulatorySymptoms.affectedArea.describe"
+                        value={
+                          formData[
+                            "circulatorySymptoms.affectedArea.describe"
+                          ] || ""
+                        }
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      name="circulatorySymptoms.affectedArea.describe"
+                      onChange={handleChange}
+                      className="input-field"
+                      rows={6}
+                      value={
+                        formData["circulatorySymptoms.affectedArea.describe"] || ""
+                      }
+                    /> */}
+                  </div>
+                  <div className="radio-row">
+                    <span>Swelling/bruising/redness?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="circulatorySymptoms.affectedAreaSeverity.anySwellingBruisingRedness"
+                        value="true"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "circulatorySymptoms.affectedAreaSeverity.anySwellingBruisingRedness"
+                          ] === "true"
+                        }
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="circulatorySymptoms.affectedAreaSeverity.anySwellingBruisingRedness"
+                        value="false"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "circulatorySymptoms.affectedAreaSeverity.anySwellingBruisingRedness"
+                          ] === "false"
+                        }
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="field-column">
+                    <label>Describe severity</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="circulatorySymptoms.affectedAreaSeverity.describe"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={
+                          formData[
+                            "circulatorySymptoms.affectedAreaSeverity.describe"
+                          ] || ""
+                        }
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="circulatorySymptoms.affectedAreaSeverity.describe"
+                        value={
+                          formData[
+                            "circulatorySymptoms.affectedAreaSeverity.describe"
+                          ] || ""
+                        }
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      name="circulatorySymptoms.affectedAreaSeverity.describe"
+                      onChange={handleChange}
+                      className="input-field"
+                      rows={6}
+                      value={
+                        formData[
+                          "circulatorySymptoms.affectedAreaSeverity.describe"
+                        ] || ""
+                      }
+                    /> */}
+                  </div>
+                  <div className="radio-row">
+                    <span>Cold/pale/discolored?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="circulatorySymptoms.affectedAreaColor.anyColdPaleDiscolored"
+                        value="true"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "circulatorySymptoms.affectedAreaColor.anyColdPaleDiscolored"
+                          ] === "true"
+                        }
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="circulatorySymptoms.affectedAreaColor.anyColdPaleDiscolored"
+                        value="false"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "circulatorySymptoms.affectedAreaColor.anyColdPaleDiscolored"
+                          ] === "false"
+                        }
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="field-column">
+                    <label>Specify color/sensation changes</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="circulatorySymptoms.affectedAreaColor.specify"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={
+                          formData[
+                            "circulatorySymptoms.affectedAreaColor.specify"
+                          ] || ""
+                        }
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="circulatorySymptoms.affectedAreaColor.specify"
+                        value={
+                          formData[
+                            "circulatorySymptoms.affectedAreaColor.specify"
+                          ] || ""
+                        }
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      name="circulatorySymptoms.affectedAreaColor.specify"
+                      onChange={handleChange}
+                      className="input-field"
+                      rows={6}
+                      value={
+                        formData["circulatorySymptoms.affectedAreaColor.specify"] ||
+                        ""
+                      }
+                    /> */}
+                  </div>
+                </div>
+                {/* 5. Lifestyle Risk */}
+                <div className="section-box m-t-10">
+                  <p>Medical History & Lifestyle Risks</p>
+                  <div className="radio-row">
+                    <span>Previous injuries/surgeries?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="lifeStyleRisk.injurySurgery.anyPrevious"
+                        value="true"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "lifeStyleRisk.injurySurgery.anyPrevious"
+                          ] === "true"
+                        }
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="lifeStyleRisk.injurySurgery.anyPrevious"
+                        value="false"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "lifeStyleRisk.injurySurgery.anyPrevious"
+                          ] === "false"
+                        }
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="field-column">
+                    <label>Describe injury/surgery</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="lifeStyleRisk.injurySurgery.describe"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={
+                          formData["lifeStyleRisk.injurySurgery.describe"] || ""
+                        }
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="lifeStyleRisk.injurySurgery.describe"
+                        value={
+                          formData["lifeStyleRisk.injurySurgery.describe"] || ""
+                        }
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/*  */}
+                  </div>
+                  <div className="radio-row">
+                    <span>Arthritis/osteoporosis/joint issue?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="lifeStyleRisk.anyArthritisOsteoporosisJointIssue"
+                        value="true"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "lifeStyleRisk.anyArthritisOsteoporosisJointIssue"
+                          ] === "true"
+                        }
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="lifeStyleRisk.anyArthritisOsteoporosisJointIssue"
+                        value="false"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "lifeStyleRisk.anyArthritisOsteoporosisJointIssue"
+                          ] === "false"
+                        }
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="radio-row">
+                    <span>Sports/physically demanding?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="lifeStyleRisk.demandingActivities.anySportsPhysicallyActivities"
+                        value="true"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "lifeStyleRisk.demandingActivities.anySportsPhysicallyActivities"
+                          ] === "true"
+                        }
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="lifeStyleRisk.demandingActivities.anySportsPhysicallyActivities"
+                        value="false"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "lifeStyleRisk.demandingActivities.anySportsPhysicallyActivities"
+                          ] === "false"
+                        }
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="field-column">
+                    <label>Specify activities</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="lifeStyleRisk.demandingActivities.specify"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={
+                          formData[
+                            "lifeStyleRisk.demandingActivities.specify"
+                          ] || ""
+                        }
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="lifeStyleRisk.demandingActivities.specify"
+                        value={
+                          formData[
+                            "lifeStyleRisk.demandingActivities.specify"
+                          ] || ""
+                        }
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* */}
+                  </div>
+                  <div className="radio-row">
+                    <span>Heavy lifting/repetitive motion at work?</span>
+                    <label>
+                      <input
+                        type="radio"
+                        name="lifeStyleRisk.workEnvironment.anyLiftingRepetitiveMotion"
+                        value="true"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "lifeStyleRisk.workEnvironment.anyLiftingRepetitiveMotion"
+                          ] === "true"
+                        }
+                      />{" "}
+                      Yes
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="lifeStyleRisk.workEnvironment.anyLiftingRepetitiveMotion"
+                        value="false"
+                        onChange={handleChange}
+                        checked={
+                          formData[
+                            "lifeStyleRisk.workEnvironment.anyLiftingRepetitiveMotion"
+                          ] === "false"
+                        }
+                      />{" "}
+                      No
+                    </label>
+                  </div>
+                  <div className="field-column">
+                    <label>Describe work environment</label>
+                    {treatmentId ? (
+                      <textarea
+                        name="lifeStyleRisk.workEnvironment.describe"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={
+                          formData["lifeStyleRisk.workEnvironment.describe"] ||
+                          ""
+                        }
+                      />
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="lifeStyleRisk.workEnvironment.describe"
+                        value={
+                          formData["lifeStyleRisk.workEnvironment.describe"] ||
+                          ""
+                        }
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* */}
+                  </div>
+                </div>
+                {treatmentId && dataFromLab && (
+                  <div className="field-column">
+                    <label>Patient's Lab Results</label>
+                    <LabRequestTable
+                      data={dataFromLab}
+                      isFamily={"Orthopedic"}
+                      treatmentId={treatmentId}
+                    />
+                  </div>
+                )}
+                {treatmentId && (
+                  <MedicationTable
+                    data={{
+                      treatmentType: "Orthopedic",
+                      treatmentId: treatmentId,
+                    }}
                   />
-                </div>
-              </div>
-              {/* 2. Pain Behavior */}
-              <div className="section-box m-t-10">
-                <p>Functional Impact and Pain Behaviors</p>
-                <div className="field-row">
-                  <label>Is pain constant?</label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="painBehavior.painType"
-                      value="1"
-                      onChange={handleChange}
-                      checked={formData["painBehavior.painType"] === "1"}
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="painBehavior.painType"
-                      value="2"
-                      onChange={handleChange}
-                      checked={formData["painBehavior.painType"] === "2"}
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>What makes pain better</label>
+                )}
+                {/* 6. Treatment Schedule & Submit */}
+                <div className="field-column m-t-20">
+                  <label>Treatment Schedule</label>
                   {treatmentId ? (
                     <textarea
-                      name="painBehavior.painReliever"
+                      name="treatmentSchedule"
                       onChange={handleChange}
                       className="input-field"
                       rows={6}
-                      value={formData["painBehavior.painReliever"] || ""}
+                      value={formData["treatmentSchedule"] || ""}
                     />
                   ) : (
                     <GhostTextCompletion
                       // label="Patient Diagnosis"
-                      name="painBehavior.painReliever"
-                      value={formData["painBehavior.painReliever"] || ""}
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* <textarea
-                    name="painBehavior.painReliever"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={formData["painBehavior.painReliever"] || ""}
-                  /> */}
-                </div>
-                <div className="field-column">
-                  <label>What makes pain worse</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="painBehavior.painAggravator"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={formData["painBehavior.painAggravator"] || ""}
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="painBehavior.painAggravator"
-                      value={formData["painBehavior.painAggravator"] || ""}
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* <textarea
-                    name="painBehavior.painAggravator"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={formData["painBehavior.painAggravator"] || ""}
-                  /> */}
-                </div>
-                <div className="radio-row">
-                  <span>Associated stiffness/weakness/swelling?</span>
-                  <label>
-                    <input
-                      type="radio"
-                      name="painBehavior.associatedSymptom.stiffnessWeaknessSwelling"
-                      value="true"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "painBehavior.associatedSymptom.stiffnessWeaknessSwelling"
-                        ] === "true"
-                      }
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="painBehavior.associatedSymptom.stiffnessWeaknessSwelling"
-                      value="false"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "painBehavior.associatedSymptom.stiffnessWeaknessSwelling"
-                        ] === "false"
-                      }
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Provide associated symptom details</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="painBehavior.associatedSymptom.details"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={
-                        formData["painBehavior.associatedSymptom.details"] || ""
-                      }
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="painBehavior.associatedSymptom.details"
-                      value={
-                        formData["painBehavior.associatedSymptom.details"] || ""
-                      }
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* <textarea
-                    name="painBehavior.associatedSymptom.details"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={
-                      formData["painBehavior.associatedSymptom.details"] || ""
-                    }
-                  /> */}
-                </div>
-                <div className="radio-row">
-                  <span>Trouble with daily activities?</span>
-                  <label>
-                    <input
-                      type="radio"
-                      name="painBehavior.dailyActivityTrouble.anyDailyTrouble"
-                      value="true"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "painBehavior.dailyActivityTrouble.anyDailyTrouble"
-                        ] === "true"
-                      }
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="painBehavior.dailyActivityTrouble.anyDailyTrouble"
-                      value="false"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "painBehavior.dailyActivityTrouble.anyDailyTrouble"
-                        ] === "false"
-                      }
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Provide daily trouble details</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="painBehavior.dailyActivityTrouble.details"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={
-                        formData["painBehavior.dailyActivityTrouble.details"] ||
-                        ""
-                      }
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="painBehavior.dailyActivityTrouble.details"
-                      value={
-                        formData["painBehavior.dailyActivityTrouble.details"] ||
-                        ""
-                      }
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* <textarea
-                    name="painBehavior.dailyActivityTrouble.details"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={
-                      formData["painBehavior.dailyActivityTrouble.details"] || ""
-                    }
-                  /> */}
-                </div>
-              </div>
-              {/* 3. Range of Motion */}
-              <div className="section-box m-t-10">
-                <p>Mobility & Range of Motion</p>
-                <div className="radio-row">
-                  <span>Can you fully move the joint?</span>
-                  <label>
-                    <input
-                      type="radio"
-                      name="rangeOfMotion.affectedJoint.fullyMoveJoint"
-                      value="true"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "rangeOfMotion.affectedJoint.fullyMoveJoint"
-                        ] === "true"
-                      }
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="rangeOfMotion.affectedJoint.fullyMoveJoint"
-                      value="false"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "rangeOfMotion.affectedJoint.fullyMoveJoint"
-                        ] === "false"
-                      }
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Describe limitation</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="rangeOfMotion.affectedJoint.describeLimitation"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={
-                        formData[
-                          "rangeOfMotion.affectedJoint.describeLimitation"
-                        ] || ""
-                      }
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="rangeOfMotion.affectedJoint.describeLimitation"
-                      value={
-                        formData[
-                          "rangeOfMotion.affectedJoint.describeLimitation"
-                        ] || ""
-                      }
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* <textarea
-                    name="rangeOfMotion.affectedJoint.describeLimitation"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={
-                      formData[
-                        "rangeOfMotion.affectedJoint.describeLimitation"
-                      ] || ""
-                    }
-                  /> */}
-                </div>
-                <div className="radio-row">
-                  <span>Clicking/popping sounds?</span>
-                  <label>
-                    <input
-                      type="radio"
-                      name="rangeOfMotion.anySound"
-                      value="true"
-                      onChange={handleChange}
-                      checked={formData["rangeOfMotion.anySound"] === "true"}
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="rangeOfMotion.anySound"
-                      value="false"
-                      onChange={handleChange}
-                      checked={formData["rangeOfMotion.anySound"] === "false"}
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="radio-row">
-                  <span>Can you put weight on limb?</span>
-                  <label>
-                    <input
-                      type="radio"
-                      name="rangeOfMotion.affectedLimb.ableToPutWeight"
-                      value="true"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "rangeOfMotion.affectedLimb.ableToPutWeight"
-                        ] === "true"
-                      }
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="rangeOfMotion.affectedLimb.ableToPutWeight"
-                      value="false"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "rangeOfMotion.affectedLimb.ableToPutWeight"
-                        ] === "false"
-                      }
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Describe difficulty</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="rangeOfMotion.affectedLimb.describeDifficult"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={
-                        formData[
-                          "rangeOfMotion.affectedLimb.describeDifficult"
-                        ] || ""
-                      }
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="rangeOfMotion.affectedLimb.describeDifficult"
-                      value={
-                        formData[
-                          "rangeOfMotion.affectedLimb.describeDifficult"
-                        ] || ""
-                      }
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* <textarea
-                    name="rangeOfMotion.affectedLimb.describeDifficult"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={
-                      formData["rangeOfMotion.affectedLimb.describeDifficult"] ||
-                      ""
-                    }
-                  /> */}
-                </div>
-                <div className="radio-row">
-                  <span>Difficulty maintaining balance?</span>
-                  <label>
-                    <input
-                      type="radio"
-                      name="rangeOfMotion.maintainingBalance.anyDifficulty"
-                      value="true"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "rangeOfMotion.maintainingBalance.anyDifficulty"
-                        ] === "true"
-                      }
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="rangeOfMotion.maintainingBalance.anyDifficulty"
-                      value="false"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "rangeOfMotion.maintainingBalance.anyDifficulty"
-                        ] === "false"
-                      }
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Specify when</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="rangeOfMotion.maintainingBalance.specifyWhen"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={
-                        formData[
-                          "rangeOfMotion.maintainingBalance.specifyWhen"
-                        ] || ""
-                      }
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="rangeOfMotion.maintainingBalance.specifyWhen"
-                      value={
-                        formData[
-                          "rangeOfMotion.maintainingBalance.specifyWhen"
-                        ] || ""
-                      }
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* <textarea
-                    name="rangeOfMotion.maintainingBalance.specifyWhen"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={
-                      formData["rangeOfMotion.maintainingBalance.specifyWhen"] ||
-                      ""
-                    }
-                  /> */}
-                </div>
-              </div>
-              {/* 4. Circulatory Symptoms */}
-              <div className="section-box m-t-10">
-                <p>Neurological & Circulatory Symptoms</p>
-                <div className="radio-row">
-                  <span>Numbness/tingling/weakness?</span>
-                  <label>
-                    <input
-                      type="radio"
-                      name="circulatorySymptoms.affectedArea.anyNumbnessTinglingWeakness"
-                      value="true"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "circulatorySymptoms.affectedArea.anyNumbnessTinglingWeakness"
-                        ] === "true"
-                      }
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="circulatorySymptoms.affectedArea.anyNumbnessTinglingWeakness"
-                      value="false"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "circulatorySymptoms.affectedArea.anyNumbnessTinglingWeakness"
-                        ] === "false"
-                      }
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Describe where & how often</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="circulatorySymptoms.affectedArea.describe"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={
-                        formData["circulatorySymptoms.affectedArea.describe"] ||
-                        ""
-                      }
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="circulatorySymptoms.affectedArea.describe"
-                      value={
-                        formData["circulatorySymptoms.affectedArea.describe"] ||
-                        ""
-                      }
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* <textarea
-                    name="circulatorySymptoms.affectedArea.describe"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={
-                      formData["circulatorySymptoms.affectedArea.describe"] || ""
-                    }
-                  /> */}
-                </div>
-                <div className="radio-row">
-                  <span>Swelling/bruising/redness?</span>
-                  <label>
-                    <input
-                      type="radio"
-                      name="circulatorySymptoms.affectedAreaSeverity.anySwellingBruisingRedness"
-                      value="true"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "circulatorySymptoms.affectedAreaSeverity.anySwellingBruisingRedness"
-                        ] === "true"
-                      }
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="circulatorySymptoms.affectedAreaSeverity.anySwellingBruisingRedness"
-                      value="false"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "circulatorySymptoms.affectedAreaSeverity.anySwellingBruisingRedness"
-                        ] === "false"
-                      }
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Describe severity</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="circulatorySymptoms.affectedAreaSeverity.describe"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={
-                        formData[
-                          "circulatorySymptoms.affectedAreaSeverity.describe"
-                        ] || ""
-                      }
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="circulatorySymptoms.affectedAreaSeverity.describe"
-                      value={
-                        formData[
-                          "circulatorySymptoms.affectedAreaSeverity.describe"
-                        ] || ""
-                      }
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* <textarea
-                    name="circulatorySymptoms.affectedAreaSeverity.describe"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={
-                      formData[
-                        "circulatorySymptoms.affectedAreaSeverity.describe"
-                      ] || ""
-                    }
-                  /> */}
-                </div>
-                <div className="radio-row">
-                  <span>Cold/pale/discolored?</span>
-                  <label>
-                    <input
-                      type="radio"
-                      name="circulatorySymptoms.affectedAreaColor.anyColdPaleDiscolored"
-                      value="true"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "circulatorySymptoms.affectedAreaColor.anyColdPaleDiscolored"
-                        ] === "true"
-                      }
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="circulatorySymptoms.affectedAreaColor.anyColdPaleDiscolored"
-                      value="false"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "circulatorySymptoms.affectedAreaColor.anyColdPaleDiscolored"
-                        ] === "false"
-                      }
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Specify color/sensation changes</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="circulatorySymptoms.affectedAreaColor.specify"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={
-                        formData[
-                          "circulatorySymptoms.affectedAreaColor.specify"
-                        ] || ""
-                      }
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="circulatorySymptoms.affectedAreaColor.specify"
-                      value={
-                        formData[
-                          "circulatorySymptoms.affectedAreaColor.specify"
-                        ] || ""
-                      }
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* <textarea
-                    name="circulatorySymptoms.affectedAreaColor.specify"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={
-                      formData["circulatorySymptoms.affectedAreaColor.specify"] ||
-                      ""
-                    }
-                  /> */}
-                </div>
-              </div>
-              {/* 5. Lifestyle Risk */}
-              <div className="section-box m-t-10">
-                <p>Medical History & Lifestyle Risks</p>
-                <div className="radio-row">
-                  <span>Previous injuries/surgeries?</span>
-                  <label>
-                    <input
-                      type="radio"
-                      name="lifeStyleRisk.injurySurgery.anyPrevious"
-                      value="true"
-                      onChange={handleChange}
-                      checked={
-                        formData["lifeStyleRisk.injurySurgery.anyPrevious"] ===
-                        "true"
-                      }
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="lifeStyleRisk.injurySurgery.anyPrevious"
-                      value="false"
-                      onChange={handleChange}
-                      checked={
-                        formData["lifeStyleRisk.injurySurgery.anyPrevious"] ===
-                        "false"
-                      }
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Describe injury/surgery</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="lifeStyleRisk.injurySurgery.describe"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={
-                        formData["lifeStyleRisk.injurySurgery.describe"] || ""
-                      }
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="lifeStyleRisk.injurySurgery.describe"
-                      value={
-                        formData["lifeStyleRisk.injurySurgery.describe"] || ""
-                      }
+                      name="treatmentSchedule"
+                      value={formData["treatmentSchedule"] || ""}
                       handleChange={handleChange}
                       none={true}
                     />
                   )}
                   {/*  */}
                 </div>
-                <div className="radio-row">
-                  <span>Arthritis/osteoporosis/joint issue?</span>
-                  <label>
-                    <input
-                      type="radio"
-                      name="lifeStyleRisk.anyArthritisOsteoporosisJointIssue"
-                      value="true"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "lifeStyleRisk.anyArthritisOsteoporosisJointIssue"
-                        ] === "true"
-                      }
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="lifeStyleRisk.anyArthritisOsteoporosisJointIssue"
-                      value="false"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "lifeStyleRisk.anyArthritisOsteoporosisJointIssue"
-                        ] === "false"
-                      }
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="radio-row">
-                  <span>Sports/physically demanding?</span>
-                  <label>
-                    <input
-                      type="radio"
-                      name="lifeStyleRisk.demandingActivities.anySportsPhysicallyActivities"
-                      value="true"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "lifeStyleRisk.demandingActivities.anySportsPhysicallyActivities"
-                        ] === "true"
-                      }
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="lifeStyleRisk.demandingActivities.anySportsPhysicallyActivities"
-                      value="false"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "lifeStyleRisk.demandingActivities.anySportsPhysicallyActivities"
-                        ] === "false"
-                      }
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Specify activities</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="lifeStyleRisk.demandingActivities.specify"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={
-                        formData["lifeStyleRisk.demandingActivities.specify"] ||
-                        ""
-                      }
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="lifeStyleRisk.demandingActivities.specify"
-                      value={
-                        formData["lifeStyleRisk.demandingActivities.specify"] ||
-                        ""
-                      }
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* */}
-                </div>
-                <div className="radio-row">
-                  <span>Heavy lifting/repetitive motion at work?</span>
-                  <label>
-                    <input
-                      type="radio"
-                      name="lifeStyleRisk.workEnvironment.anyLiftingRepetitiveMotion"
-                      value="true"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "lifeStyleRisk.workEnvironment.anyLiftingRepetitiveMotion"
-                        ] === "true"
-                      }
-                    />{" "}
-                    Yes
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="lifeStyleRisk.workEnvironment.anyLiftingRepetitiveMotion"
-                      value="false"
-                      onChange={handleChange}
-                      checked={
-                        formData[
-                          "lifeStyleRisk.workEnvironment.anyLiftingRepetitiveMotion"
-                        ] === "false"
-                      }
-                    />{" "}
-                    No
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Describe work environment</label>
-                  {treatmentId ? (
-                    <textarea
-                      name="lifeStyleRisk.workEnvironment.describe"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={
-                        formData["lifeStyleRisk.workEnvironment.describe"] || ""
-                      }
-                    />
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="lifeStyleRisk.workEnvironment.describe"
-                      value={
-                        formData["lifeStyleRisk.workEnvironment.describe"] || ""
-                      }
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* */}
-                </div>
-              </div>
-              {treatmentId && dataFromLab && (
-                <div className="field-column">
-                  <label>Patient's Lab Results</label>
-                  <LabRequestTable data={dataFromLab} isFamily={false} />
-                </div>
-              )}
-              {treatmentId && (
-                <MedicationTable
-                  data={{
-                    treatmentType: "Orthopedic",
-                    treatmentId: treatmentId,
-                  }}
-                />
-              )}
-              {/* 6. Treatment Schedule & Submit */}
-              <div className="field-column m-t-20">
-                <label>Treatment Schedule</label>
-                {treatmentId ? (
-                  <textarea
-                    name="treatmentSchedule"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={formData["treatmentSchedule"] || ""}
-                  />
-                ) : (
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="treatmentSchedule"
-                    value={formData["treatmentSchedule"] || ""}
-                    handleChange={handleChange}
-                    none={true}
+
+                {showModal && (
+                  <ReferPatient
+                    repeatedDiagnosis={repeatedDiagnosis}
+                    setRepeatedDiagnosis={setRepeatedDiagnosis}
+                    closeModal={toggleModal}
+                    visit={lastVisit}
+                    vital={vitals}
+                    orthopedic={+treatmentId || 0}
+                    // vitalId = {vitals.id}
+                    id={patientId}
+                    // treatment={data[0] || null}
                   />
                 )}
-                {/*  */}
+                {treatmentModal && (
+                  <AddTreatmentOld
+                    createTreatment={createTreatmet}
+                    repeatedDiagnosis={repeatedDiagnosis}
+                    setRepeatedDiagnosis={setRepeatedDiagnosis}
+                    closeModal={toggleTreatmentModal}
+                    visit={lastVisit}
+                    // data={data}
+                    id={patientId}
+                    // fetchData={fetchData}
+                  />
+                )}
               </div>
-              {!treatmentId && (
-                <button onClick={handleSubmit} className="submit-btn">
-                  Submit
-                </button>
-              )}
-              {showModal && (
-                <ReferPatient
-                  repeatedDiagnosis={repeatedDiagnosis}
-                  setRepeatedDiagnosis={setRepeatedDiagnosis}
-                  closeModal={toggleModal}
-                  visit={lastVisit}
-                  vital={vitals}
-                  orthopedic={+treatmentId || 0}
-                  // vitalId = {vitals.id}
-                  id={patientId}
-                  // treatment={data[0] || null}
-                />
-              )}
-              {treatmentModal && (
-                <AddTreatmentOld
-                  createTreatment={createTreatmet}
-                  repeatedDiagnosis={repeatedDiagnosis}
-                  setRepeatedDiagnosis={setRepeatedDiagnosis}
-                  closeModal={toggleTreatmentModal}
-                  visit={lastVisit}
-                  // data={data}
-                  id={patientId}
-                  // fetchData={fetchData}
-                />
-              )}
-            </div>
-          </section>
+            </section>
+          </div>
+          <VitalsRecords vitals={vitals} />
         </div>
-        <VitalsRecords vitals={vitals} />
-      </div>
+      </Accordion>
+      {!treatmentId && (
+        <button onClick={handleSubmit} className="submit-btn">
+          Submit
+        </button>
+      )}
     </div>
   );
 };
 
 export default Orthopedic;
+
+const Accordion = ({ title, children }) => {
+  const [isOpened, setIsOpened] = useState(false);
+
+  return (
+    <div className="accordion-item">
+      <div
+        className={`accordion-header ${isOpened ? "open" : ""}`}
+        onClick={() => setIsOpened(!isOpened)}
+      >
+        {title}
+        <span className="arrow">{isOpened ? "▲" : "▼"}</span>
+      </div>
+      {isOpened && <div className="accordion-body">{children}</div>}
+    </div>
+  );
+};

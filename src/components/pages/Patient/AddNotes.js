@@ -41,7 +41,7 @@ const AddNotes = () => {
                 <tr>
                   <th>Date</th>
                   <th>Case Type</th>
-                  <th>Medical Record/History</th>
+                  <th>Patient's Complaint</th>
                   <th>Doctor's Name</th>
                   <th></th>
                 </tr>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { stats } from "./mockdata/PatientData";
 import StatCard from "../UI/StatCard";
 import PatientsBreakdown from "../UI/PatientsBreakdown";
@@ -7,9 +8,11 @@ import PatientAdmission from "../UI/PatientAdmission";
 import GenderDistribution from "../UI/GenderDistribution";
 import OutAndInpatientGraph from "../UI/OutAndInpatientGraph";
 import { get } from "../../utility/fetch";
+// import SubmitFeedback from "./SubmitFeedback";
 
 function Dashboard() {
   const user = localStorage.getItem("name");
+  const navigate = useNavigate();
   const [assignedPatients, setAssignedPatients] = useState(0);
   const [allPatientCount, setAllPatientCount] = useState(0);
 
@@ -138,6 +141,12 @@ function Dashboard() {
     setSummary([assignedPatients, admitted, hmoPatients, allPatientCount]);
   }, [assignedPatients, allPatientCount, waiting, admitted, hmoPatients]);
 
+  const handleStatClick = (stat) => {
+    // choose a name field available on your stats objects
+    const cardname = stat.title || stat.name || stat.label || String(stat);
+    navigate(`/doctor/patients?cardname=${encodeURIComponent(cardname)}`);
+  };
+
   return (
     <div className="w-100 m-t-80">
       {loading ? (
@@ -149,7 +158,12 @@ function Dashboard() {
           <div className="flex w-98 gap-8 space-between m-t-10">
             {" "}
             {stats.map((stat, index) => (
-              <div style={{backgroundColor:'white'}} className="w-20" key={index}>
+              <div
+                style={{ backgroundColor: "white", cursor: "pointer" }}
+                className="w-20"
+                key={index}
+                onClick={() => handleStatClick(stat)}
+              >
                 <StatCard
                   data={stat}
                   number={summary[index]}
@@ -162,6 +176,8 @@ function Dashboard() {
             <div className="w-80 m-t-40">
               <OutAndInpatientGraph propdata={graph} />
               <div className="flex m-t-20 w-100">
+                {/* <SubmitFeedback /> */}
+                {/* <TrackFeedbackModal /> */}
                 {/* <div className="m-r-20 w-50">
                   <PatientAdmission />
                 </div>

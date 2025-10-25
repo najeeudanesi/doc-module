@@ -64,7 +64,7 @@ const fetchBackend = async (
   if (auth) {
     const token = getToken();
     if (token) {
-      headers.Authorization = `Bearer ${token}`;
+      headers.Authorization = `${token}`;
     }
   }
   const options = {

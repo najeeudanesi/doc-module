@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { BsTrash } from "react-icons/bs";
 import { RiCloseFill } from "react-icons/ri";
 import { get, post } from "../../utility/fetch";
+import { get as gets } from "../../utility/fetchLab";
 import TextArea from "../UI/TextArea";
 import debounce from "lodash.debounce"; // Import debounce from lodash
 import SpeechToTextButton from "../UI/SpeechToTextButton";
@@ -24,6 +25,7 @@ function AddTreatment({
   const [carePlan, setCarePlan] = useState("");
   const [diagnosis, setDiagnosis] = useState("");
   const [medications, setMedications] = useState([]);
+  const [prescriptionComments, setPrescriptionComments] = useState([]);
   const [otherMedications, setOtherMedications] = useState([]);
   const [newOtherMedication, setNewOtherMedication] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,6 +36,8 @@ function AddTreatment({
   const [medicationOptions, setMedicationOptions] = useState([]); // State for fetched medication options
   const [hmo, setHmo] = useState(null);
   const [sugesstPayload, setSuggPayload] = useState({ medications: [] });
+  // Store comments for each medication row
+  const [medicationComments, setMedicationComments] = useState([]);
 
   const routesOfAdministration = [
     { id: 1, name: "Orally" },
@@ -50,27 +54,48 @@ function AddTreatment({
     { id: 12, name: "Implant" },
   ];
 
+  // const administrationFrequencies = [
+  //   { id: 1, name: "Immediately" },
+  //   { id: 2, name: "As needed" },
+  //   { id: 3, name: "Once daily" },
+  //   { id: 4, name: "Twice a day" },
+  //   { id: 5, name: "Three times a day" },
+  //   { id: 6, name: "Four times a day" },
+  //   { id: 7, name: "At night" },
+  //   { id: 8, name: "Morning" },
+  //   { id: 9, name: "Evening" },
+  //   { id: 10, name: "Every 24 hours" },
+  //   { id: 11, name: "Every 12 hours" },
+  //   { id: 12, name: "Every 8 hours" },
+  //   { id: 13, name: "Every 6 hours" },
+  //   { id: 14, name: "Every 4 hours" },
+  //   { id: 15, name: "Every 3 hours" },
+  //   { id: 16, name: "Every 2 hours" },
+  //   { id: 17, name: "Every hour" },
+  //   { id: 18, name: "Every 2 months" },
+  //   { id: 19, name: "Every 3 months" },
+  //   // Every 3 months
+  // ];
   const administrationFrequencies = [
-    { id: 1, name: "Immediately" },
-    { id: 2, name: "As needed" },
-    { id: 3, name: "Once daily" },
-    { id: 4, name: "Twice a day" },
-    { id: 5, name: "Three times a day" },
-    { id: 6, name: "Four times a day" },
-    { id: 7, name: "At night" },
-    { id: 8, name: "Morning" },
-    { id: 9, name: "Evening" },
-    { id: 10, name: "Every 24 hours" },
-    { id: 11, name: "Every 12 hours" },
-    { id: 12, name: "Every 8 hours" },
-    { id: 13, name: "Every 6 hours" },
-    { id: 14, name: "Every 4 hours" },
-    { id: 15, name: "Every 3 hours" },
-    { id: 16, name: "Every 2 hours" },
-    { id: 17, name: "Every hour" },
-    { id: 18, name: "Every 2 months" },
-    { id: 19, name: "Every 3 months" },
-    // Every 3 months
+    { id: 1, name: "Immediately", abbreviation: "STAT" },
+    { id: 2, name: "As needed", abbreviation: "PRN" },
+    { id: 3, name: "Once daily", abbreviation: "QD / SID" }, // QD often discouraged, SID clearer
+    { id: 4, name: "Twice a day", abbreviation: "BID" },
+    { id: 5, name: "Three times a day", abbreviation: "TID" },
+    { id: 6, name: "Four times a day", abbreviation: "QID" },
+    { id: 7, name: "At night", abbreviation: "HS / noct." },
+    { id: 8, name: "Morning", abbreviation: "AM" },
+    { id: 9, name: "Evening", abbreviation: "PM" },
+    { id: 10, name: "Every 24 hours", abbreviation: "Q24H" },
+    { id: 11, name: "Every 12 hours", abbreviation: "Q12H" },
+    { id: 12, name: "Every 8 hours", abbreviation: "Q8H" },
+    { id: 13, name: "Every 6 hours", abbreviation: "Q6H" },
+    { id: 14, name: "Every 4 hours", abbreviation: "Q4H" },
+    { id: 15, name: "Every 3 hours", abbreviation: "Q3H" },
+    { id: 16, name: "Every 2 hours", abbreviation: "Q2H" },
+    { id: 17, name: "Every hour", abbreviation: "Q1H" },
+    { id: 18, name: "Every 2 months", abbreviation: "q2mo" }, // Common shorthand, not a strict Latin abbr.
+    { id: 19, name: "Every 3 months", abbreviation: "q3mo" }, // Common shorthand, not a strict Latin abbr.
   ];
 
   console.log(visit);
@@ -89,39 +114,95 @@ function AddTreatment({
     console.log(repeatedDiagnosis);
   }, [repeatedDiagnosis]);
 
+  // const drugMeasurementUnits = [
+  //   { id: 1, name: "Milligrams", symbol: "mg" },
+  //   { id: 2, name: "Grams", symbol: "g" },
+  //   { id: 3, name: "Micrograms", symbol: "µg" },
+  //   { id: 4, name: "Milliliters", symbol: "mL" },
+  //   { id: 5, name: "Liters", symbol: "L" },
+  //   { id: 6, name: "Units", symbol: "U" },
+  //   { id: 7, name: "Puffs" },
+  //   { id: 8, name: "Sprays" },
+  //   { id: 9, name: "Drops" },
+  //   { id: 10, name: "Patch" },
+  //   { id: 11, name: "Bottle" },
+  //   { id: 12, name: "Transdermal System" },
+  //   { id: 13, name: "Tablet" },
+  //   { id: 14, name: "Capsule" },
+  //   { id: 15, name: "Suppository" },
+  //   { id: 16, name: "Scoop" },
+  //   { id: 17, name: "Sachet" },
+  //   { id: 18, name: "Ampoule" },
+  //   { id: 19, name: "Vial" },
+  //   { id: 20, name: "Injection Pen" },
+  //   { id: 21, name: "Enema" },
+  //   { id: 22, name: "Ounces", symbol: "oz" },
+  //   { id: 23, name: "Teaspoon", symbol: "tsp" },
+  //   { id: 24, name: "Tablespoon", symbol: "tbsp" },
+  //   { id: 25, name: "Milliequivalents", symbol: "mEq" },
+  //   { id: 26, name: "International Units", symbol: "IU" },
+  // ];
   const drugMeasurementUnits = [
-    { id: 1, name: "Milligrams", symbol: "mg" },
+    { id: 18, name: "Ampoule", symbol: "amp" },
+    { id: 11, name: "Bottle", symbol: "btl" },
+    { id: 14, name: "Capsule", symbol: "cap" },
+    { id: 9, name: "Drops", symbol: "gtt" }, // or "drop" / "drops"
+    { id: 21, name: "Enema", symbol: "enema" },
     { id: 2, name: "Grams", symbol: "g" },
-    { id: 3, name: "Micrograms", symbol: "µg" },
-    { id: 4, name: "Milliliters", symbol: "mL" },
-    { id: 5, name: "Liters", symbol: "L" },
-    { id: 6, name: "Units", symbol: "U" },
-    { id: 7, name: "Puffs" },
-    { id: 8, name: "Sprays" },
-    { id: 9, name: "Drops" },
-    { id: 10, name: "Patch" },
-    { id: 11, name: "Bottle" },
-    { id: 12, name: "Transdermal System" },
-    { id: 13, name: "Tablet" },
-    { id: 14, name: "Capsule" },
-    { id: 15, name: "Suppository" },
-    { id: 16, name: "Scoop" },
-    { id: 17, name: "Sachet" },
-    { id: 18, name: "Ampoule" },
-    { id: 19, name: "Vial" },
-    { id: 20, name: "Injection Pen" },
-    { id: 21, name: "Enema" },
-    { id: 22, name: "Ounces", symbol: "oz" },
-    { id: 23, name: "Teaspoon", symbol: "tsp" },
-    { id: 24, name: "Tablespoon", symbol: "tbsp" },
-    { id: 25, name: "Milliequivalents", symbol: "mEq" },
     { id: 26, name: "International Units", symbol: "IU" },
+    { id: 20, name: "Injection Pen", symbol: "pen" },
+    { id: 5, name: "Liters", symbol: "L" },
+    { id: 3, name: "Micrograms", symbol: "µg" },
+    { id: 1, name: "Milligrams", symbol: "mg" },
+    { id: 25, name: "Milliequivalents", symbol: "mEq" },
+    { id: 4, name: "Milliliters", symbol: "mL" },
+    { id: 22, name: "Ounces", symbol: "oz" },
+    { id: 10, name: "Patch", symbol: "patch" },
+    { id: 7, name: "Puffs", symbol: "puff" },
+    { id: 17, name: "Sachet", symbol: "sachet" },
+    { id: 16, name: "Scoop", symbol: "scoop" },
+    { id: 8, name: "Sprays", symbol: "spray" },
+    { id: 15, name: "Suppository", symbol: "supp" },
+    { id: 24, name: "Tablespoon", symbol: "tbsp" },
+    { id: 13, name: "Tablet", symbol: "tab" },
+    { id: 23, name: "Teaspoon", symbol: "tsp" },
+    { id: 12, name: "Transdermal System", symbol: "TD system" }, // Common clinical shorthand
+    { id: 6, name: "Units", symbol: "U" },
+    { id: 19, name: "Vial", symbol: "vial" },
   ];
+
+  const fetchInternalLabServices = async () => {
+    try {
+      // const response = await gets(
+      //  endpoint: `/internallabservice/list/1/10`,
+      // );
+      let response = await gets({
+        // endpoint: `patientlabreport/patient-report/${patientId?.id}/labtechnician/${userAuth?.resultList?.userId}`,
+        endpoint: `/internallabservice/list/1/10`,
+
+        // body: formData,
+        // auth: false,
+      });
+      const data = response?.resultList;
+      console.log(response);
+      // Map the response to a format usable by React Select
+      // const options = data?.map((med) => ({
+      //   value: med?.id, // or med.code if you have it
+      //   label: `${med?.productName} (${med.drugCategory}) - ${med.strength}`, // Adjust this based on your response structure
+      // }));
+
+      // setMedicationOptions(options); // Set options for the dropdown
+      // setSelectedMedication(null); // Clear selection after fetching data
+    } catch (error) {
+      console.log(error);
+    }
+    // api/internallabservice/list/1/10
+  };
 
   // Fetch Medications from API with Filter Query (Debounced)
   const fetchMedications = async (
     filterOn = "name",
-    filterQuery = " ",
+    filterQuery = "a",
     pageNumber = 1,
     itemsPerPage = 10
   ) => {
@@ -134,11 +215,11 @@ function AddTreatment({
       // Map the response to a format usable by React Select
       const options = data?.map((med) => ({
         value: med?.id, // or med.code if you have it
-        label: med?.productName, // Adjust this based on your response structure
+        label: `${med?.productName} (${med.drugCategory}) - ${med.strength}`, // Adjust this based on your response structure
       }));
 
       setMedicationOptions(options); // Set options for the dropdown
-      setSelectedMedication(null); // Clear selection after fetching data
+      // setSelectedMedication(null); // Clear selection after fetching data
     } catch (error) {
       console.log(error);
     }
@@ -175,6 +256,7 @@ function AddTreatment({
   // Update suggestPayload whenever medications or otherMedications change
   useEffect(() => {
     updateSuggestPayload();
+    fetchInternalLabServices();
   }, [medications, otherMedications]);
 
   const addMedicationFromDropdown = () => {
@@ -184,9 +266,11 @@ function AddTreatment({
         {
           name: selectedMedication.label,
           pharmacyInventoryId: selectedMedication.value, // Save the medication ID (value) here
+
           quantity: "",
           frequency: "",
           duration: "",
+          dosage: "",
         },
       ]);
       setSelectedMedication(null); // Clear selection after adding
@@ -201,9 +285,10 @@ function AddTreatment({
         ...prev,
         {
           name: newOtherMedication,
-          quantity: 0,
-          frequency: 0,
-          duration: 0,
+          quantity: "",
+          frequency: "",
+          duration: "",
+          dosage: "",
         },
       ]);
       setNewOtherMedication("");
@@ -234,10 +319,8 @@ function AddTreatment({
       ...(type === "medications" ? medications : otherMedications),
     ];
 
+    // Keep all values as text instead of converting to integers
     let updatedValue = value;
-    if (["duration", "quantity"].includes(field)) {
-      updatedValue = parseInt(value, 10) || 0;
-    }
 
     updatedMedications[index] = {
       ...updatedMedications[index],
@@ -262,24 +345,32 @@ function AddTreatment({
     // Prepare the medications payload with pharmacyInventoryId
     const formattedMedications = medications.map((med) => ({
       pharmacyInventoryId: med.pharmacyInventoryId,
-      quantity: med.quantity,
-      strength: med.frequency,
-      administrationFrequency: +med.administrationFrequency || 1,
-      routeOfAdministration: +med.routeOfAdministration || 1,
-      duration: med.duration,
-
-      drugStrengthUnit: +med.drugStrengthUnit,
+      doctorPrescription: {
+        strength: med.frequency,
+        drugStrengthUnit: med.drugStrengthUnit,
+        quantity: med.quantity,
+        administrationFrequency: med.administrationFrequency,
+        routeOfAdministration: med.routeOfAdministration,
+        duration: med.duration,
+        dosage: med.dosage,
+      },
+      comment: prescriptionComments,
     }));
 
     // Prepare the otherMedications payload
     const formattedOtherMedications = otherMedications.map((med) => ({
-      name: med.name,
-      quantity: med.quantity,
-      strength: med.frequency,
-      administrationFrequency: +med.administrationFrequency || 1,
-      routeOfAdministration: +med.routeOfAdministration || 1,
-      duration: med.duration,
-      drugStrengthUnit: +med.drugStrengthUnit || 1,
+      pharmacyInventoryId: 0, // Default to 0 for other medications
+      doctorPrescription: {
+        strength: med.frequency,
+        drugStrengthUnit: med.drugStrengthUnit,
+        quantity: med.quantity,
+        administrationFrequency: med.administrationFrequency,
+        routeOfAdministration: med.routeOfAdministration,
+        duration: med.duration,
+        dosage: med.dosage,
+      },
+      comment: prescriptionComments,
+      name: med.name, // Keep the name for other medications
     }));
 
     // Construct the payload in the required format
@@ -330,6 +421,8 @@ function AddTreatment({
   // Handle input change in React Select's input field for searching medications
   const handleInputChange = (inputValue) => {
     debouncedFetchMedications(inputValue); // Trigger debounced API call
+    // setSelectedMedication(inputValue);
+    console.log(inputValue);
   };
 
   useEffect(() => {
@@ -341,7 +434,7 @@ function AddTreatment({
   return (
     <div className="overlay">
       <RiCloseFill className="close-btn pointer" onClick={closeModal} />
-      <div className="modal-box max-w-1000">
+      <div className="modal-box max-w-1400">
         <div className="p-40">
           <h3 className="bold-text">Add Treatment</h3>
 
@@ -422,12 +515,15 @@ function AddTreatment({
                   <tr>
                     <th>s/n</th>
                     <th>Medication</th>
-                    <th>Quantity</th>
+                    <th>Dosage</th>
                     <th>Strength</th>
                     <th>Units Of Measurement</th>
                     <th>Administration Frequency</th>
                     <th>Duration (days)</th>
                     <th>Route</th>
+                    <th>Quantity</th>
+
+                    {/* <th>Comment</th> */}
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -438,24 +534,26 @@ function AddTreatment({
                       <td>{med.name}</td>
                       <td>
                         <input
-                          type="number"
+                          type="text"
                           className="input-field-table"
-                          value={med.quantity}
+                          value={med.dosage || ""}
                           onChange={(e) =>
                             handleMedicationChange(
                               index,
-                              "quantity",
+                              "dosage",
                               e.target.value,
                               "medications"
                             )
                           }
+                          placeholder="Dosage"
                         />
                       </td>
+
                       <td>
                         <input
-                          // type="text"
+                          type="text"
                           className="input-field-table"
-                          // value={med.frequency}
+                          value={med.frequency}
                           onChange={(e) =>
                             handleMedicationChange(
                               index,
@@ -467,7 +565,8 @@ function AddTreatment({
                         />
                       </td>
                       <td>
-                        <select
+                        <input
+                          type="text"
                           className="input-field-table"
                           value={med.drugStrengthUnit || ""}
                           onChange={(e) =>
@@ -478,18 +577,12 @@ function AddTreatment({
                               "medications"
                             )
                           }
-                        >
-                          <option value={""}>--Select--</option>
-
-                          {drugMeasurementUnits.map((freq) => (
-                            <option key={freq.id} value={freq.id}>
-                              {freq.name}
-                            </option>
-                          ))}
-                        </select>
+                          placeholder="Units"
+                        />
                       </td>
                       <td>
-                        <select
+                        <input
+                          type="text"
                           className="input-field-table"
                           value={med.administrationFrequency || ""}
                           onChange={(e) =>
@@ -500,19 +593,13 @@ function AddTreatment({
                               "medications"
                             )
                           }
-                        >
-                          <option value={""}>--Select--</option>
-
-                          {administrationFrequencies.map((freq) => (
-                            <option key={freq.id} value={freq.id}>
-                              {freq.name}
-                            </option>
-                          ))}
-                        </select>
+                          placeholder="Frequency"
+                        />
                       </td>
+
                       <td>
                         <input
-                          type="number"
+                          type="text"
                           className="input-field-table"
                           value={med.duration}
                           onChange={(e) =>
@@ -526,7 +613,8 @@ function AddTreatment({
                         />
                       </td>
                       <td>
-                        <select
+                        <input
+                          type="text"
                           className="input-field-table"
                           value={med.routeOfAdministration || ""}
                           onChange={(e) =>
@@ -537,16 +625,38 @@ function AddTreatment({
                               "medications"
                             )
                           }
-                        >
-                          <option value={""}>--Select--</option>
-
-                          {routesOfAdministration.map((route) => (
-                            <option key={route.id} value={route.id}>
-                              {route.name}
-                            </option>
-                          ))}
-                        </select>
+                          placeholder="Route"
+                        />
                       </td>
+                      <td>
+                        <input
+                          type="text"
+                          className="input-field-table"
+                          value={med.quantity}
+                          onChange={(e) =>
+                            handleMedicationChange(
+                              index,
+                              "quantity",
+                              e.target.value,
+                              "medications"
+                            )
+                          }
+                          placeholder="Quantity"
+                        />
+                      </td>
+                      {/* <td>
+                        <textarea
+                          className="input-field-table"
+                          rows={4}
+                          value={medicationComments[index] || ""}
+                          onChange={(e) => {
+                            const updatedComments = [...medicationComments];
+                            updatedComments[index] = e.target.value;
+                            setMedicationComments(updatedComments);
+                          }}
+                          placeholder="Comment..."
+                        />
+                      </td> */}
                       <td>
                         <BsTrash
                           className="text-red pointer"
@@ -559,6 +669,15 @@ function AddTreatment({
               </table>
             </div>
           )}
+
+          <GhostTextCompletion
+            label="Prescription Comments"
+            name="prescriptionComments"
+            value={prescriptionComments}
+            handleChange={(e) => {
+              setPrescriptionComments(e.target.value);
+            }}
+          />
 
           {/* Input for adding Other Medications */}
           <div className="m-t-20">
@@ -586,6 +705,7 @@ function AddTreatment({
                     <th>Strength</th>
                     <th>Units Of Measurement</th>
                     <th>Administration Frequency</th>
+                    <th>Dosage</th>
                     <th>Duration (days)</th>
                     <th>Route</th>
                     <th>Action</th>
@@ -598,7 +718,7 @@ function AddTreatment({
                       <td>{med.name}</td>
                       <td>
                         <input
-                          type="number"
+                          type="text"
                           className="input-field-table"
                           value={med.quantity}
                           onChange={(e) =>
@@ -613,9 +733,9 @@ function AddTreatment({
                       </td>
                       <td>
                         <input
-                          // type="text"
+                          type="text"
                           className="input-field-table"
-                          // value={med.frequency}
+                          value={med.frequency}
                           onChange={(e) =>
                             handleMedicationChange(
                               index,
@@ -627,7 +747,8 @@ function AddTreatment({
                         />
                       </td>
                       <td>
-                        <select
+                        <input
+                          type="text"
                           className="input-field-table"
                           value={med.drugStrengthUnit || ""}
                           onChange={(e) =>
@@ -638,17 +759,12 @@ function AddTreatment({
                               "otherMedications"
                             )
                           }
-                        >
-                          <option value={""}>--Select--</option>
-                          {drugMeasurementUnits.map((freq) => (
-                            <option key={freq.id} value={freq.id}>
-                              {freq.name}
-                            </option>
-                          ))}
-                        </select>
+                          placeholder="Units"
+                        />
                       </td>
                       <td>
-                        <select
+                        <input
+                          type="text"
                           className="input-field-table"
                           value={med.administrationFrequency || ""}
                           onChange={(e) =>
@@ -659,18 +775,28 @@ function AddTreatment({
                               "otherMedications"
                             )
                           }
-                        >
-                          <option value={""}>--Select--</option>
-                          {administrationFrequencies.map((freq) => (
-                            <option key={freq.id} value={freq.id}>
-                              {freq.name}
-                            </option>
-                          ))}
-                        </select>
+                          placeholder="Frequency"
+                        />
                       </td>
                       <td>
                         <input
-                          type="number"
+                          type="text"
+                          className="input-field-table"
+                          value={med.dosage || ""}
+                          onChange={(e) =>
+                            handleMedicationChange(
+                              index,
+                              "dosage",
+                              e.target.value,
+                              "otherMedications"
+                            )
+                          }
+                          placeholder="Dosage"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
                           className="input-field-table"
                           value={med.duration}
                           onChange={(e) =>
@@ -684,7 +810,8 @@ function AddTreatment({
                         />
                       </td>
                       <td>
-                        <select
+                        <input
+                          type="text"
                           className="input-field-table"
                           value={med.routeOfAdministration || ""}
                           onChange={(e) =>
@@ -695,14 +822,8 @@ function AddTreatment({
                               "otherMedications"
                             )
                           }
-                        >
-                          <option value={""}>--Select--</option>
-                          {/* {routesOfAdministration.map((route) => (
-                            <option key={route.id} value={route.id}>
-                              {route.name}
-                            </option>
-                          ))} */}
-                        </select>
+                          placeholder="Route"
+                        />
                       </td>
                       {/* <td >
                         <div style={{ display: "flex", gap: "4px" }}>

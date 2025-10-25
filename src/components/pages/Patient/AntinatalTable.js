@@ -21,7 +21,7 @@ const AntinatalTable = () => {
   const fetchRecords = async (currentPage, id) => {
     setLoading(true);
     try {
-      const response = await get(`/Antenatal/list/${currentPage}/10`);
+      const response = await get(`/Antenatal/list/patient/${id}/${currentPage}/100`);
       if (response?.isSuccess) {
         setRecords(response.data.recordList);
         setTotalPages(response.data.metadata.totalPages || 1);
@@ -69,7 +69,7 @@ const AntinatalTable = () => {
                   <th>Patient Name</th>
                   <th>Date</th>
                   <th>Case Type</th>
-                  <th>Medical Record/History</th>
+                  <th>Patient's Complaint</th>
                   <th>Doctor's Name</th>
                   <th>Action</th>
                 </tr>
@@ -101,7 +101,7 @@ const AntinatalTable = () => {
                         </button>
 
                         <img
-                        className="cursor-pointer"
+                          className="cursor-pointer"
                           onClick={() => {
                             navigate(
                               `/doctor/patients/antinatal/${patientId}/?treatmentId=${record.id}`

@@ -92,7 +92,7 @@ function Treatments({ visit, id }) {
 
   return (
     <div className="w-full">
-      <div className="flex flex-h-end w-full gap-10">
+      {/* <div className="flex flex-h-end w-full gap-10">
         <button className="rounded-btn" onClick={toggleModal}>
           + Refer Patient To Lab
         </button>
@@ -102,7 +102,7 @@ function Treatments({ visit, id }) {
         <button className="rounded-btn" onClick={toggleProcedureModal}>
           + Procedures
         </button>
-      </div>
+      </div> */}
       <TreatmentTable
         patientId={id}
         data={data}

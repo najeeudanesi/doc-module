@@ -110,7 +110,7 @@ function PatientDetails() {
             <>
               <div className="m-t-80 flex space-between">
                 <h1>{patient?.firstName + " " + patient?.lastName}</h1>
-                <button onClick={handlePatientId} className="btn">View Medical History</button>
+                <button onClick={handlePatientId} className="btn">View Medical Record</button>
               </div>
               <div className="tabs flex space-between m-t-20 bold-text w-100">
                 <div

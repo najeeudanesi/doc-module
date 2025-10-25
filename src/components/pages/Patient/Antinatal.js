@@ -10,6 +10,7 @@ import MedicationTable from "./MedicationTable";
 import VitalsRecords from "../../modals/VitalsRecord";
 import AntenatalVisitTable from "./AntenatalVisitTabls";
 import DeliveryForm from "./DeliveryForm";
+import AntenatalLabourMonitoring from "./AntenatalLabourMonitoring";
 
 const Antinatal = () => {
   const [searchParams] = useSearchParams();
@@ -28,13 +29,13 @@ const Antinatal = () => {
 
   const [editingIndex, setEditingIndex] = useState(null);
   const [obstetricEntry, setObstetricEntry] = useState({
-    year: "",
-    age: "",
-    gestationalAgeWeek: "",
+    year: 0,
+    age: 0,
+    gestationalAgeWeek: "0",
     durationOfLabour: "",
     modeOfDelivery: "",
     sex: "",
-    weightKg: "",
+    weightKg: 0,
     fatalOutCome: "",
     aph: false,
     pph: false,
@@ -52,13 +53,13 @@ const Antinatal = () => {
   const cancelEdit = () => {
     setEditingIndex(null);
     setObstetricEntry({
-      year: "",
-      age: "",
-      gestationalAgeWeek: "",
+      year: 0,
+      age: 0,
+      gestationalAgeWeek: "0",
       durationOfLabour: "",
       modeOfDelivery: "",
       sex: "",
-      weightKg: "",
+      weightKg: 0,
       fatalOutCome: "",
       aph: false,
       pph: false,
@@ -95,7 +96,7 @@ const Antinatal = () => {
     setObstetricEntry({
       year: "",
       age: "",
-      gestationalAgeWeek: "",
+      gestationalAgeWeek: "0",
       durationOfLabour: "",
       modeOfDelivery: "",
       sex: "",
@@ -147,6 +148,7 @@ const Antinatal = () => {
       genoType: "",
       weightKg: 0,
       heightCm: 0,
+      gestationAge: "",
       bmi: 0,
     },
     antenatalVisits: [],
@@ -210,9 +212,9 @@ const Antinatal = () => {
     // setIsLoading(true);
     try {
       const response = await get(
-        `/patients/list/antenatal/${treatmentId}/is-family-medicine/false/1/10/antenatal-patients-lab-requests`
+        `/patients/list/antenatal/${treatmentId}/1/10/lab-request`
       );
-      setDataFromLab(response.resultList);
+      setDataFromLab(response?.data?.resultList);
       console.log(response.resultList);
       // response.data && setRepeatedDiagnosis(response.data[0]?.diagnosis);
     } catch (e) {
@@ -227,12 +229,13 @@ const Antinatal = () => {
   //   e.preventDefault();
 
   // };
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (status) => {
     // e.preventDefault();
 
-    console.log("FormData:", formData);
+    console.log("FormData:", { ...formData, status: status });
 
     // console.log(pp)
+    // return
 
     // const errors = validateFormData(formData);
 
@@ -260,20 +263,23 @@ const Antinatal = () => {
       !isEdit
         ? (response = await post(
             `/Antenatal`,
-            formData // send formData directly
+            { ...formData, status: status } // send formData directly
           ))
         : (response = await put(
             `/Antenatal/${treatmentId}`,
-            { ...formData } // send formData directly
+            { ...formData, status: status } // send formData directly
           ));
 
       //
 
-      console.log(response)
+      console.log(response);
 
-      toast.success(isEdit?"updated successfully":"Submitted successfully");
+      toast.success(isEdit ? "updated successfully" : "Submitted successfully");
 
-      navigate(`/doctor/patients/patient-details/${patientId}`);
+      // navigate(`/doctor/patients/patient-details/${patientId}`);
+      // navigate(
+      //   `/doctor/patients/antinatal/${patientId}/?treatmentId=${response?.data?.antenatalId}`
+      // );
 
       console.log("API Response:", response);
     } catch (error) {
@@ -292,12 +298,63 @@ const Antinatal = () => {
     }
   };
 
+  //
+
+  const postPostnatalCare = async () => {
+    const payload = {
+      dateOfDelivery: "2025-09-16T09:58:10.352Z",
+      modeOfDelivery: +formData.postnatalCare.modeOfDelivery || 1,
+      episiotomy: formData.postnatalCare.episiotomy ?? true,
+      complication: formData.postnatalCare.complication || "",
+      sexOfBaby: formData.postnatalCare.sexOfBaby || "",
+      weightOfBabyKg: +formData.postnatalCare.weightOfBabyKg || 0,
+      breastfeedingWell: formData.postnatalCare.breastfeedingWell ?? true,
+      conditionOfBaby: formData.postnatalCare.conditionOfBaby || "",
+      conditionOfMother: formData.postnatalCare.conditionOfMother || "",
+      familyPlanningChoice: formData.postnatalCare.familyPlanningChoice || "",
+
+      //   dateOfDelivery: response?.data.postnatalCare?.dateOfDelivery || "",
+      //   modeOfDelivery: response?.data.postnatalCare?.modeOfDelivery || 1,
+      //   episiotomy: response?.data.postnatalCare?.episiotomy ?? true,
+      //   complication: response?.data.postnatalCare?.complication || "",
+      //   sexOfBaby: response?.data.postnatalCare?.sexOfBaby || "",
+      //   weightOfBabyKg: response?.data.postnatalCare?.weightOfBabyKg || 0,
+      //   breastfeedingWell:
+      //     response?.data.postnatalCare?.breastfeedingWell ?? true,
+      //   conditionOfBaby:
+      //     response?.data.postnatalCare?.conditionOfBaby || "",
+      //   conditionOfMother:
+      //     response?.data.postnatalCare?.conditionOfMother || "",
+      //   familyPlanningChoice:
+      //     response?.data.postnatalCare?.familyPlanningChoice || "",
+      isStandalone: false,
+    };
+
+    // await postPostnatalCare(1, 2, 3, payload);
+
+    try {
+      const endpoint = `/Antenatal/${treatmentId}/patient/${patientId}/appointment/${+formData.appointmentId}/add_postnatal_care`;
+      const response = await put(endpoint, payload);
+      if(response.isSuccess){
+      toast.success("Postnatal care updated successfully");
+
+      }else{
+        toast.error("Failed to post postnatal care"); 
+      }
+      // return response;
+    } catch (error) {
+      console.error("Failed to post postnatal care:", error);
+      throw error;
+    }
+  };
+
   const fetchRecord = async () => {
     try {
       const response = await get(`/Antenatal/${treatmentId}`);
       if (response?.isSuccess) {
         console.log(response);
         setFormData({
+          ...response?.data,
           patientId: response?.data.patient?.id || 0,
           maritalStatus: response?.data.maritalStatus || "",
           educationStatus: response?.data.educationStatus || "",
@@ -340,6 +397,8 @@ const Antinatal = () => {
             weightKg: response?.data.presentPregnancyHistory?.weightKg || 0,
             heightCm: response?.data.presentPregnancyHistory?.heightCm || 0,
             bmi: response?.data.presentPregnancyHistory?.bmi || 0,
+            gestationAge:
+              response?.data.presentPregnancyHistory?.gestationAge || '',
           },
 
           antenatalVisits: response?.data.antenatalVisits || [],
@@ -480,11 +539,11 @@ const Antinatal = () => {
       ],
       followUpAppointment: {
         id: 0,
-        appointDate: "2025-06-01",
-        appointTime: "12:00",
-        description: "Follow up check",
-        doctorEmployeeId: 1,
-        nurseEmployeeId: 2,
+        appointDate: "",
+        appointTime: "",
+        description: "",
+        doctorEmployeeId: 0,
+        nurseEmployeeId: 0,
         isAdmitted: false,
         patientId: +patientId,
         serviceId: 1,
@@ -503,13 +562,13 @@ const Antinatal = () => {
       ...load,
     };
 
-    const errors = validateTreatmentPayload(payload);
+    // const errors = validateTreatmentPayload(payload);
 
-    if (errors.length) {
-      errors.forEach((err) => toast.error(err));
-      console.log("Payload validation errors:", errors);
-      return;
-    }
+    // if (errors.length) {
+    //   errors.forEach((err) => toast.error(err));
+    //   console.log("Payload validation errors:", errors);
+    //   return;
+    // }
 
     try {
       await post(`/ServiceTreatment`, payload);
@@ -542,11 +601,11 @@ const Antinatal = () => {
       }
     };
 
-    const checkArray = (key, value) => {
-      if (!Array.isArray(value) || value.length === 0) {
-        errors.push(`${key} must be a non-empty array`);
-      }
-    };
+    // const checkArray = (key, value) => {
+    //   if (!Array.isArray(value) || value.length === 0) {
+    //     errors.push(`${key} must be a non-empty array`);
+    //   }
+    // };
 
     checkString("dateOfVisit", payload.dateOfVisit);
     checkNumber("appointmentId", payload.appointmentId);
@@ -554,7 +613,7 @@ const Antinatal = () => {
     checkBoolean("isAdmitted", payload.isAdmitted);
     checkNumber("patientId", payload.patientId);
 
-    checkArray("medications", payload.medications);
+    // checkArray("medications", payload.medications);
     payload.medications.forEach((med, i) => {
       checkNumber(
         `medications[${i}].pharmacyInventoryId`,
@@ -567,7 +626,7 @@ const Antinatal = () => {
       checkNumber(`medications[${i}].duration`, med.duration);
     });
 
-    checkArray("otherMedications", payload.otherMedications);
+    // checkArray("otherMedications", payload.otherMedications);
     payload.otherMedications.forEach((med, i) => {
       checkString(`otherMedications[${i}].name`, med.name);
       checkNumber(`otherMedications[${i}].quantity`, med.quantity);
@@ -1022,952 +1081,1166 @@ const Antinatal = () => {
     // setIsLoading(false);
   };
 
+  const [currentStep, setCurrentStep] = useState(0);
+
+  const steps = ["Antenatal", "Antenatal Labour Monitoring", "Delivery Form"];
+
+  const handleStepChange = (index) => {
+    setCurrentStep(index);
+  };
+
   return (
     <div className="consultation-container" style={{ paddingTop: "60px" }}>
-      <div class="flex-between align-center">
-        <div class="flex" style={{ padding: "20px" }}>
-          <FiArrowLeft />
-          <p onClick={() => navigate(-1)}> Back</p>
-        </div>
-        {treatmentId && (
-          <div class="flex-row-gap">
-            <button className="rounded-btn" onClick={toggleModal}>
-              + Refer Patient To Lab
-            </button>
-            <button className="rounded-btn" onClick={toggleTreatmentModal}>
-              + Add Treatment
-            </button>
-          </div>
-        )}
-      </div>
-      <div>
-        <div>
-          <div className="section-box">
-            <h2 style={{ textAlign: "center" }} className="w-100">
-              Antenatal
-            </h2>
-            <VitalsRecords vitals={vitals} viewMode={false} />
+      <div style={{ padding: "20px" }}>
+        <h2>Delivery Process</h2>
+        <StepsComponent steps={steps} onStepChange={handleStepChange} />
 
-            <div className="flex-row-gap-start m-t-20">
-              <div className="w-100">
-                {/* <h2>1. Past History</h2> */}
-
-                <Accordion title="Past Medical History">
-                  <div class="form-grid">
-                    <div className="field-column">
-                      <label>Past Medical History</label>
-                      <input
-                        placeholder="Past Medical History"
-                        value={formData.pastMedicalHistory}
-                        onChange={(e) =>
-                          handleChange(e, ["pastMedicalHistory"])
-                        }
-                      />
-                    </div>
-                    <div className="field-column">
-                      <label>Past Surgical History</label>
-                      <input
-                        placeholder="Past Surgical History"
-                        value={formData.pastSurgicalHistory}
-                        onChange={(e) =>
-                          handleChange(e, ["pastSurgicalHistory"])
-                        }
-                      />
-                    </div>
-                    <div className="field-column">
-                      <label>Family History</label>
-                      <input
-                        placeholder="Family History"
-                        value={formData.familyHistory}
-                        onChange={(e) => handleChange(e, ["familyHistory"])}
-                      />
-                    </div>
+        <div style={{ marginTop: "20px" }}>
+          {currentStep === 0 && (
+            <div class="w-100">
+              <div class="flex-between align-center">
+                <div
+                  class="flex"
+                  style={{ padding: "20px", cursor: "pointer" }}
+                >
+                  <FiArrowLeft />
+                  <p onClick={() => navigate(-1)}> Back</p>
+                </div>
+                {treatmentId && (
+                  <div class="flex-row-gap">
+                    <button
+                      disabled={formData.status !== "submitted"}
+                      className="rounded-btn"
+                      onClick={toggleModal}
+                    >
+                      + Refer Patient To Lab
+                    </button>
+                    <button
+                      disabled={formData.status !== "submitted"}
+                      className="rounded-btn"
+                      onClick={toggleTreatmentModal}
+                    >
+                      + Add Treatment
+                    </button>
                   </div>
-                </Accordion>
-
-                <Accordion title="Past Obstetric History">
-                  <div className="flex-row-gap-start">
+                )}
+              </div>
+              <div>
+                <div>
+                  <div className="section-box">
                     <div
-                      style={{ width: "15%", marginRight: "10px" }}
-                      className=""
+                      className="flex"
+                      style={{ display: "flex", alignItems: "flex-start" }}
                     >
-                      <label>Gravida</label>
-                      <input
-                        type="text"
-                        value={formData.gravida}
-                        onChange={(e) => handleChange(e, ["gravida"])}
-                        placeholder="Gravida"
-                      />
+                      <h2 style={{ textAlign: "center" }} className="w-100">
+                        Antenatal
+                      </h2>
+                      {(formData.status || isEdit) && (
+                        <div>
+                          {formData.status !== "submitted" ? (
+                            <p
+                              className="flex bold"
+                              style={{
+                                backgroundColor: "yellow",
+                                borderRadius: "20px",
+                                padding: "10px 20px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              saved
+                            </p>
+                          ) : (
+                            <p
+                              style={{
+                                backgroundColor: "#ccffcc",
+                                borderRadius: "20px",
+                                padding: "10px 20px",
+                                fontWeight: "bold",
+                                color: "white",
+                              }}
+                            >
+                              Submitted
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
-                    <div
-                      style={{ width: "15%", marginRight: "10px" }}
-                      className=""
-                    >
-                      <label>Para</label>
-                      <input
-                        type="text"
-                        value={formData.para}
-                        onChange={(e) => handleChange(e, ["para"])}
-                        placeholder="Para"
-                      />
-                    </div>
-                    <div
-                      style={{ width: "15%", marginRight: "10px" }}
-                      className=""
-                    >
-                      <label>Alive</label>
-                      <input
-                        type="text"
-                        value={formData.alive}
-                        onChange={(e) => handleChange(e, ["alive"])}
-                        placeholder="Alive"
-                      />
-                    </div>
-                    <div
-                      style={{ width: "15%", marginRight: "10px" }}
-                      className=""
-                    >
-                      <label>Male</label>
-                      <input
-                        type="text"
-                        value={formData.male}
-                        onChange={(e) => handleChange(e, ["male"])}
-                        placeholder="Male"
-                      />
-                    </div>
-                    <div
-                      style={{ width: "15%", marginRight: "10px" }}
-                      className=""
-                    >
-                      <label>Female</label>
-                      <input
-                        type="text"
-                        value={formData.female}
-                        onChange={(e) => handleChange(e, ["female"])}
-                        placeholder="Female"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="readonly-table-wrapperR mt-10">
-                    <table
-                      border={1}
-                      cellPadding={5}
-                      className="w-full readonly-tableR  text-sm"
-                    >
-                      <thead>
-                        <tr>
-                          <th>Preg #</th>
-                          <th>Year at birth</th>
-                          <th>Age at birth</th>
-                          <th>GA (Weeks)</th>
-                          <th>Duration Of Labour</th>
-                          <th>Mode of Delivery</th>
-                          <th>Sex Of Baby</th>
-                          <th>Weight (Kg)</th>
-                          <th>Foetal Outcome</th>
-                          <th>APH</th>
-                          <th>PPH</th>
-                          <th>PIH</th>
-                          <th>Other Illness</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {formData?.obstetricHistories?.map((item, index) => (
-                          <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>
-                              {editingIndex === index ? (
-                                <input
-                                  type="number"
-                                  value={obstetricEntry.year}
-                                  onChange={(e) =>
-                                    setObstetricEntry({
-                                      ...obstetricEntry,
-                                      year: +e.target.value,
-                                    })
-                                  }
-                                />
-                              ) : (
-                                item.year
-                              )}
-                            </td>
-                            <td>
-                              {editingIndex === index ? (
-                                <input
-                                  type="number"
-                                  value={obstetricEntry.age}
-                                  onChange={(e) =>
-                                    setObstetricEntry({
-                                      ...obstetricEntry,
-                                      age: +e.target.value,
-                                    })
-                                  }
-                                />
-                              ) : (
-                                item.age
-                              )}
-                            </td>
-                            <td>
-                              {editingIndex === index ? (
-                                <input
-                                  type="number"
-                                  value={obstetricEntry.gestationalAgeWeek}
-                                  onChange={(e) =>
-                                    setObstetricEntry({
-                                      ...obstetricEntry,
-                                      gestationalAgeWeek: +e.target.value,
-                                    })
-                                  }
-                                />
-                              ) : (
-                                item.gestationalAgeWeek
-                              )}
-                            </td>
-                            <td>
-                              {editingIndex === index ? (
-                                <input
-                                  value={obstetricEntry.durationOfLabour}
-                                  onChange={(e) =>
-                                    setObstetricEntry({
-                                      ...obstetricEntry,
-                                      durationOfLabour: e.target.value,
-                                    })
-                                  }
-                                />
-                              ) : (
-                                item.durationOfLabour
-                              )}
-                            </td>
-                            <td>
-                              {editingIndex === index ? (
-                                <input
-                                  value={obstetricEntry.modeOfDelivery}
-                                  onChange={(e) =>
-                                    setObstetricEntry({
-                                      ...obstetricEntry,
-                                      modeOfDelivery: e.target.value,
-                                    })
-                                  }
-                                />
-                              ) : (
-                                item.modeOfDelivery
-                              )}
-                            </td>
-                            <td>
-                              {editingIndex === index ? (
-                                <select
-                                  className="input-field"
-                                  value={obstetricEntry.sex}
-                                  onChange={(e) =>
-                                    setObstetricEntry({
-                                      ...obstetricEntry,
-                                      sex: e.target.value,
-                                    })
-                                  }
-                                >
-                                  <option value="">Select</option>
-                                  <option value="Male">Male</option>
-                                  <option value="Female">Female</option>
-                                </select>
-                              ) : (
-                                item.sex
-                              )}
-                            </td>
-                            <td>
-                              {editingIndex === index ? (
-                                <input
-                                  type="number"
-                                  value={obstetricEntry.weightKg}
-                                  onChange={(e) =>
-                                    setObstetricEntry({
-                                      ...obstetricEntry,
-                                      weightKg: +e.target.value,
-                                    })
-                                  }
-                                />
-                              ) : (
-                                item.weightKg
-                              )}
-                            </td>
-                            <td>
-                              {editingIndex === index ? (
-                                <input
-                                  placeholder="Death, Alive, Abortion"
-                                  value={obstetricEntry.fatalOutCome}
-                                  onChange={(e) =>
-                                    setObstetricEntry({
-                                      ...obstetricEntry,
-                                      fatalOutCome: e.target.value,
-                                    })
-                                  }
-                                />
-                              ) : (
-                                item.fatalOutCome
-                              )}
-                            </td>
-                            <td>
-                              {editingIndex === index ? (
-                                <input
-                                  type="checkbox"
-                                  checked={obstetricEntry.aph}
-                                  onChange={(e) =>
-                                    setObstetricEntry({
-                                      ...obstetricEntry,
-                                      aph: e.target.checked,
-                                    })
-                                  }
-                                />
-                              ) : item.aph ? (
-                                "✔"
-                              ) : (
-                                ""
-                              )}
-                            </td>
-                            <td>
-                              {editingIndex === index ? (
-                                <input
-                                  type="checkbox"
-                                  checked={obstetricEntry.pph}
-                                  onChange={(e) =>
-                                    setObstetricEntry({
-                                      ...obstetricEntry,
-                                      pph: e.target.checked,
-                                    })
-                                  }
-                                />
-                              ) : item.pph ? (
-                                "✔"
-                              ) : (
-                                ""
-                              )}
-                            </td>
-                            <td>
-                              {editingIndex === index ? (
-                                <input
-                                  type="checkbox"
-                                  checked={obstetricEntry.pih}
-                                  onChange={(e) =>
-                                    setObstetricEntry({
-                                      ...obstetricEntry,
-                                      pih: e.target.checked,
-                                    })
-                                  }
-                                />
-                              ) : item.pih ? (
-                                "✔"
-                              ) : (
-                                ""
-                              )}
-                            </td>
-                            <td>
-                              {editingIndex === index ? (
-                                <input
-                                  value={obstetricEntry.otherIllness}
-                                  onChange={(e) =>
-                                    setObstetricEntry({
-                                      ...obstetricEntry,
-                                      otherIllness: e.target.value,
-                                    })
-                                  }
-                                />
-                              ) : (
-                                item.otherIllness
-                              )}
-                            </td>
-                            {/* Repeat for other cells similarly */}
-                            <td>
-                              {editingIndex === index ? (
-                                <>
-                                  <button onClick={() => saveEdit(index)}>
-                                    💾
-                                  </button>
-                                  <button onClick={cancelEdit}>❌</button>
-                                </>
-                              ) : (
-                                <>
-                                  <button
-                                    onClick={() => startEdit(index, item)}
-                                  >
-                                    ✏️
-                                  </button>
-                                  <button onClick={() => deleteEntry(index)}>
-                                    🗑️
-                                  </button>
-                                </>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                        {/* New Entry Row (already in your code) */}
-                      </tbody>
-                    </table>
-                  </div>
-                  <button
-                    className="btn"
-                    type="button"
-                    onClick={addObstetricRow}
-                    style={{ margin: "20px" }}
-                  >
-                    ➕ Add Obstetric Entry
-                  </button>
-                </Accordion>
-
-                {/* <div class="">
-                  <div className="group-box">
-                    <label>Marital Status</label>
-                    {["Single", "Married", "Divorced"].map((opt, idx) => (
-                      <label key={opt}>
-                        <input
-                          type="radio"
-                          name="maritalStatus"
-                          value={opt}
-                          onChange={(e) => handleChange(e, ["maritalStatus"])}
-                        />
-                        {opt}
-                      </label>
-                    ))}
-                  </div>
-                  <div className="group-box">
-                    <label>Educational Status</label>
-                    {["1st Degree", "2nd Degree", "3rd Degree"].map(
-                      (opt, idx) => (
+                    <VitalsRecords vitals={vitals} viewMode={false} />
+                    <div className="flex-row-gap-start m-t-20">
+                      <div className="w-100">
+                        {/* <h2>1. Past History</h2> */}
+                        <Accordion title="Patient Complaint">
+                          <div class="form-grid">
+                            <div className="field-column">
+                              <label>Patient Complaint</label>
+                              <textarea
+                                placeholder="Patient"
+                                value={formData.patientComplaint}
+                                rows={3}
+                              />
+                            </div>
+                          </div>
+                        </Accordion>
+                        <Accordion title="Past Medical History">
+                          <div class="form-grid">
+                            <div className="field-column">
+                              <label>Past Medical History</label>
+                              <input
+                                placeholder="Past Medical History"
+                                value={formData.pastMedicalHistory}
+                                onChange={(e) =>
+                                  handleChange(e, ["pastMedicalHistory"])
+                                }
+                              />
+                            </div>
+                            <div className="field-column">
+                              <label>Past Surgical History</label>
+                              <input
+                                placeholder="Past Surgical History"
+                                value={formData.pastSurgicalHistory}
+                                onChange={(e) =>
+                                  handleChange(e, ["pastSurgicalHistory"])
+                                }
+                              />
+                            </div>
+                            <div className="field-column">
+                              <label>Family History</label>
+                              <input
+                                placeholder="Family History"
+                                value={formData.familyHistory}
+                                onChange={(e) =>
+                                  handleChange(e, ["familyHistory"])
+                                }
+                              />
+                            </div>
+                          </div>
+                        </Accordion>
+                        <Accordion title="Past Obstetric History">
+                          <div className="flex-row-gap-start">
+                            <div
+                              style={{ width: "15%", marginRight: "10px" }}
+                              className=""
+                            >
+                              <label>Gravida</label>
+                              <input
+                                type="text"
+                                value={formData.gravida}
+                                onChange={(e) => handleChange(e, ["gravida"])}
+                                placeholder="Gravida"
+                              />
+                            </div>
+                            <div
+                              style={{ width: "15%", marginRight: "10px" }}
+                              className=""
+                            >
+                              <label>Para</label>
+                              <input
+                                type="text"
+                                value={formData.para}
+                                onChange={(e) => handleChange(e, ["para"])}
+                                placeholder="Para"
+                              />
+                            </div>
+                            <div
+                              style={{ width: "15%", marginRight: "10px" }}
+                              className=""
+                            >
+                              <label>Alive</label>
+                              <input
+                                type="text"
+                                value={formData.alive}
+                                onChange={(e) => handleChange(e, ["alive"])}
+                                placeholder="Alive"
+                              />
+                            </div>
+                            <div
+                              style={{ width: "15%", marginRight: "10px" }}
+                              className=""
+                            >
+                              <label>Male</label>
+                              <input
+                                type="text"
+                                value={formData.male}
+                                onChange={(e) => handleChange(e, ["male"])}
+                                placeholder="Male"
+                              />
+                            </div>
+                            <div
+                              style={{ width: "15%", marginRight: "10px" }}
+                              className=""
+                            >
+                              <label>Female</label>
+                              <input
+                                type="text"
+                                value={formData.female}
+                                onChange={(e) => handleChange(e, ["female"])}
+                                placeholder="Female"
+                              />
+                            </div>
+                          </div>
+                          <div className="readonly-table-wrapperR mt-10">
+                            <table
+                              border={1}
+                              cellPadding={5}
+                              className="w-full readonly-tableR  text-sm"
+                            >
+                              <thead>
+                                <tr>
+                                  <th>Preg #</th>
+                                  <th>Year at birth</th>
+                                  <th>Age at birth</th>
+                                  <th>GA (Weeks)</th>
+                                  <th>Duration Of Labour</th>
+                                  <th>Mode of Delivery</th>
+                                  <th>Sex Of Baby</th>
+                                  <th>Weight (Kg)</th>
+                                  <th>Foetal Outcome</th>
+                                  <th>APH</th>
+                                  <th>PPH</th>
+                                  <th>PIH</th>
+                                  <th>Other Illness</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {formData?.obstetricHistories?.map(
+                                  (item, index) => (
+                                    <tr key={index}>
+                                      <td>{index + 1}</td>
+                                      <td>
+                                        {editingIndex === index ? (
+                                          <input
+                                            type="number"
+                                            value={obstetricEntry.year}
+                                            onChange={(e) =>
+                                              setObstetricEntry({
+                                                ...obstetricEntry,
+                                                year: +e.target.value || 0,
+                                              })
+                                            }
+                                          />
+                                        ) : (
+                                          item.year
+                                        )}
+                                      </td>
+                                      <td>
+                                        {editingIndex === index ? (
+                                          <input
+                                            type="number"
+                                            value={obstetricEntry.age || 0}
+                                            onChange={(e) =>
+                                              setObstetricEntry({
+                                                ...obstetricEntry,
+                                                age: +e.target.value || 0,
+                                              })
+                                            }
+                                          />
+                                        ) : (
+                                          item.age
+                                        )}
+                                      </td>
+                                      <td>
+                                        {editingIndex === index ? (
+                                          <input
+                                            // type="number"
+                                            value={
+                                              obstetricEntry.gestationalAgeWeek ||
+                                              "0"
+                                            }
+                                            onChange={(e) =>
+                                              setObstetricEntry({
+                                                ...obstetricEntry,
+                                                gestationalAgeWeek:
+                                                  e.target.value || "0",
+                                              })
+                                            }
+                                          />
+                                        ) : (
+                                          item.gestationalAgeWeek
+                                        )}
+                                      </td>
+                                      <td>
+                                        {editingIndex === index ? (
+                                          <input
+                                            value={
+                                              obstetricEntry.durationOfLabour
+                                            }
+                                            onChange={(e) =>
+                                              setObstetricEntry({
+                                                ...obstetricEntry,
+                                                durationOfLabour:
+                                                  e.target.value,
+                                              })
+                                            }
+                                          />
+                                        ) : (
+                                          item.durationOfLabour
+                                        )}
+                                      </td>
+                                      <td>
+                                        {editingIndex === index ? (
+                                          <input
+                                            value={
+                                              obstetricEntry.modeOfDelivery
+                                            }
+                                            onChange={(e) =>
+                                              setObstetricEntry({
+                                                ...obstetricEntry,
+                                                modeOfDelivery: e.target.value,
+                                              })
+                                            }
+                                          />
+                                        ) : (
+                                          item.modeOfDelivery
+                                        )}
+                                      </td>
+                                      <td>
+                                        {editingIndex === index ? (
+                                          <select
+                                            className="input-field"
+                                            value={obstetricEntry.sex}
+                                            onChange={(e) =>
+                                              setObstetricEntry({
+                                                ...obstetricEntry,
+                                                sex: e.target.value,
+                                              })
+                                            }
+                                          >
+                                            <option value="">Select</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">
+                                              Female
+                                            </option>
+                                          </select>
+                                        ) : (
+                                          item.sex
+                                        )}
+                                      </td>
+                                      <td>
+                                        {editingIndex === index ? (
+                                          <input
+                                            type="number"
+                                            value={obstetricEntry.weightKg || 0}
+                                            onChange={(e) =>
+                                              setObstetricEntry({
+                                                ...obstetricEntry,
+                                                weightKg: +e.target.value,
+                                              })
+                                            }
+                                          />
+                                        ) : (
+                                          item.weightKg
+                                        )}
+                                      </td>
+                                      <td>
+                                        {editingIndex === index ? (
+                                          <input
+                                            placeholder="Death, Alive, Abortion"
+                                            value={obstetricEntry.fatalOutCome}
+                                            onChange={(e) =>
+                                              setObstetricEntry({
+                                                ...obstetricEntry,
+                                                fatalOutCome: e.target.value,
+                                              })
+                                            }
+                                          />
+                                        ) : (
+                                          item.fatalOutCome
+                                        )}
+                                      </td>
+                                      <td>
+                                        {editingIndex === index ? (
+                                          <input
+                                            type="checkbox"
+                                            checked={obstetricEntry.aph}
+                                            onChange={(e) =>
+                                              setObstetricEntry({
+                                                ...obstetricEntry,
+                                                aph: e.target.checked,
+                                              })
+                                            }
+                                          />
+                                        ) : item.aph ? (
+                                          "✔"
+                                        ) : (
+                                          ""
+                                        )}
+                                      </td>
+                                      <td>
+                                        {editingIndex === index ? (
+                                          <input
+                                            type="checkbox"
+                                            checked={obstetricEntry.pph}
+                                            onChange={(e) =>
+                                              setObstetricEntry({
+                                                ...obstetricEntry,
+                                                pph: e.target.checked,
+                                              })
+                                            }
+                                          />
+                                        ) : item.pph ? (
+                                          "✔"
+                                        ) : (
+                                          ""
+                                        )}
+                                      </td>
+                                      <td>
+                                        {editingIndex === index ? (
+                                          <input
+                                            type="checkbox"
+                                            checked={obstetricEntry.pih}
+                                            onChange={(e) =>
+                                              setObstetricEntry({
+                                                ...obstetricEntry,
+                                                pih: e.target.checked,
+                                              })
+                                            }
+                                          />
+                                        ) : item.pih ? (
+                                          "✔"
+                                        ) : (
+                                          ""
+                                        )}
+                                      </td>
+                                      <td>
+                                        {editingIndex === index ? (
+                                          <input
+                                            value={obstetricEntry.otherIllness}
+                                            onChange={(e) =>
+                                              setObstetricEntry({
+                                                ...obstetricEntry,
+                                                otherIllness: e.target.value,
+                                              })
+                                            }
+                                          />
+                                        ) : (
+                                          item.otherIllness
+                                        )}
+                                      </td>
+                                      {/* Repeat for other cells similarly */}
+                                      <td>
+                                        {editingIndex === index ? (
+                                          <>
+                                            <button
+                                              onClick={() => saveEdit(index)}
+                                            >
+                                              💾
+                                            </button>
+                                            <button onClick={cancelEdit}>
+                                              ❌
+                                            </button>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <button
+                                              onClick={() =>
+                                                startEdit(index, item)
+                                              }
+                                            >
+                                              ✏️
+                                            </button>
+                                            <button
+                                              onClick={() => deleteEntry(index)}
+                                            >
+                                              🗑️
+                                            </button>
+                                          </>
+                                        )}
+                                      </td>
+                                    </tr>
+                                  )
+                                )}
+                                {/* New Entry Row (already in your code) */}
+                              </tbody>
+                            </table>
+                          </div>
+                          <button
+                            className="btn"
+                            type="button"
+                            onClick={addObstetricRow}
+                            style={{ margin: "20px" }}
+                          >
+                            ➕ Add Obstetric Entry
+                          </button>
+                        </Accordion>
+                        {/* <div class="">
+                    <div className="group-box">
+                      <label>Marital Status</label>
+                      {["Single", "Married", "Divorced"].map((opt, idx) => (
                         <label key={opt}>
                           <input
                             type="radio"
-                            name="educationStatus"
+                            name="maritalStatus"
                             value={opt}
-                            onChange={(e) =>
-                              handleChange(e, ["educationStatus"])
-                            }
+                            onChange={(e) => handleChange(e, ["maritalStatus"])}
                           />
                           {opt}
                         </label>
-                      )
+                      ))}
+                    </div>
+                    <div className="group-box">
+                      <label>Educational Status</label>
+                      {["1st Degree", "2nd Degree", "3rd Degree"].map(
+                        (opt, idx) => (
+                          <label key={opt}>
+                            <input
+                              type="radio"
+                              name="educationStatus"
+                              value={opt}
+                              onChange={(e) =>
+                                handleChange(e, ["educationStatus"])
+                              }
+                            />
+                            {opt}
+                          </label>
+                        )
+                      )}
+                    </div>
+                  </div> */}
+                        {/* <h2>1. Make an accordion of them </h2> */}
+                      </div>
+                    </div>
+                    <Accordion title="Present Pregnancy History">
+                      <div className="form-grid">
+                        <div className="field-column">
+                          <label>Last Menstrual Period (LMP)</label>
+                          <input
+                            type="date"
+                            value={
+                              formData.presentPregnancyHistory
+                                ?.lastMenstrualPeriod
+                            }
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "lastMenstrualPeriod",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>Expected Date of Delivery (EDD)</label>
+                          <input
+                            type="date"
+                            value={
+                              formData.presentPregnancyHistory
+                                ?.expectedDateOfDelivery
+                            }
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "expectedDateOfDelivery",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>Gestational Age (GA)</label>
+                          <input
+                            type=""
+                            value={
+                              formData.presentPregnancyHistory?.gestationAge
+                            }
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "gestationAge",
+                              ])
+                            }
+                          />
+                        </div>
+                      </div>
+                      <h4 style={{ margin: "20px 0px" }}>
+                        Booking Test Results
+                      </h4>
+                      <div className="form-grid">
+                        <div className="field-column">
+                          <label>Weight (kg)</label>
+                          <input
+                            type="number"
+                            value={formData.presentPregnancyHistory?.weightKg}
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "weightKg",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>Height (cm)</label>
+                          <input
+                            type="number"
+                            value={formData.presentPregnancyHistory?.heightCm}
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "heightCm",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>BMI</label>
+                          <input
+                            type="number"
+                            value={formData.presentPregnancyHistory?.bmi}
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "bmi",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>PCV</label>
+                          <input
+                            type="text"
+                            value={
+                              formData.presentPregnancyHistory?.bookingTest.pcv
+                            }
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "bookingTest",
+                                "pcv",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>Glu</label>
+                          <input
+                            type="text"
+                            value={
+                              formData.presentPregnancyHistory?.bookingTest.glu
+                            }
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "bookingTest",
+                                "glu",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>Protein</label>
+                          <input
+                            type="text"
+                            value={
+                              formData.presentPregnancyHistory?.bookingTest.prot
+                            }
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "bookingTest",
+                                "prot",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>VDRL</label>
+                          <input
+                            type="text"
+                            value={
+                              formData.presentPregnancyHistory?.bookingTest.vdrl
+                            }
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "bookingTest",
+                                "vdrl",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>HIV</label>
+                          <input
+                            type="text"
+                            value={
+                              formData.presentPregnancyHistory?.bookingTest.hiv
+                            }
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "bookingTest",
+                                "hiv",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>HBV</label>
+                          <input
+                            type="text"
+                            value={
+                              formData.presentPregnancyHistory?.bookingTest.hbv
+                            }
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "bookingTest",
+                                "hbv",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>HCV</label>
+                          <input
+                            type="text"
+                            value={
+                              formData.presentPregnancyHistory?.bookingTest.bcv
+                            }
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "bookingTest",
+                                "bcv",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>Blood Group</label>
+                          <input
+                            type="text"
+                            value={formData.presentPregnancyHistory.bloodGroup}
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "bloodGroup",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>Genotype</label>
+                          <input
+                            type="text"
+                            value={formData.presentPregnancyHistory.genoType}
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "presentPregnancyHistory",
+                                "genoType",
+                              ])
+                            }
+                          />
+                        </div>
+                      </div>
+                    </Accordion>
+                    <Accordion title=" Antenatal Visits ">
+                      <AntenatalVisitTable
+                        fetchRecord={fetchRecord}
+                        catchAddedVisits={catchAddedVisits}
+                        visits={formData.antenatalVisits}
+                        appointmentId={+localStorage.getItem("appointmentId")}
+                        patientId={patientId}
+                        id={treatmentId}
+                      />
+                    </Accordion>
+                    <Accordion title="Birth Plan">
+                      <div className="form-grid">
+                        <div className="field-column">
+                          <label>Planned Date of Delivery</label>
+                          <input
+                            type="date"
+                            value={
+                              formData.birthPlan.plannedDateOfDelivery?.split(
+                                "T"
+                              )[0] || ""
+                            }
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "birthPlan",
+                                "plannedDateOfDelivery",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>Mode of Delivery</label>
+                          <select
+                            className="input-field"
+                            value={formData.birthPlan.modeOfDelivery}
+                            onChange={(e) =>
+                              handleChange(e, ["birthPlan", "modeOfDelivery"])
+                            }
+                          >
+                            <option value="">--Select--</option>
+                            <option value={1}>Vaginal</option>
+                            <option value={2}>Cesarean - elective</option>
+                            <option value={3}>Assisted - emergency</option>
+                            <option value={4}>Trial of labour</option>
+                            <option value={5}>VBAC</option>
+                          </select>
+                        </div>
+                        <div className="field-column">
+                          <label>Category</label>
+                          <select
+                            className="input-field"
+                            value={formData.birthPlan.category}
+                            onChange={(e) =>
+                              handleChange(e, ["birthPlan", "category"])
+                            }
+                          >
+                            <option value="">--Select--</option>
+                            <option value={1}>Primpara</option>
+                            <option value={2}>Multipara</option>
+                            <option value={3}>Grandmultipara</option>
+                          </select>
+                        </div>
+                        <div className="field-column">
+                          <label>Type of Pregnancy</label>
+                          <select
+                            className="input-field"
+                            value={formData.birthPlan.typeOfPregnancy}
+                            onChange={(e) =>
+                              handleChange(e, ["birthPlan", "typeOfPregnancy"])
+                            }
+                          >
+                            <option value="">--Select--</option>
+                            <option value={"Singleton"}>Singleton</option>
+                            <option value={"Twins"}>Twins</option>
+                            <option value={"Triplets"}>Triplets</option>
+                            <option value={"Quadriplets"}>Quadriplets</option>
+                            {/* <option value={'Singleton'}>Borderline</option> */}
+                          </select>
+                          {/* <input
+                  type="text"
+                  value={formData.birthPlan.typeOfPregnancy}
+                  onChange={(e) =>
+                    handleChange(e, ["birthPlan", "typeOfPregnancy"])
+                  }
+                /> */}
+                        </div>
+                        <div className="field-column">
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={formData.birthPlan.episiotomyNeeded}
+                              onChange={(e) =>
+                                handleChange(e, [
+                                  "birthPlan",
+                                  "episiotomyNeeded",
+                                ])
+                              }
+                            />
+                            Episiotomy Needed
+                          </label>
+                        </div>
+                        <div className="field-column">
+                          <label>Clinical Pelvimetry</label>
+                          <select
+                            className="input-field"
+                            value={formData.birthPlan.clinicalPelvimetry}
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "birthPlan",
+                                "clinicalPelvimetry",
+                              ])
+                            }
+                          >
+                            <option value="">--Select--</option>
+                            <option value={1}>Adequate</option>
+                            <option value={2}>Inadequate</option>
+                            <option value={2}>Borderline</option>
+                          </select>
+                        </div>
+                        <div className="field-column">
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={formData.birthPlan.deliveryListReceived}
+                              onChange={(e) =>
+                                handleChange(e, [
+                                  "birthPlan",
+                                  "deliveryListReceived",
+                                ])
+                              }
+                            />
+                            Delivery List Received
+                          </label>
+                        </div>
+                      </div>
+                    </Accordion>
+                    <Accordion title=" Postnatal Care">
+                      <div className="form-grid">
+                        <div className="field-column">
+                          <label>Date of Delivery</label>
+                          <input
+                            type="date"
+                            value={
+                              formData.postnatalCare.dateOfDelivery?.split(
+                                "T"
+                              )[0] || ""
+                            }
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "postnatalCare",
+                                "dateOfDelivery",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>Mode of Delivery</label>
+                          <select
+                            className="input-field"
+                            value={formData.postnatalCare.modeOfDelivery}
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "postnatalCare",
+                                "modeOfDelivery",
+                              ])
+                            }
+                          >
+                            <option value={1}>Vaginal</option>
+                            <option value={2}>Cesarean - elective</option>
+                            <option value={3}>Assisted - emergency</option>
+                            <option value={4}>Trial of labour</option>
+                            <option value={5}>VBAC</option>
+                          </select>
+                        </div>
+                        <div className="field-column">
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={formData.postnatalCare.episiotomy}
+                              onChange={(e) =>
+                                handleChange(e, ["postnatalCare", "episiotomy"])
+                              }
+                            />
+                            Episiotomy Done
+                          </label>
+                        </div>
+                        <div className="field-column">
+                          <label>Complication</label>
+                          <input
+                            type="text"
+                            value={formData.postnatalCare.complication}
+                            onChange={(e) =>
+                              handleChange(e, ["postnatalCare", "complication"])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>Sex of Baby</label>
+                          <select
+                            className="input-field"
+                            value={formData.postnatalCare.sexOfBaby}
+                            onChange={(e) =>
+                              handleChange(e, ["postnatalCare", "sexOfBaby"])
+                            }
+                          >
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                          </select>
+                        </div>
+                        <div className="field-column">
+                          <label>Weight of Baby (kg)</label>
+                          <input
+                            type="number"
+                            value={formData.postnatalCare.weightOfBabyKg}
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "postnatalCare",
+                                "weightOfBabyKg",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={formData.postnatalCare.breastfeedingWell}
+                              onChange={(e) =>
+                                handleChange(e, [
+                                  "postnatalCare",
+                                  "breastfeedingWell",
+                                ])
+                              }
+                            />
+                            Breastfeeding Well
+                          </label>
+                        </div>
+                        <div className="field-column">
+                          <label>Condition of Baby</label>
+                          <input
+                            type="text"
+                            value={formData.postnatalCare.conditionOfBaby}
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "postnatalCare",
+                                "conditionOfBaby",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>Condition of Mother</label>
+                          <input
+                            type="text"
+                            value={formData.postnatalCare.conditionOfMother}
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "postnatalCare",
+                                "conditionOfMother",
+                              ])
+                            }
+                          />
+                        </div>
+                        <div className="field-column">
+                          <label>Family Planning Choice</label>
+                          <input
+                            type="text"
+                            value={formData.postnatalCare.familyPlanningChoice}
+                            onChange={(e) =>
+                              handleChange(e, [
+                                "postnatalCare",
+                                "familyPlanningChoice",
+                              ])
+                            }
+                          />
+                        </div>
+                        <button
+                          className="submit-btn"
+                          onClick={postPostnatalCare}
+                          style={{ marginTop: "20px" }}
+                        >
+                          Update postatal
+                        </button>
+                      </div>
+                      {/* {!treatmentId && (
+                 
+                )} */}
+                    </Accordion>
+                    {!treatmentId && (
+                      <div className="flex-row-gap">
+                        <button
+                          className="submit-btn"
+                          type="submit"
+                          style={{ marginTop: "20px" }}
+                          onClick={() => handleSubmit("saved")}
+                        >
+                          Save
+                        </button>
+                        <button
+                          className="submit-btn"
+                          type="submit"
+                          style={{ marginTop: "20px" }}
+                          onClick={() => handleSubmit("submitted")}
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    )}
+                    {isEdit && formData.status !== "submitted" && (
+                      <div className="flex-row-gap">
+                        <button
+                          className="submit-btn"
+                          type="submit"
+                          style={{ marginTop: "20px" }}
+                          onClick={() => handleSubmit("saved")}
+                        >
+                          Update Record
+                        </button>
+                        <button
+                          className="submit-btn"
+                          type="submit"
+                          style={{ marginTop: "20px" }}
+                          onClick={() => handleSubmit("submitted")}
+                        >
+                          Submit Record
+                        </button>
+                      </div>
+                    )}
+                    {isEdit && formData.status == "submitted" && (
+                      <div className="flex-row-gap">
+                        <button
+                          className="submit-btn"
+                          type="submit"
+                          style={{ marginTop: "20px" }}
+                          onClick={() => handleSubmit("saved")}
+                        >
+                          Update Record
+                        </button>
+                        {/* <button
+                          className="submit-btn"
+                          type="submit"
+                          style={{ marginTop: "20px" }}
+                          onClick={() => handleSubmit("submitted")}
+                        >
+                          Submit Record
+                        </button> */}
+                      </div>
                     )}
                   </div>
-                </div> */}
-                {/* <h2>1. Make an accordion of them </h2> */}
-              </div>
-            </div>
-            <Accordion title="Present Pregnancy History">
-              <div className="form-grid">
-                <div className="field-column">
-                  <label>Last Menstrual Period (LMP)</label>
-                  <input
-                    type="date"
-                    value={
-                      formData.presentPregnancyHistory?.lastMenstrualPeriod
-                    }
-                    onChange={(e) =>
-                      handleChange(e, [
-                        "presentPregnancyHistory",
-                        "lastMenstrualPeriod",
-                      ])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>Expected Date of Delivery (EDD)</label>
-                  <input
-                    type="date"
-                    value={
-                      formData.presentPregnancyHistory?.expectedDateOfDelivery
-                    }
-                    onChange={(e) =>
-                      handleChange(e, [
-                        "presentPregnancyHistory",
-                        "expectedDateOfDelivery",
-                      ])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>Gestational Age (GA)</label>
-                  <input
-                    type="text"
-                    value={formData.presentPregnancyHistory?.gestationalAge}
-                    onChange={(e) =>
-                      handleChange(e, [
-                        "presentPregnancyHistory",
-                        "gestationalAge",
-                      ])
-                    }
-                  />
                 </div>
               </div>
-
-              <h4 style={{ margin: "20px 0px" }}>Booking Test Results</h4>
-              <div className="form-grid">
+              {treatmentId && dataFromLab && (
                 <div className="field-column">
-                  <label>Weight (kg)</label>
-                  <input
-                    type="number"
-                    value={formData.presentPregnancyHistory?.weightKg}
-                    onChange={(e) =>
-                      handleChange(e, ["presentPregnancyHistory", "weightKg"])
-                    }
+                  <label>Patient's Lab Results</label>
+                  <LabRequestTable
+                    data={dataFromLab}
+                    isFamily={"Antenatal"}
+                    treatmentId={treatmentId}
                   />
                 </div>
-                <div className="field-column">
-                  <label>Height (cm)</label>
-                  <input
-                    type="number"
-                    value={formData.presentPregnancyHistory?.heightCm}
-                    onChange={(e) =>
-                      handleChange(e, ["presentPregnancyHistory", "heightCm"])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>BMI</label>
-                  <input
-                    type="number"
-                    value={formData.presentPregnancyHistory?.bmi}
-                    onChange={(e) =>
-                      handleChange(e, ["presentPregnancyHistory", "bmi"])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>PCV</label>
-                  <input
-                    type="text"
-                    value={formData.presentPregnancyHistory?.bookingTest.pcv}
-                    onChange={(e) =>
-                      handleChange(e, [
-                        "presentPregnancyHistory",
-                        "bookingTest",
-                        "pcv",
-                      ])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>Glu</label>
-                  <input
-                    type="text"
-                    value={formData.presentPregnancyHistory?.bookingTest.glu}
-                    onChange={(e) =>
-                      handleChange(e, [
-                        "presentPregnancyHistory",
-                        "bookingTest",
-                        "glu",
-                      ])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>Protein</label>
-                  <input
-                    type="text"
-                    value={formData.presentPregnancyHistory?.bookingTest.prot}
-                    onChange={(e) =>
-                      handleChange(e, [
-                        "presentPregnancyHistory",
-                        "bookingTest",
-                        "prot",
-                      ])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>VDRL</label>
-                  <input
-                    type="text"
-                    value={formData.presentPregnancyHistory?.bookingTest.vdrl}
-                    onChange={(e) =>
-                      handleChange(e, [
-                        "presentPregnancyHistory",
-                        "bookingTest",
-                        "vdrl",
-                      ])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>HIV</label>
-                  <input
-                    type="text"
-                    value={formData.presentPregnancyHistory?.bookingTest.hiv}
-                    onChange={(e) =>
-                      handleChange(e, [
-                        "presentPregnancyHistory",
-                        "bookingTest",
-                        "hiv",
-                      ])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>HBV</label>
-                  <input
-                    type="text"
-                    value={formData.presentPregnancyHistory?.bookingTest.hbv}
-                    onChange={(e) =>
-                      handleChange(e, [
-                        "presentPregnancyHistory",
-                        "bookingTest",
-                        "hbv",
-                      ])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>HCV</label>
-                  <input
-                    type="text"
-                    value={formData.presentPregnancyHistory?.bookingTest.bcv}
-                    onChange={(e) =>
-                      handleChange(e, [
-                        "presentPregnancyHistory",
-                        "bookingTest",
-                        "bcv",
-                      ])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>Blood Group</label>
-                  <input
-                    type="text"
-                    value={formData.presentPregnancyHistory.bloodGroup}
-                    onChange={(e) =>
-                      handleChange(e, ["presentPregnancyHistory", "bloodGroup"])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>Genotype</label>
-                  <input
-                    type="text"
-                    value={formData.presentPregnancyHistory.genoType}
-                    onChange={(e) =>
-                      handleChange(e, ["presentPregnancyHistory", "genoType"])
-                    }
-                  />
-                </div>
-              </div>
-            </Accordion>
-            <Accordion title=" Antenatal Visits ">
-              <AntenatalVisitTable
-                fetchRecord={fetchRecord}
-                catchAddedVisits={catchAddedVisits}
-                visits={formData.antenatalVisits}
-                appointmentId={+localStorage.getItem("appointmentId")}
-                patientId={patientId}
-                id={treatmentId}
-              />
-            </Accordion>
-            <Accordion title="Birth Plan">
-              <div className="form-grid">
-                <div className="field-column">
-                  <label>Planned Date of Delivery</label>
-                  <input
-                    type="date"
-                    value={
-                      formData.birthPlan.plannedDateOfDelivery?.split("T")[0] ||
-                      ""
-                    }
-                    onChange={(e) =>
-                      handleChange(e, ["birthPlan", "plannedDateOfDelivery"])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>Mode of Delivery</label>
-                  <select
-                    className="input-field"
-                    value={formData.birthPlan.modeOfDelivery}
-                    onChange={(e) =>
-                      handleChange(e, ["birthPlan", "modeOfDelivery"])
-                    }
-                  >
-                    <option value="">--Select--</option>
-                    <option value={1}>Vaginal</option>
-                    <option value={2}>Cesarean - elective</option>
-                    <option value={3}>Assisted - emergency</option>
-                    <option value={4}>Trial of labour</option>
-                    <option value={5}>VBAC</option>
-                  </select>
-                </div>
-                <div className="field-column">
-                  <label>Category</label>
-                  <select
-                    className="input-field"
-                    value={formData.birthPlan.category}
-                    onChange={(e) => handleChange(e, ["birthPlan", "category"])}
-                  >
-                    <option value="">--Select--</option>
-                    <option value={1}>Primpara</option>
-                    <option value={2}>Multipara</option>
-                    <option value={2}>Grandmultipara</option>
-                  </select>
-                </div>
-                <div className="field-column">
-                  <label>Type of Pregnancy</label>
-                  <select
-                    className="input-field"
-                    value={formData.birthPlan.typeOfPregnancy}
-                    onChange={(e) =>
-                      handleChange(e, ["birthPlan", "typeOfPregnancy"])
-                    }
-                  >
-                    <option value="">--Select--</option>
-                    <option value={"Singleton"}>Singleton</option>
-                    <option value={"Twins"}>Twins</option>
-                    <option value={"Triplets"}>Triplets</option>
-                    <option value={"Quadriplets"}>Quadriplets</option>
-                    {/* <option value={'Singleton'}>Borderline</option> */}
-                  </select>
-                  {/* <input
-                type="text"
-                value={formData.birthPlan.typeOfPregnancy}
-                onChange={(e) =>
-                  handleChange(e, ["birthPlan", "typeOfPregnancy"])
-                }
-              /> */}
-                </div>
-                <div className="field-column">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={formData.birthPlan.episiotomyNeeded}
-                      onChange={(e) =>
-                        handleChange(e, ["birthPlan", "episiotomyNeeded"])
-                      }
-                    />
-                    Episiotomy Needed
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Clinical Pelvimetry</label>
-                  <select
-                    className="input-field"
-                    value={formData.birthPlan.clinicalPelvimetry}
-                    onChange={(e) =>
-                      handleChange(e, ["birthPlan", "clinicalPelvimetry"])
-                    }
-                  >
-                    <option value="">--Select--</option>
-                    <option value={1}>Adequate</option>
-                    <option value={2}>Inadequate</option>
-                    <option value={2}>Borderline</option>
-                  </select>
-                </div>
-                <div className="field-column">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={formData.birthPlan.deliveryListReceived}
-                      onChange={(e) =>
-                        handleChange(e, ["birthPlan", "deliveryListReceived"])
-                      }
-                    />
-                    Delivery List Received
-                  </label>
-                </div>
-              </div>
-            </Accordion>
-            {/* <Accordion title=" Postnatal Care">
-              <div className="form-grid">
-                <div className="field-column">
-                  <label>Date of Delivery</label>
-                  <input
-                    type="date"
-                    value={
-                      formData.postnatalCare.dateOfDelivery?.split("T")[0] || ""
-                    }
-                    onChange={(e) =>
-                      handleChange(e, ["postnatalCare", "dateOfDelivery"])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>Mode of Delivery</label>
-                  <select
-                    className="input-field"
-                    value={formData.postnatalCare.modeOfDelivery}
-                    onChange={(e) =>
-                      handleChange(e, ["postnatalCare", "modeOfDelivery"])
-                    }
-                  >
-                    <option value={1}>Vaginal</option>
-                    <option value={2}>Cesarean - elective</option>
-                    <option value={3}>Assisted - emergency</option>
-                    <option value={4}>Trial of labour</option>
-                    <option value={5}>VBAC</option>
-                  </select>
-                </div>
-                <div className="field-column">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={formData.postnatalCare.episiotomy}
-                      onChange={(e) =>
-                        handleChange(e, ["postnatalCare", "episiotomy"])
-                      }
-                    />
-                    Episiotomy Done
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Complication</label>
-                  <input
-                    type="text"
-                    value={formData.postnatalCare.complication}
-                    onChange={(e) =>
-                      handleChange(e, ["postnatalCare", "complication"])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>Sex of Baby</label>
-                  <select
-                    className="input-field"
-                    value={formData.postnatalCare.sexOfBaby}
-                    onChange={(e) =>
-                      handleChange(e, ["postnatalCare", "sexOfBaby"])
-                    }
-                  >
-                    <option value="">Select</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
-                </div>
-                <div className="field-column">
-                  <label>Weight of Baby (kg)</label>
-                  <input
-                    type="number"
-                    value={formData.postnatalCare.weightOfBabyKg}
-                    onChange={(e) =>
-                      handleChange(e, ["postnatalCare", "weightOfBabyKg"])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={formData.postnatalCare.breastfeedingWell}
-                      onChange={(e) =>
-                        handleChange(e, ["postnatalCare", "breastfeedingWell"])
-                      }
-                    />
-                    Breastfeeding Well
-                  </label>
-                </div>
-                <div className="field-column">
-                  <label>Condition of Baby</label>
-                  <input
-                    type="text"
-                    value={formData.postnatalCare.conditionOfBaby}
-                    onChange={(e) =>
-                      handleChange(e, ["postnatalCare", "conditionOfBaby"])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>Condition of Mother</label>
-                  <input
-                    type="text"
-                    value={formData.postnatalCare.conditionOfMother}
-                    onChange={(e) =>
-                      handleChange(e, ["postnatalCare", "conditionOfMother"])
-                    }
-                  />
-                </div>
-                <div className="field-column">
-                  <label>Family Planning Choice</label>
-                  <input
-                    type="text"
-                    value={formData.postnatalCare.familyPlanningChoice}
-                    onChange={(e) =>
-                      handleChange(e, ["postnatalCare", "familyPlanningChoice"])
-                    }
-                  />
-                </div>
-              </div>
-              {!treatmentId && (
-                <button
-                  className="submit-btn"
-                  type="submit"
-                  style={{ marginTop: "20px" }}
-                >
-                  Submit
-                </button>
               )}
-            </Accordion> */}
-
-            {!treatmentId && (
-              <button
-                className="submit-btn"
-                type="submit"
-                style={{ marginTop: "20px" }}
-                onClick={handleSubmit}
-              >
-                Submit
-              </button>
-            )}
-
-            {isEdit && (
-              <button
-                className="submit-btn"
-                type="submit"
-                style={{ marginTop: "20px" }}
-                onClick={() => handleSubmit(isEdit)}
-              >
-                Update Record
-              </button>
-            )}
-          </div>
+              {treatmentId && (
+                <MedicationTable
+                  data={{
+                    treatmentType: "antenatal",
+                    treatmentId: treatmentId,
+                  }}
+                />
+              )}
+              {treatmentModal && (
+                <AddTreatmentOld
+                  createTreatment={createTreatment}
+                  repeatedDiagnosis={repeatedDiagnosis}
+                  setRepeatedDiagnosis={setRepeatedDiagnosis}
+                  closeModal={toggleTreatmentModal}
+                  visit={lastVisit}
+                  // data={data}
+                  id={patientId}
+                  // fetchData={fetchData}
+                />
+              )}
+              {showModal && (
+                <ReferPatient
+                  repeatedDiagnosis={repeatedDiagnosis}
+                  setRepeatedDiagnosis={setRepeatedDiagnosis}
+                  closeModal={toggleModal}
+                  visit={lastVisit}
+                  vital={vitals}
+                  antenatal={+treatmentId || 0}
+                  status={formData.status}
+                  // vitalId = {vitals.id}
+                  id={patientId}
+                  // treatment={data[0] || null}
+                />
+              )}
+            </div>
+          )}
+          {currentStep === 1 && (
+            <div>
+              <AntenatalLabourMonitoring />
+            </div>
+          )}
+          {currentStep === 2 && (
+            <div>
+              <DeliveryForm />
+            </div>
+          )}
         </div>
       </div>
-
-      {treatmentId && dataFromLab && (
-        <div className="field-column">
-          <label>Patient's Lab Results</label>
-          <LabRequestTable data={dataFromLab} isFamily={false} />
-        </div>
-      )}
-
-      {treatmentId && (
-        <MedicationTable
-          data={{
-            treatmentType: "antenatal",
-            treatmentId: treatmentId,
-          }}
-        />
-      )}
-
-      {treatmentModal && (
-        <AddTreatmentOld
-          createTreatment={createTreatment}
-          repeatedDiagnosis={repeatedDiagnosis}
-          setRepeatedDiagnosis={setRepeatedDiagnosis}
-          closeModal={toggleTreatmentModal}
-          visit={lastVisit}
-          // data={data}
-          id={patientId}
-          // fetchData={fetchData}
-        />
-      )}
-      {showModal && (
-        <ReferPatient
-          repeatedDiagnosis={repeatedDiagnosis}
-          setRepeatedDiagnosis={setRepeatedDiagnosis}
-          closeModal={toggleModal}
-          visit={lastVisit}
-          vital={vitals}
-          antenatal={+treatmentId || 0}
-          // vitalId = {vitals.id}
-          id={patientId}
-          // treatment={data[0] || null}
-        />
-      )}
-
-      {/* <DeliveryForm/> */}
     </div>
   );
 };
@@ -1987,6 +2260,42 @@ const Accordion = ({ title, children }) => {
         <span className="arrow">{isOpen ? "▲" : "▼"}</span>
       </div>
       {isOpen && <div className="accordion-body">{children}</div>}
+    </div>
+  );
+};
+
+const StepsComponent = ({ steps, onStepChange }) => {
+  const [activeStep, setActiveStep] = useState(0);
+
+  const handleStepClick = (index) => {
+    setActiveStep(index);
+    onStepChange(index);
+  };
+
+  return (
+    <div
+      className="steps-wrapper"
+      style={{ display: "flex", margin: "20px 0" }}
+    >
+      {steps.map((step, index) => (
+        <div
+          key={index}
+          onClick={() => handleStepClick(index)}
+          style={{
+            flex: 1,
+            padding: "10px 0",
+            textAlign: "center",
+            cursor: "pointer",
+            background: index === activeStep ? "#3498db" : "#ecf0f1",
+            color: index === activeStep ? "#fff" : "#333",
+            borderRadius: "4px",
+            marginRight: index !== steps.length - 1 ? "10px" : "0",
+            transition: "all 0.3s ease",
+          }}
+        >
+          {step}
+        </div>
+      ))}
     </div>
   );
 };

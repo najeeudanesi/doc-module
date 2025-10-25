@@ -5,7 +5,7 @@ import { get } from "../../../utility/fetch";
 import "./FamilyMedicineTable.css";
 
 const OrthopedicTable = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const { patientId } = useParams();
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +19,9 @@ const OrthopedicTable = () => {
   const fetchRecords = async (currentPage, id) => {
     setLoading(true);
     try {
-      const response = await get(`/orthopedic/list/patient/${id}/${currentPage}/10`);
+      const response = await get(
+        `/orthopedic/list/patient/${id}/${currentPage}/10`
+      );
       if (response?.isSuccess) {
         setRecords(response.data.recordList || []);
         setTotalPages(response.data.metadata.totalPages || 1);
@@ -45,9 +47,16 @@ const OrthopedicTable = () => {
         <h3>Orthopedic Consultation Log</h3>
 
         <div className="button-bar">
-        <button className="btn-case" onClick={() => navigate(`/doctor/patients/orthopedic-consultation/${patientId}`)}>+ Create a Case Note</button>
-        {/* <button className="btn-note">+ Add Note</button> */}
-      </div>
+          <button
+            className="btn-case"
+            onClick={() =>
+              navigate(`/doctor/patients/orthopedic-consultation/${patientId}`)
+            }
+          >
+            + Create a Case Note
+          </button>
+          {/* <button className="btn-note">+ Add Note</button> */}
+        </div>
       </div>
 
       <div className="table-section">
@@ -62,7 +71,7 @@ const OrthopedicTable = () => {
                   <th>Patient Name</th>
                   <th>Date</th>
                   <th>Case Type</th>
-                  <th>Medical Record/History</th>
+                  <th>Patient's Complaint</th>
                   <th>Doctor's Name</th>
                   <th>Action</th>
                 </tr>
@@ -71,15 +80,26 @@ const OrthopedicTable = () => {
                 {records.length > 0 ? (
                   records.map((record) => (
                     <tr key={record.id}>
-                      <td>{record.patient?.firstName} {record.patient?.lastName}</td>
+                      <td>
+                        {record.patient?.firstName} {record.patient?.lastName}
+                      </td>
                       <td>{new Date(record.createdAt).toLocaleDateString()}</td>
-                      <td>{record.deliveryType||'Orthopedic Consultation'}</td>
-                      <td>{record.diagnosis }</td>
-                      <td>Dr. {record.doctor?.firstName} {record.doctor?.lastName}</td>
+                      <td>
+                        {record.deliveryType || "Orthopedic Consultation"}
+                      </td>
+                      <td>{record.diagnosis}</td>
+                      <td>
+                        Dr. {record.doctor?.firstName} {record.doctor?.lastName}
+                      </td>
                       <td>
                         <button
-                        onClick={()=>{navigate(`/doctor/patients/orthopedic-consultation/${patientId}/?id=${record.id}`)}}
-                        className="icon-btn">
+                          onClick={() => {
+                            navigate(
+                              `/doctor/patients/orthopedic-consultation/${patientId}/?id=${record.id}`
+                            );
+                          }}
+                          className="icon-btn"
+                        >
                           <FiEdit3 size={16} color="#109615" />
                         </button>
                       </td>
@@ -93,9 +113,15 @@ const OrthopedicTable = () => {
               </tbody>
             </table>
             <div className="pagination-controls">
-              <button onClick={handlePrev} disabled={page === 1}>Previous</button>
-              <span>Page {page} of {totalPages}</span>
-              <button onClick={handleNext} disabled={page === totalPages}>Next</button>
+              <button onClick={handlePrev} disabled={page === 1}>
+                Previous
+              </button>
+              <span>
+                Page {page} of {totalPages}
+              </span>
+              <button onClick={handleNext} disabled={page === totalPages}>
+                Next
+              </button>
             </div>
           </>
         )}

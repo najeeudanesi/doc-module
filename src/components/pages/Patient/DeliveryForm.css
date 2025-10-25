@@ -1,67 +1,84 @@
-.container {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 20px;
+.delivery-form {
+  max-width: 650px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #fafafa;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-h2, h3 {
-  margin-bottom: 10px;
+.delivery-form h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
 }
 
-form {
-  border: 1px solid #ccc;
-  padding: 20px;
-  margin-bottom: 30px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.form-group {
+.delivery-form label {
   display: flex;
   flex-direction: column;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #444;
 }
 
-.form-group label {
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-
-input[type="text"], input[type="number"] {
-  padding: 6px;
+.delivery-form input[type="text"],
+.delivery-form input[type="number"],
+.delivery-form input[type="datetime-local"],
+.delivery-form input[type="time"]
+ {
+  padding: 0.5rem;
+  margin-top: 0.5rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 1rem;
 }
 
-input[type="checkbox"] {
-  margin-top: 6px;
+/* .delivery-form input[type="checkbox"] {
+  margin-top: 0.3rem;
+  width: auto;
+  transform: scale(1.2);
+} */
+
+.delivery-form fieldset {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
 }
 
-.submit-btn {
-  margin-top: 16px;
-  padding: 10px 20px;
-  border: none;
-  /* background-color: #5567dd; */
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
+.delivery-form legend {
+  font-weight: 600;
+  color: #555;
+  padding: 0 0.5rem;
 }
 
-table {
+.delivery-form button[type="submit"] {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
+  padding: 0.75rem;
+  background-color: #28a745;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-table th, table td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
+.delivery-form button[type="submit"]:hover {
+  background-color: #218838;
 }
 
-table th {
-  background-color: #eee;
+.delivery-form input:focus,
+.delivery-form select:focus,
+.delivery-form textarea:focus {
+  outline: none;
+  border-color: #28a745;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+}
+
+@media (max-width: 600px) {
+  .delivery-form {
+    padding: 1rem;
+  }
 }

@@ -4,6 +4,7 @@ import Select from "react-select";
 import InputField from "../UI/InputField";
 import TextArea from "../UI/TextArea";
 import { post, get } from "../../utility/fetch";
+import { get as gets } from "../../utility/fetchFinance";
 import toast from "react-hot-toast";
 import { BsTrash } from "react-icons/bs";
 import SpeechToTextButton from "../UI/SpeechToTextButton";
@@ -24,6 +25,7 @@ function ReferPatient({
   treatment,
   setRepeatedDiagnosis,
   repeatedDiagnosis,
+  status
 }) {
   const [testRequests, setTestRequests] = useState([]);
   const [otherTestRequests, setOtherTestRequests] = useState([]);
@@ -92,31 +94,30 @@ function ReferPatient({
   console.log(vital, "visit", visit);
 
   const getCategories = async () => {
-    const token = sessionStorage.getItem("token");
+    // const token = sessionStorage.getItem("token");
 
-    if (!token) {
-      console.error("Token not found in session storage");
-      return;
-    }
+    // if (!token) {
+    //   console.error("Token not found in session storage");
+    //   return;
+    // }
 
-    const options = {
-      method: "GET",
-      headers: {
-        Authorization: `${token}`,
-      },
-    };
+    // const options = {
+    //   method: "GET",
+    //   headers: {
+    //     Authorization: `${token}`,
+    //   },
+    // };
 
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}/healthfinanceapi/api/category/list/1/1000`,
-        options
-      );
+      const res = await gets(`/category/list/1/1000`);
 
-      const tempServices = res?.data?.resultList
-        ?.filter(
-          (service) =>
-            service.name === "Lab Service" || service.name === "Lab Services"
-        )
+      console.log(res);
+
+      const tempServices = res?.resultList
+        // ?.filter(
+        //   (service) =>
+        //     service.name === "Lab Service" || service.name === "Lab Services"
+        // )
         .map((category) => ({
           label: category?.name,
           value: parseFloat(category?.id),
@@ -131,29 +132,29 @@ function ReferPatient({
   };
 
   const getCategoriesService = async () => {
-    const token = sessionStorage.getItem("token");
+    // const token = sessionStorage.getItem("token");
 
-    if (!token) {
-      console.error("Token not found in session storage");
-      return;
-    }
+    // if (!token) {
+    //   console.error("Token not found in session storage");
+    //   return;
+    // }
 
-    const options = {
-      method: "GET",
-      headers: {
-        Authorization: `${token}`,
-      },
-    };
+    // const options = {
+    //   method: "GET",
+    //   headers: {
+    //     Authorization: `${token}`,
+    //   },
+    // };
 
     try {
       setService({});
       setServices(null);
-      const res = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}/healthfinanceapi/api/categoryitem/list/category/${category?.value}/1/1000`,
-        options
+      const res = await gets(
+        `/categoryitem/list/category/${category?.value}/1/1000`
       );
+      console.log(res)
 
-      const tempServices = res?.data?.resultList.map((service) => ({
+      const tempServices = res?.resultList.map((service) => ({
         label: service?.itemName,
         value: parseFloat(service?.id),
       }));
@@ -215,7 +216,7 @@ function ReferPatient({
       return;
     }
 
-    setLoading(true);
+    // setLoading(true);
 
     console.log(vital);
     console.log(visit);
@@ -247,6 +248,8 @@ function ReferPatient({
               antenatalId: antenatal || 0,
               pediatricId: 0,
               generalPracticeId: generalPractice || 0,
+              cardiologyId: 0,
+              ophthalmologyId: 0,
             }
           : null,
       externalLab:
@@ -256,9 +259,7 @@ function ReferPatient({
               isFamilyMedicine: familyMedcine ? true : false,
               dateOfVisit: new Date(visit?.appointDate).toISOString(),
               appointmentId: visit?.id,
-              hmoId: hmo?.hmoProviderId || 0,
-              hmoPackageId: hmo?.hmoPackageId || 0,
-              testRequests,
+              otherTestRequests,
               additionalNote,
               familyMedicineId: +familyMedcine || 0,
               oG_IVFId: ivf,
@@ -268,6 +269,7 @@ function ReferPatient({
               antenatalId: antenatal || 0,
               pediatricId: 0,
               generalPracticeId: 0,
+              cardiologyId: 0,
             }
           : null,
     };
@@ -277,7 +279,7 @@ function ReferPatient({
 
     try {
       await post(
-        `/patients/${id}/vital/${selectedVital?.vitalId}/lab-request`,
+        `/lab/${id}/vital/${selectedVital?.vitalId}/lab-request`,
         payload
       );
       toast.success("Lab request added successfully");

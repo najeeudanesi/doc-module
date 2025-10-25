@@ -22,7 +22,7 @@ const Pediatrics = () => {
   const [displaydocAfm, setDisplayDocumentsAfm] = useState({});
 
   const [loading, setLoading] = useState(true);
-  const [diagnosis, setDiagnosis] = useState("");
+  const [dataFromLab, setDataFromLab] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
   const [carePlan, setcarePlan] = useState("");
 
@@ -174,6 +174,21 @@ const Pediatrics = () => {
     // alert("Appointment created!");
   };
 
+  const fetcLabhData = async (treatmentId) => {
+    // setIsLoading(true);
+    try {
+      const response = await get(
+        `/patients/list/pediatrics/${treatmentId}/1/10/lab-request`
+      );
+      setDataFromLab(response?.data?.resultList);
+      console.log(response?.data?.resultList);
+      // response.data && setRepeatedDiagnosis(response.data[0]?.diagnosis);
+    } catch (e) {
+      console.log(e);
+    }
+    // setIsLoading(false);
+  };
+
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -318,7 +333,10 @@ const Pediatrics = () => {
   };
 
   useEffect(() => {
-    if (patientId) fetchRecord();
+    if (patientId) {
+      fetchRecord();
+      fetcLabhData();
+    }
   }, [patientId]);
 
   const fetchRecord = async () => {
@@ -388,9 +406,17 @@ const Pediatrics = () => {
             {/* 1. Symptom Analysis */}
             <p>Patient Identification a& GEneral information</p>
 
-           
+            <div className="field-column new">
+              <label>Patient Complaint</label>
+              <textarea
+                placeholder="Patient"
+                value={formData.patientComplaint}
+                rows={3}
+              />
+            </div>
+
             <div className="input-row">
-            <div className="radio-row">
+              <div className="radio-row">
                 <span>Does the child have any ongoing medical conditions?</span>
                 <label>
                   <input
@@ -441,7 +467,7 @@ const Pediatrics = () => {
                   No
                 </label>
               </div>
-             
+
               <div className="field-row">
                 <label>Provide Details</label>
                 <input
@@ -453,10 +479,10 @@ const Pediatrics = () => {
               </div>
             </div>
 
-           {/* {2} */}
+            {/* {2} */}
 
-          <div className="section-box">
-          <p>Patient Identification a& GEneral information</p>
+            <div className="section-box">
+              <p>Patient Identification a& GEneral information</p>
 
               <div className="field-row">
                 <label>When did the symptoms start?</label>
@@ -478,7 +504,10 @@ const Pediatrics = () => {
               </div>
 
               <div className="radio-row">
-                <span>Was there any triggering event (injury, exposure, food, activity)?</span>
+                <span>
+                  Was there any triggering event (injury, exposure, food,
+                  activity)?
+                </span>
                 <label>
                   <input
                     type="radio"
@@ -498,7 +527,7 @@ const Pediatrics = () => {
                   No
                 </label>
               </div>
-             
+
               <div className="field-column">
                 <label>Provide details</label>
                 <textarea
@@ -508,7 +537,6 @@ const Pediatrics = () => {
                   rows={6}
                 />
               </div>
-             
             </div>
 
             <div className="section-box m-t-10">
@@ -581,7 +609,9 @@ const Pediatrics = () => {
                 />
               </div>
               <div className="radio-row">
-                <span>Is the child waking up at night due to pain or discomfort??</span>
+                <span>
+                  Is the child waking up at night due to pain or discomfort??
+                </span>
                 <label>
                   <input
                     type="radio"
@@ -601,7 +631,7 @@ const Pediatrics = () => {
                   No
                 </label>
               </div>
-            
+
               <div className="field-column">
                 <label>Specify location and severity</label>
                 <textarea
@@ -611,8 +641,6 @@ const Pediatrics = () => {
                   rows={6}
                 />
               </div>
-           
-             
             </div>
 
             {/* 3. Range of Motion */}
@@ -691,7 +719,9 @@ const Pediatrics = () => {
                 </label>
               </div>
               <div className="radio-row">
-                <span>Is the child excessively sleepy, weak, or unresponsive?</span>
+                <span>
+                  Is the child excessively sleepy, weak, or unresponsive?
+                </span>
                 <label>
                   <input
                     type="radio"
@@ -754,7 +784,10 @@ const Pediatrics = () => {
                 </label>
               </div>
               <div className="radio-row">
-                <span>Does the child complain of a headache, dizziness, or vision problems??</span>
+                <span>
+                  Does the child complain of a headache, dizziness, or vision
+                  problems??
+                </span>
                 <label>
                   <input
                     type="radio"
@@ -805,7 +838,7 @@ const Pediatrics = () => {
                   rows={6}
                 />
               </div>
-             
+
               <div className="field-column">
                 <label>Treatment Schedule</label>
                 <textarea
@@ -817,7 +850,6 @@ const Pediatrics = () => {
               </div>
             </div>
 
-           
             <button onClick={handleSubmit} className="submit-btn">
               Submit
             </button>

@@ -10,6 +10,8 @@ import SearchInput from "../UI/SearchInput";
 import AdmitCheck from "./Patient/AdmitCheck";
 import HMOPatientListTable from "../tables/HMOPatientListTable";
 import AllPatientsTable from "../tables/AllPatientsTable";
+import { MdOutlineCancel } from "react-icons/md";
+import { useSearchParams } from "react-router-dom"; // added import
 
 function Patients() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -26,22 +28,87 @@ function Patients() {
   const [summary, setSummary] = useState([0, 0, 0, 0, 0]);
   const [patientData, setPatientData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [holderData, setHolderData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [patientLoading, setPatientLoading] = useState(true);
 
   const [selectedTab, setSelectedTab] = useState("patients");
   const [filteredDate, setFilteredDate] = useState(null); // Add state for filtered date
   const [admittedPatients, setAdmittedPatients] = useState([]);
-  const [totalPages, setTotalPages] = useState(0);
+  const [assignedSpecialistPatients, setAssignedSpecialistPatients] = useState(
+    []
+  );
+
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalPagesAdmitted, setTotalPagesAdmitted] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
 
   const docInfo = JSON.parse(localStorage.getItem("USER_INFO"));
 
-  const getTableData = async () => {
+  const [searchParams] = useSearchParams(); // added hook
+
+  // new effect: read ?cardname=... and switch tab
+  useEffect(() => {
+    const cardname = searchParams.get("cardname");
+    if (!cardname) return;
+
+    console.log("cardname from URL:", cardname);
+
+    const decoded = decodeURIComponent(cardname).trim();
+    const matched = stats.find(
+      (s) =>
+        (s.title && s.title === decoded) ||
+        (s.name && s.name === decoded) ||
+        (s.label && s.label === decoded) ||
+        (s.type && s.type === decoded)
+    );
+
+    if (matched) {
+      setSelectedTab(matched.type);
+      return;
+    }
+
+    // fallback mapping for common display names -> tab types
+    const nameMap = {
+      "assigned patients": "patients",
+      assigned: "patients",
+      "admitted patients": "admittedPatients",
+      "hmo patients": "hmoPatients",
+      "all patients": "allPatients",
+      "reffered patients (external)": "specialistPatients",
+      "referred patients (external)": "specialistPatients",
+    };
+
+    const key = decoded.toLowerCase();
+    if (nameMap[key]) setSelectedTab(nameMap[key]);
+  }, [searchParams]);
+
+  const getTableData = async (page = 1, pageSize = 20) => {
+    setPatientLoading(true);
     try {
-      const data = await get(`/patients/assignedtodoctor`);
-      setPatientData(data.data);
-      setFilteredData(data.data); // Initialize filtered data with all patient data
+      const data = await get(
+        `/patients/assignedtodoctor?pageIndex=${page}&pageSize=${pageSize}`
+      );
+      setPatientData(data.data); // array of patients
+      setFilteredData(data.data);
+      setHolderData(data.data);
+      setTotalPages(data.pageCount); // set total pages for pagination
+      setCurrentPage(data.pageIndex); // update current page
+    } catch (e) {
+      setPatientLoading(false);
+      console.log("Error: ", e);
+    }
+    setPatientLoading(false);
+  };
+
+  const getAssignedSpecialistPatients = async () => {
+    try {
+      const data = await get(
+        `/patients/assignedtodoctorspecialist?pageIndex=1&pageSize=1000`
+      );
+      setAssignedSpecialistPatients(data.data);
+      console.log("Assigned Specialist Patients:", data.data);
     } catch (e) {
       console.log("Error: ", e);
     }
@@ -67,8 +134,6 @@ function Patients() {
       console.log("Error: ", e);
     }
   };
-
-  
 
   // https://edogoverp.com/medicals/api/HMO/all-patient-hmo/2?pageIndex=1&pageSize=10
 
@@ -149,16 +214,18 @@ function Patients() {
     }
   };
 
-  const getAllAdmittedPatients = async (currentPage) => {
+  const getAllAdmittedPatients = async (page = 1, pageSize = 10) => {
     setLoading(true);
     try {
-      let res = await get(
-        `/patients/admitted-patients-service?pageNumber=${currentPage}&pageSize=1000`
+      const res = await get(
+        `/ServiceTreatment/list/paginate/true/admitted-patients?pageNumber=${page}&pageSize=${pageSize}`
       );
-      setAdmittedPatients(res?.data);
-      setTotalPages(res?.pageCount);
+      // Use recordList for data and metadata for pagination
+      setAdmittedPatients(res?.data?.recordList || []);
+      setTotalPagesAdmitted(res?.data?.metadata?.totalPages || 1);
+      setCurrentPage(res?.data?.metadata?.page || 1);
     } catch (error) {
-      console.error("Error fetching all patients:", error);
+      console.error("Error fetching admitted patients:", error);
     } finally {
       setLoading(false);
     }
@@ -176,7 +243,7 @@ function Patients() {
     setLoading(true);
     await getAssigned();
     await getAllPatientCount();
-    
+
     await getHMOPatientsByClientId();
     await getAllPatientsList();
     await getAdmitted();
@@ -184,6 +251,7 @@ function Patients() {
     await getOutPatients();
     await getWaiting();
     await getTableData();
+    await getAssignedSpecialistPatients();
     setLoading(false);
   };
 
@@ -191,11 +259,18 @@ function Patients() {
     setSummary([
       assignedPatients,
       // admitted,
-      admittedPatients.length,
+      admittedPatients?.length,
       hmoPatientsList?.length,
       allPatientCount,
     ]);
-  }, [assignedPatients, allPatientCount, waiting, admitted, hmoPatients,admittedPatients]);
+  }, [
+    assignedPatients,
+    allPatientCount,
+    waiting,
+    admitted,
+    hmoPatients,
+    admittedPatients,
+  ]);
 
   useEffect(() => {
     if (searchText === "") {
@@ -218,8 +293,8 @@ function Patients() {
   };
 
   const dateFilter = async () => {
-    await getTableData();
-    setFilteredData(patientData);
+    // await getTableData();
+    // setFilteredData(patientData);
     if (filteredDate) {
       const filteredResults = patientData.filter((patient) => {
         // Parse the date string into a Date object
@@ -283,15 +358,17 @@ function Patients() {
   };
 
   const CustomInput = ({ value, onClick }) => (
-    <button
-      onClick={onClick}
-      onKeyDown={(e) => e.preventDefault()} // Prevent typing in the date field
-      className="custom-datepicker-input flex gap-6 flex-v-center"
-    >
-      {filteredDate ? formatDate(selectedDate) : "Select Date"}{" "}
-      {/* Update this line */}
-      <RiCalendar2Fill />
-    </button>
+    <div className="custom-datepicker-input flex gap-6 flex-v-center">
+      <button
+        onClick={onClick}
+        onKeyDown={(e) => e.preventDefault()} // Prevent typing in the date field
+        className="custom-datepicker-input flex gap-6 flex-v-center"
+      >
+        {filteredDate ? formatDate(selectedDate) : "Select Date"}{" "}
+        {/* Update this line */}
+        <RiCalendar2Fill />
+      </button>
+    </div>
   );
 
   return (
@@ -319,45 +396,7 @@ function Patients() {
                 </div>
               ))}
             </div>
-          </div>
-          <div className="flex flex-v-center w-100 space-between">
-            <div className="flex gap-7 m-t-40">
-              <p>Assigned Waiting Patients</p>|
-              <DatePicker
-                selected={selectedDate}
-                onChange={handleDateChange}
-                dateFormat="dd-MM-yyyy"
-                maxDate={new Date()}
-                customInput={<CustomInput />}
-                icon={<RiCalendar2Fill />}
-              />
-            </div>
-
-            {(selectedTab === "allPatients" ||
-              selectedTab === "patients") && (
-              <div className="flex flex-v-end space-between  w-50 m-t-20 gap-10 ">
-                <div></div>
-                <div className="w-50">
-                  <SearchInput
-                    type="text"
-                    onChange={handleSearchChange}
-                    value={searchText}
-                    name="searchText"
-                  />
-                </div>
-
-                {/* <div className="dropdown-input w-25 ">
-              {" "}
-              <select>
-                <option value="">Name</option>
-                <option value="Ward B">Age</option>
-                <option value="Ward C"></option>
-                <option value="Ward D">Ward D</option>
-              </select>
-            </div> */}
-              </div>
-            )}
-          </div>
+          </div>{" "}
           {/* <div className="tabs m-t-20 bold-text">
             <div
               className={`tab-item ${
@@ -376,20 +415,163 @@ function Patients() {
               Patients Currently Admitted
             </div>
           </div> */}
+          <div
+            className=" flex gap-7 w-100 justify-between mt-40"
+            style={{ alignItems: "center", marginTop: "70px" }}
+          >
+            <div className=" flex gap-7 w-100 ">
+              <div
+                className="flex"
+                style={{
+                  cursor: "pointer",
+                  alignItems: "center",
+                  marginLeft: "18px",
+                }}
+              >
+                {/* <p>Assigned Waiting Patients</p>| */}
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={handleDateChange}
+                  dateFormat="dd-MM-yyyy"
+                  maxDate={new Date()}
+                  customInput={<CustomInput />}
+                  icon={<RiCalendar2Fill />}
+                />
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "1px",
+                    height: "24px",
+                    background: "#ccc",
+                    // margin: "0 12px",
+                    verticalAlign: "middle",
+                  }}
+                />
+                <MdOutlineCancel
+                  onClick={() => {
+                    setFilteredDate(null);
+                    getTableData();
+                  }}
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    zIndex: "5000",
+                    cursor: "pointer",
+                    // border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    // padding: "4px 8px",
+                  }}
+                />
+              </div>
+              {(selectedTab === "allPatients" ||
+                selectedTab === "patients") && (
+                <div className="flex flex-v-end space-between  w-50 ">
+                  <div className="">
+                    <SearchInput
+                      type="text"
+                      onChange={handleSearchChange}
+                      value={searchText}
+                      name="searchText"
+                    />
+                  </div>
+                  {/* <div className="dropdown-input w-25 ">
+                {" "}
+                <select>
+                  <option value="">Name</option>
+                  <option value="Ward B">Age</option>
+                  <option value="Ward C"></option>
+                  <option value="Ward D">Ward D</option>
+                </select>
+              </div> */}
+                </div>
+              )}
+            </div>
+            <div className="flex gap-10 w-100">
+              <button
+                className={`btn toggle-btn ${
+                  selectedTab === "patients" ? "active" : ""
+                }`}
+                style={{
+                  backgroundColor:
+                    selectedTab === "patients" ? "#3c7e2d" : "#fff",
+                  color: selectedTab === "patients" ? "#fff" : "#3c7e2d",
+                  border:
+                    selectedTab === "patients"
+                      ? "2px solid #3c7e2d"
+                      : "2px solid #3c7e2d",
+                  fontWeight: selectedTab === "patients" ? "bold" : "normal",
+                  boxShadow:
+                    selectedTab === "patients"
+                      ? "0 2px 8px rgba(0,123,255,0.15)"
+                      : "none",
+                }}
+                onClick={() => setSelectedTab("patients")}
+              >
+                Assigned Patients
+              </button>
+              <button
+                className={`btn toggle-btn ${
+                  selectedTab === "specialistPatients" ? "active" : ""
+                }`}
+                style={{
+                  backgroundColor:
+                    selectedTab === "specialistPatients" ? "#3c7e2d" : "#fff",
+                  color:
+                    selectedTab === "specialistPatients" ? "#fff" : "#3c7e2d",
+                  border:
+                    selectedTab === "specialistPatients"
+                      ? "2px solid #3c7e2d"
+                      : "2px solid #3c7e2d",
+                  fontWeight:
+                    selectedTab === "specialistPatients" ? "bold" : "normal",
+                  boxShadow:
+                    selectedTab === "specialistPatients"
+                      ? "0 2px 8px rgba(0,123,255,0.15)"
+                      : "none",
+                }}
+                onClick={() => setSelectedTab("specialistPatients")}
+              >
+                Reffered Patients (External)
+              </button>
+            </div>
+          </div>
+          {/* <AdmitCheck
+                data={admittedPatients}
+                getAllAdmittedPatients={getAllAdmittedPatients}
+                setCurrentPage={setCurrentPage}
+                currentPage={currentPage}
+                totalPages={totalPagesAdmitted}
+              /> */}
           <div className="">
             {selectedTab === "patients" ? (
               <PatientsTable
+                loading={patientLoading}
                 data={filteredData}
+                setCurrentPage={(page) => {
+                  setCurrentPage(page);
+                  getTableData(page, 20); // 10 per page, or use your preferred pageSize
+                }}
+                currentPage={currentPage}
+                totalPages={totalPages}
+              />
+            ) : selectedTab === "specialistPatients" ? (
+              <PatientsTable
+                data={assignedSpecialistPatients}
                 setCurrentPage={setCurrentPage}
                 currentPage={currentPage}
                 totalPages={totalPages}
+                extraColumns={[
+                  { key: "refferalNote", label: "Referral Note" },
+                  { key: "diagnosis", label: "Diagnosis" },
+                ]}
               />
             ) : selectedTab === "admittedPatients" ? (
               <AdmitCheck
                 data={admittedPatients}
+                getAllAdmittedPatients={getAllAdmittedPatients}
                 setCurrentPage={setCurrentPage}
                 currentPage={currentPage}
-                totalPages={totalPages}
+                totalPages={totalPagesAdmitted}
               />
             ) : selectedTab === "hmoPatients" ? (
               <HMOPatientListTable patients={hmoPatientsList} />

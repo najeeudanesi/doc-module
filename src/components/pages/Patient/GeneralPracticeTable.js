@@ -26,7 +26,7 @@ const GeneralPractice = () => {
         `/GeneralPractice/list/patient/${id}/${currentPage}/10`
       );
       if (response?.isSuccess) {
-        setRecords( response.data.recordList);
+        setRecords(response.data.recordList);
         setTotalPages(response.data.metadata.totalPages || 1);
       }
     } catch (error) {
@@ -74,7 +74,7 @@ const GeneralPractice = () => {
                   <th>Patient Name</th>
                   <th>Date</th>
                   <th>General Practice</th>
-                  <th>Medical Record/History</th>
+                  <th>Patient's Complaint</th>
                   <th>Doctor's Name</th>
                   <th>Action</th>
                 </tr>
@@ -88,10 +88,7 @@ const GeneralPractice = () => {
                       </td>
                       <td>{new Date(record.createdAt).toLocaleDateString()}</td>
                       <td>{record.deliveryType || "Case Note"}</td>
-                      <td>
-                        {record.history ||
-                          ""}
-                      </td>
+                      <td>{record.history || ""}</td>
                       <td>
                         Dr. {record.doctor?.firstName} {record.doctor?.lastName}
                       </td>

@@ -6,15 +6,17 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import toast from "react-hot-toast";
 import ReferPatient from "../../modals/ReferPatient";
+import ReferPatientToSpecialist from "../../modals/ReferPatientToSpecialist";
 import LabRequestTable from "./LabRequestTable";
 import AddTreatmentOld from "../../modals/AddTreatmentOld";
 import MedicationTable from "./MedicationTable";
 import VitalsRecords from "../../modals/VitalsRecord";
 import GhostTextCompletion from "../../UI/TextPrediction";
+import DetailedNurseNotes from "../../modals/DetailedNurseNotes";
 
 // import IVFConsultation from "./IVFConsultation";
 
-const GeneralPracticeForm = () => {
+const GeneralPracticeForm = ({ patient }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const treatmentId = searchParams.get("treatmentId");
@@ -24,9 +26,9 @@ const GeneralPracticeForm = () => {
   const [treatmentModal, setTreatmentModal] = useState(false);
 
   const { patientId } = useParams();
-  const [records, setRecords] = useState({});
+  const [detailedNurseModal, setDetailedNurseModal] = useState(false);
   const [surgeonList, setsurgeonList] = useState([]);
-  const [anasList, setanasList] = useState([]);
+  const [newData, setNewData] = useState([]);
   const [displaydoc, setDisplayDocuments] = useState({});
   const [displaydocPelvic, setDisplayDocumentsPelvic] = useState({});
   const [
@@ -43,6 +45,7 @@ const GeneralPracticeForm = () => {
   const [vitals, setvitals] = useState();
   const [dataFromLab, setDataFromLab] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showSpecialistModal, setShowSpecialistModal] = useState(false);
   const [lastVisit, setLastVisit] = useState(null);
 
   const [newLab, setNewLab] = useState({ test: "", location: "" });
@@ -56,13 +59,15 @@ const GeneralPracticeForm = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
     const payload = {
       patientId: +patientId || 0, // include if applicable
       title: "",
+      patientComplaint: formData.patientComplaint,
       details: formData.details,
       history: formData.history,
+      diagnosis: formData.diagnosis,
       physicalExamination: formData.physicalExamination,
       investigation: formData.investigation,
       appointmentId: +localStorage.getItem("appointmentId"),
@@ -71,11 +76,16 @@ const GeneralPracticeForm = () => {
 
     console.log("Payload:", payload);
     // ...then call your API
-
+    // return;
     try {
       const response = await post("/GeneralPractice", payload);
       if (response.isSuccess) {
-        navigate(`/doctor/patients/patient-details/${patientId}`);
+        navigate(
+          `/doctor/patients/general-practice/${patientId}/?treatmentId=${response?.data?.generalPracticeId}`
+        );
+        fetchVisit();
+
+        // navigate(`/doctor/patients/patient-details/${patientId}`);
       }
       console.log("API Response:", response);
     } catch (error) {
@@ -92,6 +102,7 @@ const GeneralPracticeForm = () => {
       if (response.isSuccess) {
         console.log(response.data);
         setFormData({
+          ...response.data,
           patientId: response.data?.patient?.id || 0,
           title: response.data?.title,
           details: response.data?.details,
@@ -100,6 +111,8 @@ const GeneralPracticeForm = () => {
           investigation: response.data?.investigation,
           appointmentId: response.data?.appointmentId || 0,
         });
+
+        setDetailedNurseModal(false);
 
         // const mappedData = mapResponseToFormData(response.data);
         // setFormData(mappedData);
@@ -113,6 +126,46 @@ const GeneralPracticeForm = () => {
     }
     // https://edogoverp.com/medicals/api/OG_BirthRecord/list/1/10
   };
+ const handleSubmitSpecialist = async (e) => {
+    // e.preventDefault();
+
+    const payload = {
+      patientId: +patientId || 0, // include if applicable
+      title: "",
+      patientComplaint: formData.patientComplaint,
+      details: formData.details,
+      history: formData.history,
+      diagnosis: formData.diagnosis,
+      physicalExamination: formData.physicalExamination,
+      investigation: formData.investigation,
+      appointmentId: +localStorage.getItem("appointmentId"),
+      doctorId: +docInfo.employeeId,
+      specialistId: 23,
+    };
+
+    console.log("Payload:", payload);
+    // ...then call your API
+    // return;
+    try {
+      const response = await post("/SpecialistExaminations", payload);
+      console.log(response);
+      return;
+      if (response.isSuccess) {
+        navigate(
+          `/doctor/patients/general-practice/${patientId}/?treatmentId=${response?.data?.generalPracticeId}`
+        );
+        fetchVisit();
+
+        // navigate(`/doctor/patients/patient-details/${patientId}`);
+      }
+      console.log("API Response:", response);
+    } catch (error) {
+      console.error("Submission failed:", error);
+    }
+
+    console.log(payload); // check your payload structure
+    // alert("Appointment created!");
+  };
 
   useEffect(() => {
     // if (patientId) fetchSurgeonRecord();
@@ -123,6 +176,7 @@ const GeneralPracticeForm = () => {
     fetchTreatmentVitalsRecord();
 
     getRecord();
+    // getSpecialist()
 
     console.log(formData);
   }, [patientId]);
@@ -148,7 +202,7 @@ const GeneralPracticeForm = () => {
       const response = await get(
         `/appointment/get-appointment-bypatientId/${patientId}/`
       );
-      setLastVisit(response.data[response.data.length - 1]);
+      setLastVisit(response.data[response?.data?.length - 1]);
     } catch (e) {
       console.log(e);
     }
@@ -188,10 +242,10 @@ const GeneralPracticeForm = () => {
     // setIsLoading(true);
     try {
       const response = await get(
-        `/patients/list/generalPractice/${treatmentId}/is-family-medicine/false/1/10/general-practice-patients-lab-requests`
+        `/lab/list/generalPractice/${treatmentId}/1/10/lab-request`
       );
-      setDataFromLab(response.resultList);
-      console.log(response.resultList);
+      setDataFromLab(response?.data?.resultList);
+      console.log(response.data?.resultList);
       // response.data && setRepeatedDiagnosis(response.data[0]?.diagnosis);
     } catch (e) {
       console.log(e);
@@ -199,7 +253,17 @@ const GeneralPracticeForm = () => {
     }
     // setIsLoading(false);
   };
-
+  const parentMeds = (data) => {
+    console.log(data);
+    setNewData(data);
+  };
+  const toggleSpecialistModal = () => {
+    if (lastVisit === null) {
+      toast("A visit has to exist before you can refer patient");
+      return;
+    }
+    setShowSpecialistModal(!showSpecialistModal);
+  };
   const toggleTreatmentModal = () => {
     if (lastVisit === null) {
       alert("");
@@ -208,6 +272,16 @@ const GeneralPracticeForm = () => {
       return;
     }
     setTreatmentModal(!treatmentModal);
+  };
+
+  const toggleDetailedNurseModal = () => {
+    if (lastVisit === null) {
+      alert("");
+
+      toast("A visit has to exist before you can add treatment");
+      return;
+    }
+    setDetailedNurseModal(!detailedNurseModal);
   };
 
   const createTreatmet = async (load) => {
@@ -275,18 +349,30 @@ const GeneralPracticeForm = () => {
   return (
     <div className="w-100">
       <div class="flex-between align-center w-70">
-        {/* <div class="flex" style={{ padding: "20px" }}>
+        <div class="flex" style={{ padding: "20px", cursor: "pointer" }}>
           <FiArrowLeft />
           <p onClick={() => navigate(-1)}> Back</p>
-        </div> */}
+        </div>
         <div className=""></div>
         {treatmentId && (
           <div class="flex-row-gap">
             <button className="rounded-btn" onClick={toggleModal}>
               + Refer Patient To Lab
             </button>
-            <button className="rounded-btn" onClick={toggleTreatmentModal}>
-              + Add Treatment
+            {newData.length < 1 ? (
+              <button className="rounded-btn" onClick={toggleTreatmentModal}>
+                + Add Treatment
+              </button>
+            ) : (
+              <button
+                className="rounded-btn"
+                onClick={toggleDetailedNurseModal}
+              >
+                + Add additional Medication
+              </button>
+            )}
+            <button className="rounded-btn" onClick={toggleSpecialistModal}>
+              + Refer Patient To Specialist
             </button>
           </div>
         )}
@@ -301,56 +387,112 @@ const GeneralPracticeForm = () => {
             <section className="">
               <div className="section-box flex-col-gap">
                 <div className="field-column">
-                  <label>History</label>
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="history"
-                    value={formData.history || ""}
+                  <label>Patient Complaint</label>
+                  {!treatmentId ? (
+                    <GhostTextCompletion
+                      // label="Patient Diagnosis"
+                      name="patientComplaint"
+                      value={formData.patientComplaint || ""}
+                      handleChange={handleChange}
+                      none={true}
+                    />
+                  ) : (
+                    <textarea
+                      name="patientComplaint"
+                      onChange={handleChange}
+                      // className="input-field"
+                      rows={2}
+                      value={formData.patientComplaint}
+                    />
+                  )}
+                </div>
+                {/* <div className="field-column">
+                  <label>Patient Complaint</label>
+                  <textarea
+                    name="patientComplaint"
+                    placeholder="Patient"
+                    value={formData.patientComplaint}
                     handleChange={handleChange}
-                    none={true}
+                    rows={3}
                   />
-                  {/* <textarea
-                    name="history"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={formData.history}
-                  /> */}
+                </div> */}
+                <div className="field-column">
+                  <label>History</label>
+                  {!treatmentId ? (
+                    <GhostTextCompletion
+                      // label="Patient Diagnosis"
+                      name="history"
+                      value={formData.history || ""}
+                      handleChange={handleChange}
+                      none={true}
+                    />
+                  ) : (
+                    <textarea
+                      name="history"
+                      onChange={handleChange}
+                      rows={8}
+                      value={formData.history}
+                    />
+                  )}
                 </div>
                 <div className="field-column">
                   <label>Physical Examination</label>
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="physicalExamination"
-                    value={formData.physicalExamination || ""}
-                    handleChange={handleChange}
-                    none={true}
-                  />
-                  {/* <textarea
-                    name="physicalExamination"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={formData.physicalExamination}
-                  /> */}
+                  {!treatmentId ? (
+                    <GhostTextCompletion
+                      // label="Patient Diagnosis"
+                      name="physicalExamination"
+                      value={formData.physicalExamination || ""}
+                      handleChange={handleChange}
+                      none={true}
+                    />
+                  ) : (
+                    <textarea
+                      name="physicalExamination"
+                      onChange={handleChange}
+                      rows={8}
+                      value={formData.physicalExamination}
+                    />
+                  )}
+                </div>
+                <div className="field-column">
+                  <label>Diagnosis</label>
+                  {!treatmentId ? (
+                    <GhostTextCompletion
+                      // label="Patient Diagnosis"
+                      name="diagnosis"
+                      value={formData.diagnosis || ""}
+                      handleChange={handleChange}
+                      none={true}
+                    />
+                  ) : (
+                    <textarea
+                      name="diagnosis"
+                      onChange={handleChange}
+                      rows={8}
+                      value={formData.diagnosis}
+                    />
+                  )}
                 </div>
                 <div className="field-column">
                   <label>Investigation</label>
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="investigation"
-                    value={formData.investigation || ""}
-                    handleChange={handleChange}
-                    none={true}
-                  />
-                  {/* <textarea
-                    name="investigation"
-                    onChange={handleChange}
-                    className="input-field"
-                    rows={6}
-                    value={formData.investigation}
-                  /> */}
+                  {!treatmentId ? (
+                    <GhostTextCompletion
+                      // label="Patient Diagnosis"
+                      name="investigation"
+                      value={formData.investigation || ""}
+                      handleChange={handleChange}
+                      none={true}
+                    />
+                  ) : (
+                    <textarea
+                      name="investigation"
+                      onChange={handleChange}
+                      rows={8}
+                      value={formData.investigation}
+                    />
+                  )}
                 </div>
+
                 {/* <div className="field-column">
                   <label>Surgeon Signature</label>
                   <textarea
@@ -365,10 +507,14 @@ const GeneralPracticeForm = () => {
               <h2 style={{ marginTop: "40px", marginBottom: "20px" }}>
                 Lab Reports{" "}
               </h2>
-              {treatmentId && dataFromLab.length > 0 ? (
+              {treatmentId && dataFromLab?.length > 0 ? (
                 <div className="field-column">
                   <label>Patient's Lab Results</label>
-                  <LabRequestTable data={dataFromLab} isFamily={false} />
+                  <LabRequestTable
+                    data={dataFromLab}
+                    isFamily={"OG_IVF"}
+                    treatmentId={treatmentId}
+                  />
                 </div>
               ) : (
                 <p>No lab records</p>
@@ -378,6 +524,7 @@ const GeneralPracticeForm = () => {
               </h2>
               {treatmentId && (
                 <MedicationTable
+                  parentMeds={parentMeds}
                   data={{
                     treatmentType: "GeneralPractice",
                     treatmentId: treatmentId,
@@ -417,6 +564,24 @@ const GeneralPracticeForm = () => {
           // vitalId = {vitals.id}
           id={patientId}
           // treatment={data[0] || null}
+        />
+      )}
+      {showSpecialistModal && (
+        <ReferPatientToSpecialist
+          patient={patient}
+          closeModal={toggleSpecialistModal}
+          id={patientId}
+          userId={docInfo?.employeeId || 0}
+          clinicId={lastVisit?.clinicId || 0}
+        />
+      )}
+
+      {detailedNurseModal && (
+        <DetailedNurseNotes
+          closeModal={toggleDetailedNurseModal}
+          getAllAdmittedPatients={getRecord}
+          treatment={newData[0]}
+          patientId={patientId}
         />
       )}
     </div>

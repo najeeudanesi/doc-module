@@ -12,8 +12,7 @@ import { useParams } from "react-router-dom";
 import { get } from "../../utility/fetch";
 
 const Accordion = ({ title, children }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <div className="accordion-item">
@@ -31,7 +30,7 @@ const Accordion = ({ title, children }) => {
 
 const PatientDetailsNew = () => {
   const [patient, setPatient] = useState(null);
-  const { patientId, } = useParams();
+  const { patientId } = useParams();
   const getPatientDetails = async () => {
     // setLoading(true);
     try {
@@ -56,27 +55,28 @@ const PatientDetailsNew = () => {
 
       <Accordion title="Patient Information">
         <PatientDetails
+          patient={patient}
           visibleTabs={[
             "personal",
+            "appointments",
+            "medicalRecordFiles",
+            "treatment",
+            "immunization",
             "contactDetails",
             "emergencyContact",
-            "immunization",
-            "appointments",
-            'visits'
+            "healthMonitoring",
+            // "medicalRecord",
+            "visits",
+            "specialty",
+            
           ]}
         />
       </Accordion>
 
-      <Accordion title="Specialty Clinic">
-        {/* <Orthopedic /> */}
-        {/* <BirthRecordForm /> */}
-
+      {/* <Accordion title="Specialty Clinic">
         <MedicalLog patient={patient} />
-        {/* <Pediatrics/> */}
-        {/* <GeneralSurgery/> */}
-        {/*  <FamilyConsultationReadOnly />
-        <AddNotes /> */}
-      </Accordion>
+      
+      </Accordion> */}
     </div>
   );
 };

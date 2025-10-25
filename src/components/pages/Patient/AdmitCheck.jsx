@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
-import {  get } from "../../../utility/fetch";
-import {  RiEdit2Fill } from "react-icons/ri";
+import { get } from "../../../utility/fetch";
+import { RiEdit2Fill } from "react-icons/ri";
 import notification from "../../../utility/notification";
 import axios from "axios";
 import DetailedNurseNotes from "../../modals/DetailedNurseNotes";
 
-function AdmitCheck({ data, setCurrent, totalPages, currentPage }) {
-
+function AdmitCheck({
+  data,
+  setCurrentPage,
+  totalPages,
+  currentPage,
+  getAllAdmittedPatients,
+}) {
   const [viewing, setViewing] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [add, setAdd] = useState(false);
@@ -17,11 +22,11 @@ function AdmitCheck({ data, setCurrent, totalPages, currentPage }) {
   const [bedList, setBedsList] = useState([]);
   const [patientName, setPatientName] = useState("");
 
-
+  // Pagination controls
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
-      setCurrent(newPage);
-      setCurrent(newPage);
+      setCurrentPage(newPage);
+      getAllAdmittedPatients(newPage); // Fetch new page data from parent
     }
   };
 
@@ -41,41 +46,49 @@ function AdmitCheck({ data, setCurrent, totalPages, currentPage }) {
       }
     }
     return pages;
-
   };
 
   const getAllPatients = async () => {
     setLoading(true);
     try {
-      let res = await get(`/patients/AllPatient/${sessionStorage?.getItem("clinicId")}?pageIndex=${1}&pageSize=${1000}`);
+      let res = await get(
+        `/patients/AllPatient/${sessionStorage?.getItem(
+          "clinicId"
+        )}?pageIndex=${1}&pageSize=${1000}`
+      );
       setPatient(res?.data);
     } catch (error) {
-      console.error('Error fetching all patients:', error);
+      console.error("Error fetching all patients:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const getAssignedBeds = async () => {
-    const token = sessionStorage.getItem('token');
+    const token = sessionStorage.getItem("token");
 
     if (!token) {
-      console.error('Token not found in session storage');
+      console.error("Token not found in session storage");
       return;
     }
 
     const options = {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     };
 
     try {
-      let res = await axios.get(`${process.env.REACT_APP_BASE_URL}/clinicapi/api/bed/assign-bed/list/${1}/1000`, options);
+      let res = await axios.get(
+        `${
+          process.env.REACT_APP_BASE_URL
+        }/clinicapi/api/bed/assign-bed/list/${1}/1000`,
+        options
+      );
       setBeds(res?.data?.resultList || []);
     } catch (error) {
-      console.error('Error fetching equipment:', error);
+      console.error("Error fetching equipment:", error);
     }
   };
 
@@ -86,77 +99,78 @@ function AdmitCheck({ data, setCurrent, totalPages, currentPage }) {
     }
     const patientRecord = patient?.find((p) => p?.patientId === id);
 
-    return patientRecord ? `${patientRecord?.firstName} ${patientRecord?.lastName}` : "";
+    return patientRecord
+      ? `${patientRecord?.firstName} ${patientRecord?.lastName}`
+      : "";
   };
 
   const isPatientOccupyingBed = (patientId) => {
     const bed = beds?.find((b) => b?.patient?.id === patientId);
-    return bed ? bed?.bed?.name : 'Assign patient a bed';
+    return bed ? bed?.bed?.name : "Assign patient a bed";
   };
-
-
 
   useEffect(() => {
     getAllPatients();
-    getAssignedBeds()
+    getAssignedBeds();
   }, []);
 
   useEffect(() => {
     setCombinedData(data);
   }, [data]);
 
-
   const closeModal = () => {
     setIsModalOpen(false);
-    setAdd(false)
+    setAdd(false);
   };
 
   const selectRecord = (record) => () => {
-    console.log('Selected record:', record.appointmentId);
-    const patientRecord = patient?.find((p) => p?.patientId === record?.patientId);
+    const patientRecord = patient?.find(
+      (p) => p?.patientId === record?.patientId
+    );
 
     if (patientRecord) {
       setPatientName(`${patientRecord?.firstName} ${patientRecord?.lastName}`);
     }
     setIsModalOpen(true);
     setViewing(record);
-    // navigate('/facility');
   };
-
 
   const handleEdit = (recordId) => {
     setViewing(recordId);
     setAdd(true);
-  }
+  };
 
   const getBedList = async () => {
-    const token = sessionStorage.getItem('token');
+    const token = sessionStorage.getItem("token");
 
     if (!token) {
-      console.error('Token not found in session storage');
+      console.error("Token not found in session storage");
       return;
     }
 
     const options = {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     };
     try {
       setLoading(true);
-      let res = await axios.get(`${process.env.REACT_APP_BASE_URL}/clinicapi/api/bed/list/${1}/10`, options);
+      let res = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/clinicapi/api/bed/list/${1}/10`,
+        options
+      );
       if (res.status === 200) {
         setBedsList(res?.data?.resultList || []);
       } else if (res.status === 500) {
-        notification({ message: 'Server Error', type: "error" });
+        notification({ message: "Server Error", type: "error" });
         setBedsList([]);
       } else {
         setBedsList([]);
       }
     } catch (error) {
       setBedsList([]);
-      console.error('Error fetching bed list:', error);
+      console.error("Error fetching bed list:", error);
     } finally {
       setLoading(false);
     }
@@ -169,15 +183,11 @@ function AdmitCheck({ data, setCurrent, totalPages, currentPage }) {
           <thead className="border-top-none">
             <tr className="border-top-none">
               <th className="center-text">Date</th>
-
               <th className="center-text">Time Of Admission</th>
               <th className="center-text">Age</th>
               <th className="center-text">Diagnosis</th>
               <th className="center-text">Patient</th>
               <th className="center-text">Bed Occupying</th>
-              {/* <th className="center-text">Action</th> */}
-
-
             </tr>
           </thead>
           <tbody className="white-bg view-det-pane">
@@ -185,72 +195,87 @@ function AdmitCheck({ data, setCurrent, totalPages, currentPage }) {
               const patientName = findPatientName(row.patientId);
               const bed = isPatientOccupyingBed(row.patientId);
               return (
-                <tr className="hovers pointer" onClick={selectRecord(row)} key={row?.id}>
+                <tr
+                  className="hovers pointer"
+                  onClick={selectRecord(row)}
+                  key={row?.id}
+                >
                   <td>{new Date(row?.dateOfVisit).toLocaleDateString()}</td>
                   <td>
-                    {new Date(row?.createdAt?.split('.')[0]).toLocaleTimeString('en-US', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      second: '2-digit',
-                      hour12: true, // 12-hour format
-                    })}
+                    {new Date(row?.createdAt?.split(".")[0]).toLocaleTimeString(
+                      "en-US",
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: true,
+                      }
+                    )}
                   </td>
                   <td>{row?.age} years</td>
+                  <td>{row?.diagnosis}</td>
                   <td>
-                    {row?.diagnosis}
+                    {patientName
+                      ? patientName
+                      : row.patient.firstName + " " + row.patient.lastName}
                   </td>
-                  <td>{patientName ? patientName : ''}</td>
-                  <td>{bed ? bed : ''}</td>
-                  {/* <td> <RiEdit2Fill size={20} onClick={selectRecord(row)} style={{ color: 'green', cursor: 'pointer' }} /></td> */}
-
+                  <td>{bed ? bed : ""}</td>
                 </tr>
-              )
+              );
             })}
-
           </tbody>
         </table>
       </div>
-      <div>
-        <div className="pagination flex space-between  col-4 m-t-20">
-          <div className="flex gap-8">
-            <div className="bold-text">Page</div> <div className=" m-r-20">{currentPage}/{totalPages}</div>
+      {/* Pagination Controls */}
+      <div className="pagination flex space-between col-4 m-t-20">
+        <div className="flex gap-8">
+          <div className="bold-text">Page</div>
+          <div className=" m-r-20">
+            {currentPage}/{totalPages}
           </div>
-          <div className="flex gap-8">
-            <button
-              className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              {"Previous"}
-            </button>
+        </div>
+        <div className="flex gap-8">
+          <button
+            className={`pagination-btn ${currentPage === 1 ? "disabled" : ""}`}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            {"Previous"}
+          </button>
 
-            {generatePageNumbers().map((page, index) => (
-              <button
-                key={`page-${index}`}
-                className={`pagination-btn ${currentPage === page ? 'bg-green text-white' : ''}`}
-                onClick={() => handlePageChange(page)}
-              >
-                {page}
-              </button>
-            ))}
-
+          {generatePageNumbers().map((page, index) => (
             <button
-              className={`pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`}
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
+              key={`page-${index}`}
+              className={`pagination-btn ${
+                currentPage === page ? "bg-green text-white" : ""
+              }`}
+              onClick={() => handlePageChange(page)}
             >
-              {"Next"}
+              {page}
             </button>
-          </div>
+          ))}
+
+          <button
+            className={`pagination-btn ${
+              currentPage === totalPages ? "disabled" : ""
+            }`}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            {"Next"}
+          </button>
         </div>
       </div>
 
-      {
-        isModalOpen &&
-        <DetailedNurseNotes closeModal={closeModal} treatment={viewing} patientName={patientName} patientId={viewing?.patientId}/>
-      }
-
-     
+      {isModalOpen && (
+        <DetailedNurseNotes
+          getAllAdmittedPatients={getAllAdmittedPatients}
+          closeModal={closeModal}
+          treatment={viewing}
+          patientName={patientName}
+          patientId={viewing?.patientId}
+        />
+      )}
     </div>
   );
 }

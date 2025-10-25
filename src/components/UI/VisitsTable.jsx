@@ -91,7 +91,7 @@ function VisitsTable({ data }) {
           </thead>
 
           <tbody className="white-bg view-det-pane">
-            {Array.isArray(data) && data?.map((row) => (
+            {Array.isArray(data) ?data?.map((row) => (
               <tr key={row?.id}>
                 <td style={{ minWidth: '100px' }}>{formatDate(row?.dateOfVisit)}</td>
                 <td>{row?.bloodPressure}</td>
@@ -107,7 +107,7 @@ function VisitsTable({ data }) {
                 {/* <td onClick={selectRecord(row)}><img className="hovers pointer" src="/details.png" /></td> */}
               </tr>
 
-            ))}
+            )):"No record found"}
           </tbody>
         </table>
       </div>

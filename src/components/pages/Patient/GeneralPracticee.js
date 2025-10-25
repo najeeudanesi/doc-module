@@ -116,7 +116,7 @@ function PatientDetails() {
                 </button> */}
               </div>
               <div className="m-t-10">
-                  <GeneralPracticeForm />
+                  <GeneralPracticeForm patient={patient} />
               </div>
 
              

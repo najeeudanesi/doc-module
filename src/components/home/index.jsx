@@ -7,6 +7,8 @@ import InputField from "../UI/InputField";
 import greenz from "../../assets/images/Greenzone.png";
 import icon from "../../assets/images/Group-2.png";
 import Footer from "../layouts/Footer";
+import { get } from "../../utility/fetchClinic";
+import axios from "axios";
 
 const Home = (props) => {
   const location = useLocation();
@@ -22,6 +24,97 @@ const Home = (props) => {
     //   toast("Please enter email and password");
     //   return;
     // }
+    // let baseurl = "https://edogoverp.com";
+
+    // if (urltoken !== "") {
+    //   setLoading(true);
+
+    //   const authurl = "/pharmacyapi/api/Auth/Auth/";
+
+    //   axios
+    //     .post(`${baseurl}${authurl}?AuthToken=${urltoken}`, {
+    //       headers: {
+    //         "Access-Control-Allow-Credentials": true,
+    //         crossorigin: true,
+    //         "Access-Control-Allow-Methods": "POST",
+    //         "Access-Control-Allow-Origin": "*",
+    //       },
+    //     })
+    //     .then((response) => {
+    //       const user_auth = response?.data;
+
+    //       console.log(response);
+
+    //       // getProfiles(user_auth?.clinicId);
+    //       // sessionStorage.setItem("token", user_auth?.token);
+    //       // sessionStorage.setItem("clinicId", user_auth?.clinicId);
+    //       // sessionStorage.setItem("userId", user_auth?.userId);
+    //       // localStorage.setItem("nurseRole", user_auth?.role);
+    //       // localStorage.setItem("USER_INFO", JSON.stringify(user_auth));
+    //       // sessionStorage.setItem("isAdmin", user_auth?.isAdmin);
+    //       // sessionStorage.setItem("homeLink", user_auth?.homeLink);
+    //       // // sessionStorage.setItem("_APIBaseURL", parsed.base);
+    //       // sessionStorage.setItem("isAdmin", user_auth?.isAdmin);
+    //       // sessionStorage.setItem(
+    //       //   "name",
+    //       //   `${user_auth?.firstName} ${user_auth?.lastName}`
+    //       // );
+
+    //       // const loginTime = new Date().getTime();
+    //       // localStorage.setItem("LOGIN_TIME", loginTime);
+
+    //       // Cookies.set(`${ModuleName}_AppToken`, user_auth?.token, {
+    //       //   expires: 0.0416665,
+    //       // });
+    //       // Cookies.set("homeLink", user_auth?.homeLink);
+    //       // Cookies.set(`${ModuleName}_AccessToken`, parsed?.emp);
+    //       // Cookies.set("_APIBaseURL", parsed?.base);
+    //       // Cookies.set("tokenExist", true, { expires: 0.0416665 });
+
+    //       if (user_auth) {
+    //         setLoading(false);
+    //         // navigate("/facility"); // Redirect to dashboard
+    //       } else {
+    //         // setLoading(false);
+    //         // store?.addNotification({
+    //         //   title: "Error!",
+    //         //   message: user_auth?.message,
+    //         //   type: "danger",
+    //         //   insert: "bottom",
+    //         //   container: "bottom-left",
+    //         //   animationIn: ["animate__animated", "animate__fadeIn"],
+    //         //   animationOut: ["animate__animated", "animate__fadeOut"],
+    //         //   dismiss: {
+    //         //     duration: 5000,
+    //         //     onScreen: true,
+    //         //   },
+    //         // });
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //       // setLoading(false);
+    //       // Cookies.set("_AppToken", null);
+    //       // Cookies.set("tokenExist", false);
+    //       // Cookies.set("_FullName", null);
+    //       // Cookies.set("_Role", null);
+    //       // Cookies.set("_Email", null);
+
+    //       // store?.addNotification({
+    //       //   title: "Error!",
+    //       //   message: "You Do Not Have Access To this Application!",
+    //       //   type: "danger",
+    //       //   insert: "bottom",
+    //       //   container: "bottom-left",
+    //       //   animationIn: ["animate__animated", "animate__fadeIn"],
+    //       //   animationOut: ["animate__animated", "animate__fadeOut"],
+    //       //   dismiss: {
+    //       //     duration: 5000,
+    //       //     onScreen: true,
+    //       //   },
+    //       // });
+    //     });
+    // }
     setLoading(true);
     const payload = {
       email: email,
@@ -30,6 +123,7 @@ const Home = (props) => {
     try {
       const data = await post(`/Auth/auth?AuthToken=${urltoken}`);
       console.log(data);
+      // getProfiles(data?.clinicId);
       if (data?.role.includes("Doctor")) {
         sessionStorage.setItem("clinicId", data?.clinicId);
         localStorage.setItem("homeLink", data?.homeLink);
@@ -41,10 +135,8 @@ const Home = (props) => {
 
         navigate("/doctor/dashboard");
       } else {
-        window.location.href =
-        `${process.env.REACT_APP_BASE_URL}/home`;
+        window.location.href = `${process.env.REACT_APP_BASE_URL}/home`;
         throw { e: "Invalid Role" };
-       
       }
     } catch (error) {
       console.log(error);
@@ -52,6 +144,16 @@ const Home = (props) => {
       toast.error("Invalid login credentials");
     }
     setLoading(false);
+  };
+
+  const getProfiles = async (clinicId) => {
+    const response = await get(`/clinic/${clinicId}`);
+    localStorage.setItem("COMPANY_INFO", JSON.stringify(response));
+    // localStorage.setItem("nurseRole", user_auth?.role);
+    console.log(response);
+
+    // setFormData({ ...formData, ...response });
+    //   setTotalPaginationLength(response.totalPages * 10)
   };
 
   const toggleShowPassword = () => {
@@ -89,8 +191,7 @@ const Home = (props) => {
     // console.log(urltoken);
     urltoken
       ? makePostRequest(urltoken)
-      : (window.location.href =
-          `${process.env.REACT_APP_BASE_URL}/home`);
+      : (window.location.href = `${process.env.REACT_APP_BASE_URL}/home`);
     // const query = qs.parse(location.search);
     // // encodeToken({ api: query.base }, 'api');
     // handleAuthentication(query.emp);

@@ -13,6 +13,9 @@ import AppointmentTable from "../tables/AppointmentTable";
 import MedicalHistory from "../modals/MedicalHistory";
 import Discounts from "./Patient/Discounts";
 import Procedure from "./Patient/Procedures";
+import MedicalLog from "./Patient/MedicalLogs";
+import MedicalRecordFiles from "./Patient/MedicalRecordFiles";
+import HealthMonitoring from "./Patient/HealthMonitoring";
 
 function PatientDetails({ visibleTabs = [] }) {
   const [selectedTab, setSelectedTab] = useState("personal");
@@ -68,6 +71,16 @@ function PatientDetails({ visibleTabs = [] }) {
             patientId={patientId}
           />
         );
+      case "medicalRecordFiles":
+        return (
+          <MedicalRecordFiles
+            patient={patient}
+            data={patient.medicalRecords}
+            next={() => switchToTab("immunization")}
+            fetchData={getPatientDetails}
+            patientId={patientId}
+          />
+        );
       case "visits":
         return (
           <VisitTable
@@ -92,6 +105,17 @@ function PatientDetails({ visibleTabs = [] }) {
             next={() => switchToTab("labs")}
           />
         );
+         case "healthMonitoring":
+        return (
+          <>
+            <HealthMonitoring 
+            patientId={patientId}
+              next={() => switchToTab("labs")}
+            />
+            
+          </>
+        );
+
       case "labs":
         return <Labs visit={visit} id={patientId} />;
       case "discounts":
@@ -103,6 +127,9 @@ function PatientDetails({ visibleTabs = [] }) {
             name={`${patient?.firstName} ${patient?.lastName}`}
           />
         );
+      case "specialty":
+        return <MedicalLog patient={patient} />;
+
       default:
         return null;
     }
@@ -127,7 +154,7 @@ function PatientDetails({ visibleTabs = [] }) {
               <div className=" flex space-between">
                 <h1>{patient?.firstName + " " + patient?.lastName}</h1>
                 <button onClick={handlePatientId} className="btn">
-                  View Medical History
+                  View Medical Records
                 </button>
               </div>
 
@@ -162,6 +189,48 @@ function PatientDetails({ visibleTabs = [] }) {
                     Emergency Contact
                   </div>
                 )}
+
+                {/* medicalRecordFiles */}
+                {visibleTabs.includes("appointments") && (
+                  <div
+                    className={`tab-item ${
+                      selectedTab === "appointments" ? "active" : ""
+                    }`}
+                    onClick={() => switchToTab("appointments")}
+                  >
+                    Appointments
+                  </div>
+                )}
+                {visibleTabs.includes("visits") && (
+                  <div
+                    className={`tab-item ${
+                      selectedTab === "visits" ? "active" : ""
+                    }`}
+                    onClick={() => switchToTab("visits")}
+                  >
+                    Vitals
+                  </div>
+                )}
+                {visibleTabs.includes("treatment") && (
+                  <div
+                    className={`tab-item ${
+                      selectedTab === "treatment" ? "active" : ""
+                    }`}
+                    onClick={() => switchToTab("treatment")}
+                  >
+                    Medical Records
+                  </div>
+                )}
+                {visibleTabs.includes("medicalRecordFiles") && (
+                  <div
+                    className={`tab-item ${
+                      selectedTab === "medicalRecordFiles" ? "active" : ""
+                    }`}
+                    onClick={() => switchToTab("medicalRecordFiles")}
+                  >
+                    Patient Files
+                  </div>
+                )}
                 {visibleTabs.includes("medicalRecord") && (
                   <div
                     className={`tab-item ${
@@ -182,36 +251,30 @@ function PatientDetails({ visibleTabs = [] }) {
                     Immunization
                   </div>
                 )}
-                {visibleTabs.includes("visits") && (
+
+
+                {visibleTabs.includes("healthMonitoring") && (
                   <div
                     className={`tab-item ${
-                      selectedTab === "visits" ? "active" : ""
+                      selectedTab === "healthMonitoring" ? "active" : ""
                     }`}
-                    onClick={() => switchToTab("visits")}
+                    onClick={() => switchToTab("healthMonitoring")}
                   >
-                    Vitals
+                    Health Monitoring
                   </div>
                 )}
-                {visibleTabs.includes("treatment") && (
+
+                {visibleTabs.includes("specialty") && (
                   <div
                     className={`tab-item ${
-                      selectedTab === "treatment" ? "active" : ""
+                      selectedTab === "specialty" ? "active" : ""
                     }`}
-                    onClick={() => switchToTab("treatment")}
+                    onClick={() => switchToTab("specialty")}
                   >
-                    Treatment
+                    Specialty Clinic
                   </div>
                 )}
-                {visibleTabs.includes("appointments") && (
-                  <div
-                    className={`tab-item ${
-                      selectedTab === "appointments" ? "active" : ""
-                    }`}
-                    onClick={() => switchToTab("appointments")}
-                  >
-                    Appointments
-                  </div>
-                )}
+
                 {visibleTabs.includes("labs") && (
                   <div
                     className={`tab-item ${
@@ -219,7 +282,7 @@ function PatientDetails({ visibleTabs = [] }) {
                     }`}
                     onClick={() => switchToTab("labs")}
                   >
-                    Labs
+                    Labs History
                   </div>
                 )}
                 {visibleTabs.includes("procedures") && (
@@ -255,10 +318,16 @@ function PatientDetails({ visibleTabs = [] }) {
 
       {showHistory && (
         <MedicalHistory
+          data={patient}
           patientId={id}
           closeModal={() => setShowHistory(false)}
         />
       )}
+
+      {/* Health and Monitoring Section */}
+      {/* <div style={{ marginTop: 32 }}>
+        <HealthMonitoring />
+      </div> */}
     </div>
   );
 }

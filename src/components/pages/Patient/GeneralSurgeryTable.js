@@ -69,7 +69,7 @@ const GeneralSurgeryTable = () => {
                   <th>Patient Name</th>
                   <th>Date</th>
                   <th>Case Type</th>
-                  <th>Medical Record/History</th>
+                  <th>Patient's Complaint</th>
                   <th>Doctor's Name</th>
                   <th>Action</th>
                 </tr>

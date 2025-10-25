@@ -538,11 +538,12 @@
   border-radius: 4px;
    */
   /* flex: 1; */
-  height: 32px;
+  /* height: 32px; */
 
   box-shadow: 1px 4px 11px 0px #cebde440;
   border: 1px solid #3c7e2da6;
   width: 100%;
+  /* min-width: 100px; */
   border: none;
   padding: 6px 10px;
   outline: none;
@@ -959,6 +960,10 @@ section {
 
 .max-w-1000 {
   max-width: 1000px !important;
+}
+
+.max-w-1400 {
+  max-width: 1400px !important;
 }
 
 .col-1,

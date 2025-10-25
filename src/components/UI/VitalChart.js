@@ -24,14 +24,22 @@ const vitalOptions = [
   // Add other vital options as needed.
 ];
 
-const VitalsChart = ({ visitsData }) => {
-  const [selectedVitals, setSelectedVitals] = useState(["temperature"]);
+const VitalsChart = ({ visitsData, bp }) => {
+  // Filter out blood pressure if bp prop is true
+  const filteredVitalOptions = bp
+    ? vitalOptions.filter((v) => v.key !== "bloodPressure")
+    : vitalOptions;
+
+  const [selectedVitals, setSelectedVitals] = useState([
+    filteredVitalOptions[0]?.key,
+  ]);
 
   // Sort visitsData by dateOfVisit in ascending order
   const sortedData = Array.isArray(visitsData)
-    ? [...visitsData].sort((a, b) => new Date(a.dateOfVisit) - new Date(b.dateOfVisit))
+    ? [...visitsData].sort(
+        (a, b) => new Date(a.dateOfVisit) - new Date(b.dateOfVisit)
+      )
     : [];
-
 
   const toggleVital = (vitalKey) => {
     setSelectedVitals((prev) =>
@@ -46,7 +54,7 @@ const VitalsChart = ({ visitsData }) => {
       <h3>Vitals Over Time</h3>
       {/* Vital Selection Checkboxes */}
       <div>
-        {vitalOptions.map((vital) => (
+        {filteredVitalOptions.map((vital) => (
           <label key={vital.key} style={{ marginRight: "10px" }}>
             <input
               type="checkbox"
@@ -65,7 +73,7 @@ const VitalsChart = ({ visitsData }) => {
           <Tooltip />
           <Legend />
           {selectedVitals.map((vitalKey) => {
-            const option = vitalOptions.find((v) => v.key === vitalKey);
+            const option = filteredVitalOptions.find((v) => v.key === vitalKey);
             return (
               <Line
                 key={vitalKey}

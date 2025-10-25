@@ -74,39 +74,87 @@ const FamilyConsultation = () => {
   };
 
   const handleSubmit = async (e) => {
+    const str = (v) => v ?? "";
+    const num = (v) => (v !== undefined && v !== "" ? Number(v) : 0);
+    const bool = (v) =>
+      v === true || v === "true" || v === "Yes" ? true : false;
+
     e.preventDefault();
+    // Ensure lastConfinement is not beyond today and format as ISO datetime
+
+    const toISODateTime = (dateStr) => {
+      const today = new Date();
+      // If missing, use today
+      if (!dateStr) return today.toISOString();
+      // If already has time, just return ISO
+      if (dateStr.length > 10) return new Date(dateStr).toISOString();
+      // If only date, append T00:00:00
+      return new Date(dateStr + "T00:00:00").toISOString();
+    };
+    const today = new Date();
+    // lastConfinement
+    let lastConfinementValue = str(formData.lastConfinement);
+    if (lastConfinementValue) {
+      const inputDate = new Date(lastConfinementValue);
+      if (inputDate > today) {
+        lastConfinementValue = today.toISOString().slice(0, 10);
+      }
+    }
+    lastConfinementValue = toISODateTime(lastConfinementValue);
+    // dateCommence
+    let dateCommenceValue = str(formData.dateCommence);
+    dateCommenceValue = toISODateTime(dateCommenceValue);
+    // dateExpired
+    let dateExpiredValue = str(formData.dateExpired);
+    dateExpiredValue = toISODateTime(dateExpiredValue);
+
     const payload = {
-      patientId: parseInt(patientId),
-      lastConfinement: formData.lastConfinement || null,
-      deliveryType: +formData.deliveryType || null,
-      deliveryComplications: formData.deliveryComplications === "Yes",
-      details: formData.details || "",
-      breastFeeding: formData.breastFeeding === "Yes",
-      menstrualResumed: formData.menstrualResumption === "Yes",
+      patientId: num(patientId),
+      lastConfinement: lastConfinementValue,
+      deliveryType: num(formData.deliveryType),
+      deliveryComplications: bool(formData.deliveryComplications),
+      details: str(formData.details),
+      breastFeeding: bool(formData.breastFeeding),
+      menstrualResumed: bool(formData.menstrualResumption),
       familyMedicineInvestigations: investigationArray.map((item) => ({
-        investigation: item.id,
+        investigation: num(item.id),
       })),
-      familyPlanMethod: +formData.familyPlanMethod || null,
-      dateCommence: formData.dateCommence || null,
-      appointmentId: +localStorage.getItem("appointmentId"),
-      instructions: formData.instructions || "",
-      remarks: formData.remark || "",
-      doctorId: docInfo?.employeeId || 0,
-      consent: formData.consent === "Yes",
+      familyPlanMethod: num(formData.familyPlanMethod),
+      dateCommence: dateCommenceValue,
+      dateExpired: dateExpiredValue,
+      appointmentId: num(localStorage.getItem("appointmentId")),
+      instructions: str(formData.instructions),
+      remarks: str(formData.remark),
+      doctorId: num(docInfo?.employeeId),
+      consent: bool(formData.consent),
       familyMedicineDocuments: [
         {
           docName: "string",
           docPath: "string",
         },
       ],
+      // Add any additional required fields with strict defaults here
+      patientComplaint: str(formData.patientComplaint),
+      history: str(formData.history),
+      physicalExamination: str(formData.physicalExamination),
+      diagnosis: str(formData.diagnosis),
+      investigation: str(formData.investigation),
     };
 
     console.log("Mapped Payload:", payload);
 
     try {
       const response = await post("/FamilyMedicine", payload);
+      console.log(response);
+
       if (response?.isSuccess) {
-        navigate(`/doctor/patients/patient-details/${patientId}`);
+        // navigate(`/doctor/patients/family-medcine/${patientId}`)
+
+        // navigate(`/doctor/patients/patient-details/${patientId}`);
+
+        navigate(
+          `/doctor/patients/family-medcine-treatment/${patientId}/?treatmentId=${response?.data?.familyMedicineId}`
+        );
       } else {
         console.error("Submission failed: Response not successful");
       }
@@ -117,7 +165,7 @@ const FamilyConsultation = () => {
 
   return (
     <div style={{ padding: "60px 0px" }} className="consultation-container">
-      <div class="flex" style={{ padding: "20px" }}>
+      <div class="flex" style={{ padding: "20px", cursor: "pointer" }}>
         <FiArrowLeft />
         <p onClick={() => navigate(-1)}> Back</p>
       </div>
@@ -125,38 +173,81 @@ const FamilyConsultation = () => {
         <h2 style={{ textAlign: "center" }} className="w-70">
           Family Planning
         </h2>
-        <main className="consultation-main">
-          <form className="consultation-form" onSubmit={handleSubmit}>
-            <div className="input-row">
-              <div class="flex-row-gap">
-                <div className="field-row">
-                  <label htmlFor="lastConfinement">Last confinement</label>
-                  <input
-                    id="lastConfinement"
-                    name="lastConfinement"
-                    onChange={handleChange}
-                    type="date"
-                    className="input-field"
-                  />
+        <Accordion title="Examination">
+          <div className="field-column new">
+            <label>Patient Complaint</label>
+            <textarea
+              name="patientComplaint"
+              placeholder="Patient"
+              value={formData.patientComplaint}
+              onChange={handleChange}
+              rows={3}
+            />
+          </div>
+          <div className="field-column new">
+            <label>History</label>
+            <textarea
+              name="history"
+              placeholder="Patient"
+              value={formData.history}
+              onChange={handleChange}
+              rows={3}
+            />
+          </div>
+          <div className="field-column new">
+            <label>Physical Examination</label>
+            <textarea
+              name="physicalExamination"
+              placeholder="Patient"
+              value={formData.physicalExamination}
+              onChange={handleChange}
+              rows={3}
+            />
+          </div>
+          <div className="field-column new">
+            <label>Diagnosis</label>
+            <textarea
+              name="diagnosis"
+              placeholder="Patient"
+              value={formData.diagnosis}
+              onChange={handleChange}
+              rows={3}
+            />
+          </div>
+        </Accordion>
+        <Accordion title="Questionaire">
+          <main className="consultation-main">
+            <form className="consultation-form">
+              <div className="input-row">
+                <div class="flex-row-gap">
+                  <div className="field-row">
+                    <label htmlFor="lastConfinement">Last confinement</label>
+                    <input
+                      id="lastConfinement"
+                      name="lastConfinement"
+                      onChange={handleChange}
+                      type="date"
+                      className="input-field"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="group-box">
-                <label>Type Of Delivery</label>
-                <div className="group-options">
-                  {["Normal", "C-section", "Assisted"].map((opt, index) => (
-                    <label key={opt}>
-                      <input
-                        type="radio"
-                        name="deliveryType"
-                        value={index + 1}
-                        onChange={handleChange}
-                      />
-                      {opt}
-                    </label>
-                  ))}
+                <div className="group-box">
+                  <label>Type Of Delivery</label>
+                  <div className="group-options">
+                    {["Normal", "C-section", "Assisted"].map((opt, index) => (
+                      <label key={opt}>
+                        <input
+                          type="radio"
+                          name="deliveryType"
+                          value={index + 1}
+                          onChange={handleChange}
+                        />
+                        {opt}
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              {/* <div className="field-row">
+                {/* <div className="field-row">
                 <label htmlFor="deliveryType">Type of delivery</label>
                 <input
                   id="deliveryType"
@@ -166,111 +257,134 @@ const FamilyConsultation = () => {
                   className="input-field"
                 />
               </div> */}
-            </div>
-            <div className="radio-row">
-              <span>Delivery Complications?</span>
-              <label>
-                <input
-                  type="radio"
-                  name="deliveryComplications"
-                  value="Yes"
-                  onChange={handleChange}
-                />{" "}
-                Yes
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="deliveryComplications"
-                  value="No"
-                  onChange={handleChange}
-                />{" "}
-                No
-              </label>
-            </div>
-            <div className="field-column">
-              <label htmlFor="details">Provide Details</label>
-              <GhostTextCompletion
-                // label="Patient Diagnosis"
-                name="details"
-                value={formData.details}
-                handleChange={
-                  handleChange
-                  // setFormData({ details: e.target.value });
-                  // setRepeatedDiagnosis(e.target.value);
-                }
-                none={true}
-              />
-              {/* <textarea
+              </div>
+              <div className="radio-row">
+                <span>Delivery Complications?</span>
+                <label>
+                  <input
+                    type="radio"
+                    name="deliveryComplications"
+                    value="Yes"
+                    onChange={handleChange}
+                  />{" "}
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="deliveryComplications"
+                    value="No"
+                    onChange={handleChange}
+                  />{" "}
+                  No
+                </label>
+              </div>
+              <div className="field-column">
+                <label htmlFor="details">Provide Details</label>
+                <GhostTextCompletion
+                  // label="Patient Diagnosis"
+                  name="details"
+                  value={formData.details}
+                  handleChange={
+                    handleChange
+                    // setFormData({ details: e.target.value });
+                    // setRepeatedDiagnosis(e.target.value);
+                  }
+                  none={true}
+                />
+                {/* <textarea
                 id="details"
                 name="details"
                 onChange={handleChange}
                 className="textarea-field"
               ></textarea> */}
-            </div>
-            <div className="radio-row">
-              <span>Breast feeding?</span>
-              <label>
-                <input
-                  type="radio"
-                  name="breastFeeding"
-                  value="Yes"
-                  onChange={handleChange}
-                />{" "}
-                Yes
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="breastFeeding"
-                  value="No"
-                  onChange={handleChange}
-                />{" "}
-                No
-              </label>
-              <span>Menstrual resumption?</span>
-              <label>
-                <input
-                  type="radio"
-                  name="menstrualResumption"
-                  value="Yes"
-                  onChange={handleChange}
-                />{" "}
-                Yes
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="menstrualResumption"
-                  value="No"
-                  onChange={handleChange}
-                />{" "}
-                No
-              </label>
-            </div>
-            <div className="input-row">
-              <div className="group-box">
-                <label>Investigation</label>
+              </div>
+              <div className="radio-row">
+                <span>Breast feeding?</span>
+                <label>
+                  <input
+                    type="radio"
+                    name="breastFeeding"
+                    value="Yes"
+                    onChange={handleChange}
+                  />{" "}
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="breastFeeding"
+                    value="No"
+                    onChange={handleChange}
+                  />{" "}
+                  No
+                </label>
+                <span>Menstrual resumption?</span>
+                <label>
+                  <input
+                    type="radio"
+                    name="menstrualResumption"
+                    value="Yes"
+                    onChange={handleChange}
+                  />{" "}
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="menstrualResumption"
+                    value="No"
+                    onChange={handleChange}
+                  />{" "}
+                  No
+                </label>
+              </div>
+              <div className="input-row">
                 <div className="group-box">
+                  <label>Investigation</label>
+                  <div className="group-box">
+                    <div className="group-options">
+                      {investigations.map((opt) => (
+                        <label key={opt.name}>
+                          <input
+                            type="checkbox"
+                            name="investigation"
+                            value={opt.name}
+                            checked={investigationArray.some(
+                              (item) => item.name === opt.name
+                            )}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setInvestigationArray((prev) => [...prev, opt]);
+                              } else {
+                                setInvestigationArray((prev) =>
+                                  prev.filter((item) => item.name !== opt.name)
+                                );
+                              }
+                            }}
+                          />{" "}
+                          {opt.name}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="group-box">
+                  <label>Family Plan Methods</label>
                   <div className="group-options">
-                    {investigations.map((opt) => (
-                      <label key={opt.name}>
+                    {[
+                      { name: "IUCD", id: 1 },
+                      { name: "Pills", id: 2 },
+                      { name: "Injectable-two months", id: 3 },
+                      { name: "Injectable-three months", id: 4 },
+                      { name: "Implant", id: 5 },
+                    ].map((opt) => (
+                      <label key={opt.id}>
                         <input
-                          type="checkbox"
-                          name="investigation"
-                          value={opt.name}
-                          checked={investigationArray.some(
-                            (item) => item.name === opt.name
-                          )}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setInvestigationArray((prev) => [...prev, opt]);
-                            } else {
-                              setInvestigationArray((prev) =>
-                                prev.filter((item) => item.name !== opt.name)
-                              );
-                            }
-                          }}
+                          type="radio"
+                          name="familyPlanMethod"
+                          value={opt.id}
+                          onChange={handleChange}
                         />{" "}
                         {opt.name}
                       </label>
@@ -278,72 +392,49 @@ const FamilyConsultation = () => {
                   </div>
                 </div>
               </div>
-              <div className="group-box">
-                <label>Family Plan Methods</label>
-                <div className="group-options">
-                  {[
-                    { name: "IUCD", id: 1 },
-                    { name: "Pills", id: 2 },
-                    { name: "Injectable-two months", id: 3 },
-                    { name: "Injectable-three months", id: 4 },
-                    { name: "Implant", id: 5 },
-                  ].map((opt) => (
-                    <label key={opt.id}>
-                      <input
-                        type="radio"
-                        name="familyPlanMethod"
-                        value={opt.id}
-                        onChange={handleChange}
-                      />{" "}
-                      {opt.name}
-                    </label>
-                  ))}
+              <div className="radio-row">
+                <span>Consent</span>
+                <label>
+                  <input
+                    type="radio"
+                    name="consent"
+                    value="Yes"
+                    onChange={handleChange}
+                  />{" "}
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="consent"
+                    value="No"
+                    onChange={handleChange}
+                  />{" "}
+                  No
+                </label>
+              </div>
+              <div className="input-row">
+                <div className="field-row">
+                  <label htmlFor="dateCommence">Date commence</label>
+                  <input
+                    id="dateCommence"
+                    name="dateCommence"
+                    onChange={handleChange}
+                    type="date"
+                    className="input-field"
+                  />
                 </div>
-              </div>
-            </div>
-            <div className="radio-row">
-              <span>Consent</span>
-              <label>
-                <input
-                  type="radio"
-                  name="consent"
-                  value="Yes"
-                  onChange={handleChange}
-                />{" "}
-                Yes
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="consent"
-                  value="No"
-                  onChange={handleChange}
-                />{" "}
-                No
-              </label>
-            </div>
-            <div className="input-row">
-              <div className="field-row">
-                <label htmlFor="dateCommence">Date commence</label>
-                <input
-                  id="dateCommence"
-                  name="dateCommence"
-                  onChange={handleChange}
-                  type="date"
-                  className="input-field"
-                />
-              </div>
-              <div className="field-row">
-                <label htmlFor="lastConfinement">Date Expired</label>
-                <input
-                  id="dateExpired"
-                  name="dateExpired"
-                  onChange={handleChange}
-                  type="date"
-                  className="input-field"
-                />
-              </div>
-              {/* <div className="field-row">
+                <div className="field-row">
+                  <label htmlFor="lastConfinement">Date Expired</label>
+                  <input
+                    id="dateExpired"
+                    name="dateExpired"
+                    onChange={handleChange}
+                    type="date"
+                    className="input-field"
+                  />
+                </div>
+                {/* <div className="field-row">
                 <label htmlFor="nextVisit">Next visit</label>
                 <input
                   id="nextVisit"
@@ -353,54 +444,71 @@ const FamilyConsultation = () => {
                   className="input-field"
                 />
               </div> */}
-            </div>
-            <div className="field-column">
-              <label htmlFor="instructions">Instructions</label>
-              <GhostTextCompletion
-                // label="Patient Diagnosis"
-                name="instructions"
-                value={formData.instructions}
-                handleChange={handleChange}
-                none={true}
-              />
-              {/* <textarea
+              </div>
+              <div className="field-column">
+                <label htmlFor="instructions">Instructions</label>
+                <GhostTextCompletion
+                  // label="Patient Diagnosis"
+                  name="instructions"
+                  value={formData.instructions}
+                  handleChange={handleChange}
+                  none={true}
+                />
+                {/* <textarea
                 id="instructions"
                 name="instructions"
                 onChange={handleChange}
                 className="textarea-field"
               ></textarea> */}
-            </div>
-            <div className="field-column">
-              <label htmlFor="remark">Remark</label>
-              <GhostTextCompletion
-                // label="Patient Diagnosis"
-                name="remark"
-                value={formData.remark}
-                handleChange={handleChange}
-                none={true}
-              />
-              {/* <textarea
+              </div>
+              <div className="field-column">
+                <label htmlFor="remark">Remark</label>
+                <GhostTextCompletion
+                  // label="Patient Diagnosis"
+                  name="remark"
+                  value={formData.remark}
+                  handleChange={handleChange}
+                  none={true}
+                />
+                {/* <textarea
                 id="remark"
                 name="remark"
                 onChange={handleChange}
                 className="textarea-field"
               ></textarea> */}
-            </div>
-            {/* <div className="upload-box">Attach documents</div> */}
-            <div className="action-row">
-              {/* <button type="button" className="btn grey">
+              </div>
+              {/* <div className="upload-box">Attach documents</div> */}
+            </form>
+            <VitalsRecords vitals={vitals} />
+          </main>
+        </Accordion>
+        <div className="action-row">
+          {/* <button type="button" className="btn grey">
                 Preview Record
               </button> */}
-              <button type="submit" className="btn green">
-                Submit Record
-              </button>
-            </div>
-          </form>
-          <VitalsRecords vitals={vitals} />
-        </main>
+          <button onClick={handleSubmit} className="btn green">
+            Submit Record
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
 export default FamilyConsultation;
+const Accordion = ({ title, children }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="accordion-item">
+      <div
+        className={`accordion-header ${isOpen ? "open" : ""}`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {title}
+        <span className="arrow">{isOpen ? "▲" : "▼"}</span>
+      </div>
+      {isOpen && <div className="accordion-body">{children}</div>}
+    </div>
+  );
+};

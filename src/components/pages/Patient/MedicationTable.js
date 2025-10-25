@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { get } from "../../../utility/fetch";
+import moment from "moment";
 
-const MedicationTable = ({ data }) => {
+const MedicationTable = ({ data, parentMeds }) => {
   const [record, setRecord] = useState([]);
   useEffect(() => {
     fetchTreatmentRecord();
@@ -79,9 +80,11 @@ const MedicationTable = ({ data }) => {
       const response = await get(
         `/ServiceTreatment/list/${data.treatmentType}/${data.treatmentId}/1/1000`
       );
+      console.log(response);
       if (response?.isSuccess) {
         setRecord(response.data.recordList);
-        console.log(response.data.recordList[0]);
+        parentMeds(response.data.recordList);
+        console.log(response.data.recordList);
 
         // setFamilyMedcineTreatmentDataById(response.data.recordList[0] || {});
         // console.log(response.data.recordList[0] || {});
@@ -97,7 +100,7 @@ const MedicationTable = ({ data }) => {
         // });
       }
     } catch (error) {
-      console.error("Failed to fetch record:", error);
+      // console.error("Failed to fetch record:", error);
     } finally {
       //   setLoading(false);
     }
@@ -109,19 +112,31 @@ const MedicationTable = ({ data }) => {
       record.medications?.map((med, medIndex) => ({
         sn: `${recordIndex + 1}`,
         productName: med.pharmacyInventory?.productName || "N/A",
-        dosage: med.quantity || "-",
+        dosage: med.doctorPrescription?.dosage || med.quantity || "-",
+        quantity: med.doctorPrescription?.quantity || med.quantity || "-",
         frequency: med.frequency || "-",
-        strength: med.strength || "-",
-        duration: med.duration || "-",
-        drugStrengthUnit: med.drugStrengthUnit || "-",
-        administrationFrequency: med.administrationFrequency || "-",
-        routeOfAdministration: med.routeOfAdministration || "-",
+        strength: med.doctorPrescription?.strength || med.strength || "-",
+        duration: med.doctorPrescription?.duration || med.duration || "-",
+        drugStrengthUnit:
+          med.doctorPrescription?.drugStrengthUnit ||
+          med.drugStrengthUnit ||
+          "-",
+        administrationFrequency:
+          med.doctorPrescription?.administrationFrequency ||
+          med.administrationFrequency ||
+          "-",
+        routeOfAdministration:
+          med.doctorPrescription?.routeOfAdministration ||
+          med.routeOfAdministration ||
+          "-",
+        createdAt: record.createdAt,
       }))
     ) || [];
 
+  // Only show the first record (if any)
   return (
     <div>
-      {record?.length>0 && (
+      {record?.length > 0 && (
         <div>
           <div className="field-column">
             <label>Patient's DIagnosis</label>
@@ -148,9 +163,11 @@ const MedicationTable = ({ data }) => {
             <table style={{ borderCollapse: "collapse", width: "100%" }}>
               <thead>
                 <tr style={{ backgroundColor: "#e9fbe9" }}>
-                  <th style={cellStyle}>S/N</th>
+                  {/* <th style={cellStyle}>S/N</th> */}
+                  <th style={cellStyle}>Date</th>
                   <th style={cellStyle}>Medication</th>
                   <th style={cellStyle}>Quantity</th>
+                  <th style={cellStyle}>Dosage</th>
                   {/* <th style={cellStyle}>Frequency</th> */}
                   <th style={cellStyle}>Strength</th>
                   <th style={cellStyle}>Unit Of Measurement</th>
@@ -160,28 +177,38 @@ const MedicationTable = ({ data }) => {
                 </tr>
               </thead>
               <tbody>
-                {allMedications.map((med, index) => (
+                {(allMedications || [])?.map((med, index) => (
                   <tr key={index}>
-                    <td style={cellStyle}>{med.sn}</td>
-                    <td style={cellStyle}>{med.productName}</td>
-                    <td style={cellStyle}>{med.dosage}</td>
+                    {/* <td style={cellStyle}>{index + 1}</td> */}
+                    <td style={cellStyle}>
+                      {moment(record[0]?.createdAt).format("ll")}
+                    </td>
+                    <td style={cellStyle}>{med.pharmacyInventory?.productName || med.productName || "N/A"}</td>
+                    <td style={cellStyle}>
+                      {med.doctorPrescription?.quantity || med.quantity || "-"}
+                    </td>
+                    <td style={cellStyle}>{med.doctorPrescription?.dosage || med.dosage || "-"}</td>
                     {/* <td style={cellStyle}>{med.frequency}</td> */}
-                    <td style={cellStyle}>{med.strength}</td>
-                    <td style={cellStyle}>{measurementUnits.find(unit => unit.id == med.drugStrengthUnit)?.name }</td>
-                    <td style={cellStyle}>{med.duration}</td>
+                    <td style={cellStyle}>{med.doctorPrescription?.strength || med.strength || "-"}</td>
                     <td style={cellStyle}>
                       {
-                        administrationFrequencies.find(
-                          (e) => e.id === med.administrationFrequency
-                        )?.name
+                        measurementUnits.find(
+                          (unit) => unit.id === med.drugStrengthUnit
+                        )?.name || med.doctorPrescription?.drugStrengthUnit || med.drugStrengthUnit || "-"
                       }
                     </td>
+                    <td style={cellStyle}>{med.duration || med.doctorPrescription?.duration || "-"}</td>
                     <td style={cellStyle}>
-                      {
-                        routesOfAdministration.find(
-                          (e) => e.id === med.routeOfAdministration
-                        )?.name
-                      }
+                      {administrationFrequencies.find(
+                        (e) => e.id === med.administrationFrequency
+                      )?.name ||
+                        med.doctorPrescription?.administrationFrequency || med.administrationFrequency || "-"}
+                    </td>
+                    <td style={cellStyle}>
+                      {routesOfAdministration.find(
+                        (e) => e.id === med.routeOfAdministration
+                      )?.name ||
+                        med.doctorPrescription?.routeOfAdministration || med.routeOfAdministration || "-"}
                     </td>
                   </tr>
                 ))}

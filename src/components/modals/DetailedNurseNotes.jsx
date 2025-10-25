@@ -12,7 +12,7 @@ import MedicationTable from "../tables/MedicationTable";
 import AddMoreTreatment from "./AddMorePrescription";
 
 
-function DetailedNurseNotes({ closeModal, treatment, doctors, nurses, patientId, patientName }) {
+function DetailedNurseNotes({ closeModal, treatment, doctors, nurses, patientId, patientName,getAllAdmittedPatients }) {
     const [nurseNotesModal, setNurseNotesModal] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -109,7 +109,7 @@ function DetailedNurseNotes({ closeModal, treatment, doctors, nurses, patientId,
 
     const getPrescriptionLog = async () => {
         try {
-            const res = await get(`/patients/prescription-log?treatmentId=${treatment?.id}`);
+            const res = await get(`/patients/prescription-log-by-service-treatment?serviceTreatmentId=${treatment?.id}`);
             setNotes(res);
             setTotalPages(res.length);
         } catch (error) {
@@ -120,7 +120,9 @@ function DetailedNurseNotes({ closeModal, treatment, doctors, nurses, patientId,
     const getVital = async () => {
         try {
             const res = await get(`/patients/vital-by-appointmentId?appointmentId=${treatment?.appointmentId}&pageIndex=1&pageSize=100`);
-            const vital = res?.data?.find((vital) => vital?.vitalId === treatment?.vitalId);
+            console.log("vital", treatment);
+            console.log("vital res", res);
+            const vital = res?.data?.find((vital) => vital?.appointmentId === treatment?.appointmentId);
             setVitals(vital);
             setTotalPages(res.length);
         } catch (error) {
@@ -383,6 +385,7 @@ function DetailedNurseNotes({ closeModal, treatment, doctors, nurses, patientId,
 
             {add && (
                 <AddMoreTreatment
+                getAllAdmittedPatients={getAllAdmittedPatients}
                     closeModal={() => setAdd(false)} // Close the modal
                     patientId={patientId} 
                     treatment={treatment}

@@ -94,7 +94,11 @@ const GeneralSurgery = () => {
     try {
       const response = await post("/GeneralSurgery", payload);
       if (response.isSuccess) {
-        navigate(`/doctor/patients/patient-details/${patientId}`);
+        // navigate(`/doctor/patients/patient-details/${patientId}`);
+      
+        navigate(
+          `/doctor/patients/general-surgery/${patientId}/?treatmentId=${response?.data?.generalSurgeryId}`
+        );
       }
       console.log("API Response:", response);
     } catch (error) {
@@ -135,6 +139,7 @@ const GeneralSurgery = () => {
       if (response.isSuccess) {
         console.log(response.data);
         setFormData({
+          ...response.data,
           patientId: response.data?.patient?.id || 0,
           startTime: response.data?.startTime?.hasValue
             ? `${String(response.data.startTime.value.hours).padStart(
@@ -487,9 +492,9 @@ const GeneralSurgery = () => {
     // setIsLoading(true);
     try {
       const response = await get(
-        `/patients/list/generalsurgery/${treatmentId}/is-family-medicine/false/1/10/general-surgery-patients-lab-requests`
+        `/patients/list/generalsurgery/${treatmentId}/1/10/lab-request`
       );
-      setDataFromLab(response.resultList);
+      setDataFromLab(response?.data?.resultList);
       console.log(response.resultList);
       // response.data && setRepeatedDiagnosis(response.data[0]?.diagnosis);
     } catch (e) {
@@ -582,7 +587,7 @@ const GeneralSurgery = () => {
   return (
     <div style={{ padding: "90px" }} className="w-100">
       <div class="flex-between align-center">
-        <div class="flex" style={{ padding: "20px" }}>
+        <div class="flex" style={{ padding: "20px", cursor: "pointer" }}>
           <FiArrowLeft />
           <p onClick={() => navigate(-1)}> Back</p>
         </div>
@@ -599,7 +604,9 @@ const GeneralSurgery = () => {
         )}
       </div>
       <div class="section-box">
-      <h2 style={{ textAlign: "center" }} className="w-100">General Surgery</h2>
+        <h2 style={{ textAlign: "center" }} className="w-100">
+          General Surgery
+        </h2>
 
         <div className="field-row m-t-20">
           <label>Surgery Performed</label>
@@ -667,10 +674,11 @@ const GeneralSurgery = () => {
                         // label="Patient Diagnosis"
                         name="indication"
                         value={formData.indication}
-                        handleChange={(e) => {
-                          setFormData({ indication: e.target.value });
-                          setRepeatedDiagnosis(e.target.value);
-                        }}
+                        handleChange={handleChange}
+                        // handleChange={(e) => {
+                        //   setFormData({ indication: e.target.value });
+                        //   // setRepeatedDiagnosis(e.target.value);
+                        // }}
                         none={true}
                       />
                     )}
@@ -798,10 +806,11 @@ const GeneralSurgery = () => {
                         // label="Patient Diagnosis"
                         name="incisions"
                         value={formData.incisions}
-                        handleChange={(e) => {
-                          setFormData({ incisions: e.target.value });
-                          setRepeatedDiagnosis(e.target.value);
-                        }}
+                        handleChange={handleChange}
+                        // handleChange={(e) => {
+                        //   setFormData({ incisions: e.target.value });
+                        //   setRepeatedDiagnosis(e.target.value);
+                        // }}
                         none={true}
                       />
                     )}
@@ -828,10 +837,11 @@ const GeneralSurgery = () => {
                         // label="Patient Diagnosis"
                         name="findings"
                         value={formData.findings}
-                        handleChange={(e) => {
-                          setFormData({ findings: e.target.value });
-                          setRepeatedDiagnosis(e.target.value);
-                        }}
+                        handleChange={handleChange}
+                        // handleChange={(e) => {
+                        //   setFormData({ findings: e.target.value });
+                        //   // setRepeatedDiagnosis(e.target.value);
+                        // }}
                         none={true}
                       />
                     )}
@@ -857,11 +867,12 @@ const GeneralSurgery = () => {
                       <GhostTextCompletion
                         // label="Patient Diagnosis"
                         name="procedures"
+                        handleChange={handleChange}
                         value={formData.procedures}
-                        handleChange={(e) => {
-                          setFormData({ procedures: e.target.value });
-                          setRepeatedDiagnosis(e.target.value);
-                        }}
+                        // handleChange={(e) => {
+                        //   setFormData({ procedures: e.target.value });
+                        //   // setRepeatedDiagnosis(e.target.value);
+                        // }}
                         none={true}
                       />
                     )}
@@ -930,7 +941,11 @@ const GeneralSurgery = () => {
                   {treatmentId && dataFromLab && (
                     <div className="field-column">
                       <label>Patient's Lab Results</label>
-                      <LabRequestTable data={dataFromLab} isFamily={false} />
+                      <LabRequestTable
+                        data={dataFromLab}
+                        isFamily={"GeneralSurgery"}
+                        treatmentId={treatmentId}
+                      />
                     </div>
                   )}
                   {treatmentId && (
@@ -956,12 +971,13 @@ const GeneralSurgery = () => {
                         // label="Patient Diagnosis"
                         name="intra_OperationTreatment"
                         value={formData.intra_OperationTreatment}
-                        handleChange={(e) => {
-                          setFormData({
-                            intra_OperationTreatment: e.target.value,
-                          });
-                          setRepeatedDiagnosis(e.target.value);
-                        }}
+                        handleChange={handleChange}
+                        // handleChange={(e) => {
+                        //   setFormData({
+                        //     intra_OperationTreatment: e.target.value,
+                        //   });
+                        //   setRepeatedDiagnosis(e.target.value);
+                        // }}
                         none={true}
                       />
                     )}
@@ -988,12 +1004,13 @@ const GeneralSurgery = () => {
                         // label="Patient Diagnosis"
                         name="post_OperationTreatmentOrder"
                         value={formData.post_OperationTreatmentOrder}
-                        handleChange={(e) => {
-                          setFormData({
-                            post_OperationTreatmentOrder: e.target.value,
-                          });
-                          setRepeatedDiagnosis(e.target.value);
-                        }}
+                        handleChange={handleChange}
+                        // handleChange={(e) => {
+                        //   setFormData({
+                        //     post_OperationTreatmentOrder: e.target.value,
+                        //   });
+                        //   // setRepeatedDiagnosis(e.target.value);
+                        // }}
                         none={true}
                       />
                     )}
@@ -1014,10 +1031,11 @@ const GeneralSurgery = () => {
                         // label="Patient Diagnosis"
                         name="specialInstructions"
                         value={formData.specialInstructions}
-                        handleChange={(e) => {
-                          setFormData({ specialInstructions: e.target.value });
-                          setRepeatedDiagnosis(e.target.value);
-                        }}
+                        handleChange={handleChange}
+                        // handleChange={(e) => {
+                        //   setFormData({ specialInstructions: e.target.value });
+                        //   // setRepeatedDiagnosis(e.target.value);
+                        // }}
                         none={true}
                       />
                     )}

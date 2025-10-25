@@ -74,7 +74,7 @@ function AppointmentTable({ patientId, next }) {
                         </thead>
 
                         <tbody className="white-bg view-det-pane">
-                            {data.map((row) => (
+                            {data?.map((row) => (
                                 <tr key={row?.id}>
                                     <td>{formatDate(row?.appointDate)}</td>
                                     <td>{row?.appointTime}</td>

@@ -40,6 +40,7 @@ function VisitTable({ patientId, next }) {
       const response = await get(
         `/patients/vital-by-patientId?patientId=${patientId}&pageIndex=${page}&pageSize=${30}`
       );
+      console.log(response.data);
       setData(response.data);
       setTotalPages(response.totalPages || 1); // Assuming the response includes total pages
     } catch (e) {
@@ -103,7 +104,7 @@ function VisitTable({ patientId, next }) {
               </thead>
 
               <tbody className="white-bg view-det-pane">
-                {dataVitalData.map((row) => (
+                {(data)?.map((row) => (
                   <tr key={row?.id}>
                     <td>{formatDate(row?.dateOfVisit)}</td>
                     <td>{row?.weight}</td>
@@ -142,11 +143,11 @@ function VisitTable({ patientId, next }) {
                                 target="blank"
                               // download={true}
                               >
-                                {item.docName}
+                                {item?.docName}
                               </a>
-                              {item.docPath && (
+                              {item?.docPath && (
                                 <a
-                                  href={item.docPath}
+                                  href={item?.docPath}
                                   target="_blank"
                                   download={true}
                                 >
@@ -208,7 +209,7 @@ function VisitTable({ patientId, next }) {
                   </tr>
                 </thead>
                 <tbody className="white-bg view-det-pane">
-                  {data.map((row) => (
+                  {data?.map((row) => (
                     <tr key={row?.id}>
                       <td>{formatDate(row?.dateOfVisit)}</td>
                       <td>{row?.weight}</td>

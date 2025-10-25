@@ -9,6 +9,7 @@ import { RiBarChartFill, RiHeartPulseLine, RiHotelBedFill, RiHealthBookLine } fr
 export default [
     { title: 'Dashboard', href: '/doctor/dashboard', icon: <RiBarChartFill className="icon" /> },
     { title: 'Patients', href: '/doctor/patients', icon: <RiHealthBookLine className="icon" /> },
-    { title: 'Facility', href: '/doctor/facility', icon: <RiHotelBedFill className="icon" /> },
-    { title: 'Customer Engagement', href: '/doctor/customer-engagement', icon: <RiHeartPulseLine className="icon" /> },
+    // { title: 'Patients By Specialization', href: '/doctor/specialization-patients', icon: <RiHotelBedFill className="icon" /> },
+    // { title: 'Customer Engagement', href: '/doctor/customer-engagement', icon: <RiHeartPulseLine className="icon" /> },
+    // { title: 'Others', href: '/doctor/customer-engagement', icon: <RiHeartPulseLine className="icon" /> },
 ];

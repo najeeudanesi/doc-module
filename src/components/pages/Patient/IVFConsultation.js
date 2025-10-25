@@ -76,9 +76,9 @@ const IVFConsultation = () => {
     // setIsLoading(true);
     try {
       const response = await get(
-        `/patients/list/og_ivf/${treatmentId}/is-family-medicine/false/1/10/og-ivf-patients-lab-requests`
+        `/patients/list/og_ivf/${treatmentId}/1/10/lab-request`
       );
-      setDataFromLab(response.resultList);
+      setDataFromLab(response?.data?.resultList);
       console.log(response.resultList);
       // response.data && setRepeatedDiagnosis(response.data[0]?.diagnosis);
     } catch (e) {
@@ -90,60 +90,72 @@ const IVFConsultation = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const str = (v) => v ?? "";
+    const num = (v) => (v !== undefined && v !== "" ? Number(v) : 0);
+    const bool = (v) =>
+      v === true || v === "true" || v === "Yes" ? true : false;
+
+    // Helper to ensure date is not empty and not in the future
+    const validDate = (v) => {
+      let d = v ? new Date(v) : new Date();
+      const today = new Date();
+      // If invalid date or in the future, use today
+      if (isNaN(d.getTime()) || d > today) d = today;
+      return d.toISOString().split("T")[0];
+    };
+
     const payload = {
-      patientId: Number(patientId),
-      yearOfMarriage: formData.yearOfMarriage,
-      cohabiting: formData.cohabiting === "Yes",
-      sexualIntercourse: formData.sexualIntercourse === "Yes",
-      previousMarriage: formData.previousMarriage === "Yes",
-      howManyKids: +formData.childrenCount,
-      lastConfinement: formData.lastConfinement,
-      lastLMP: formData.lastLMP,
+      patientId: num(patientId),
+      yearOfMarriage: validDate(formData.yearOfMarriage),
+      cohabiting: bool(formData.cohabiting),
+      sexualIntercourse: bool(formData.sexualIntercourse),
+      previousMarriage: bool(formData.previousMarriage),
+      howManyKids: num(formData.childrenCount),
+      lastConfinement: validDate(formData.lastConfinement),
+      lastLMP: validDate(formData.lastLMP),
       menstrualCycle: {
-        numberOfDays: Number(formData.noOfDays),
-        intervals: Number(formData.intervals),
+        numberOfDays: num(formData.noOfDays),
+        intervals: num(formData.intervals),
         menstrualFlow: formData.menstrualFlow === "Regular" ? 1 : 0,
       },
       previousTreatment: {
-        anyPreviousTreatment: formData.previousTreatment === "Yes",
-        details: formData.previousDetails,
+        anyPreviousTreatment: bool(formData.previousTreatment),
+        details: str(formData.previousDetails),
         partnerProfile: {
-          age: +formData.age,
-          otherWives: formData.otherWives === "Yes",
-          otherKids: formData.otherKids === "Yes",
-          previousSpermTest: formData.previousSpermTest === "Yes",
+          age: num(formData.age),
+          otherWives: bool(formData.otherWives),
+          otherKids: bool(formData.otherKids),
+          previousSpermTest: bool(formData.previousSpermTest),
           spermTestResult: "Normal",
         },
-        // inMateProfile: "" || formData.intimateProfile,
         pelvicScanDocuments: [
           {
             docName: "",
             docPath: "",
           },
-        ], // handle file uploads separately
+        ],
       },
       previousInvestigation: {
-        anyPreviousInvestigation: formData.previousInvestigation === "Yes",
-        details: formData.previousInvestigationDetails,
+        anyPreviousInvestigation: bool(formData.previousInvestigation),
+        details: str(formData.previousInvestigationDetails),
         hsgDocuments: [
           {
             docName: "",
             docPath: "",
           },
-        ], // handle file uploads separately
-        afmDocuments: [
+        ],
+        amfDocuments: [
           {
             docName: "",
             docPath: "",
           },
-        ], // handle file uploads separately
+        ],
       },
       physicalExam: {
-        breastExam: "N/A" || formData.breastScan,
-        pelvic: "N/A" || formData.pelvicScanPhysical,
-        vagina: "N/A" || formData.vaginalScan,
+        breastExam: str(formData.breastScan),
+        pelvic: str(formData.pelvicScanPhysical),
+        vagina: str(formData.vaginalScan),
       },
-
       investigations: [
         {
           investigationType: 1,
@@ -151,27 +163,30 @@ const IVFConsultation = () => {
             docName: "string",
             docPath: "string",
           },
-          investigationResult: "N/A" || formData.investigationResults,
+          investigationResult: str(formData.investigationResults),
         },
       ],
-      diagnosis: +formData.diagnosis || 0,
-      // primaryInfertility:
-      //   formData.primaryInfertility || formData.secondaryInfertility,
-      // secondaryInfertility:
-      //   formData.secondaryInfertility || formData.primaryInfertility,
-      oG_IVFTreatmentId: +formData.oG_IVFTreatmentId,
-      causeOfInfertility: formData.causeOfInfertility,
-      typeOfInfertility: formData.typeOfInfertility,
-      oG_IVF_IVPMethodId: +formData.oG_IVF_IVPMethodId, // set based on your logic
-      treatmentSchedule: formData.treatmentSchedule,
-      appointmentId: +localStorage.getItem("appointmentId"),
-      doctorId: docInfo.employeeId,
+      diagnosis: num(formData.diagnosis),
+      oG_IVFTreatmentId: num(formData.oG_IVFTreatmentId),
+      causeOfInfertility: str(formData.causeOfInfertility),
+      typeOfInfertility: str(formData.typeOfInfertility),
+      oG_IVF_IVPMethodId: num(formData.oG_IVF_IVPMethodId),
+      treatmentSchedule: str(formData.treatmentSchedule),
+      appointmentId: num(localStorage.getItem("appointmentId")),
+      doctorId: str(docInfo?.employeeId),
+      patientComplaint: str(formData.patientComplaint),
+      history: str(formData.history),
+      physicalExamination: str(formData.physicalExamination),
+      diagnosisText: str(formData.diagnosis),
+      investigation: str(formData.investigation),
     };
 
     try {
       const response = await post("/OG_IVF", payload);
       if (response.isSuccess) {
-        navigate(`/doctor/patients/patient-details/${patientId}`);
+        navigate(
+          `/doctor/patients/IVF-consultation/${patientId}?view=true&treatmentId=${response?.data?.oG_IVFTreatmentId}`
+        );
       }
       console.log("API Response:", response);
     } catch (error) {
@@ -646,7 +661,7 @@ const IVFConsultation = () => {
   return (
     <div style={{ paddingTop: "60px" }} className="w-100">
       <div class="flex-between align-center">
-        <div class="flex" style={{ padding: "20px" }}>
+        <div class="flex" style={{ padding: "20px", cursor: "pointer" }}>
           <FiArrowLeft />
           <p onClick={() => navigate(-1)}> Back</p>
         </div>
@@ -662,879 +677,898 @@ const IVFConsultation = () => {
           </div>
         )}
       </div>
-      <main className="">
-        <section className="section-box">
-          <h2 style={{ textAlign: "center" }} className="w-100">
-            O & G IVF
-          </h2>
-
-          <div className=" flex-row-gap-start m-t-20">
-            <div className="input-row w-70">
-              <div class="w-100 flex-row-gap">
-                <div className="field-row">
-                  <label>Year Of Marriage</label>
-                  <input
-                    type="date"
-                    name="yearOfMarriage"
-                    onChange={handleChange}
-                    className="input-field"
-                    value={formData.yearOfMarriage || ""}
-                  />
+      <h2 style={{ textAlign: "center" }} className="w-100">
+        O & G IVF
+      </h2>
+      <Accordion title="Examination">
+        <div className="field-column new">
+          <label>Patient Complaint</label>
+          <textarea
+            placeholder="Patient"
+            value={formData.patientComplaint}
+            rows={3}
+          />
+        </div>
+        <div className="field-column new">
+          <label>History</label>
+          <textarea placeholder="Patient" value={formData.history} rows={3} />
+        </div>
+        <div className="field-column new">
+          <label>Physical Examination</label>
+          <textarea
+            placeholder="Patient"
+            value={formData.physicalExamination}
+            rows={3}
+          />
+        </div>
+        <div className="field-column new">
+          <label>Diagnosis</label>
+          <textarea placeholder="Patient" value={formData.diagnosis} rows={3} />
+        </div>
+      </Accordion>
+      <Accordion title="Questionaire">
+        <main className="">
+          <section className="section-box">
+            {/* <div className="field-column new">
+              <label>Patient Complaint</label>
+              <textarea
+                placeholder="Patient"
+                value={formData.patientComplaint}
+                rows={3}
+              />
+            </div> */}
+            <div className=" flex-row-gap-start m-t-20">
+              <div className="input-row w-70">
+                <div class="w-100 flex-row-gap">
+                  <div className="field-row">
+                    <label>Year Of Marriage</label>
+                    <input
+                      type="date"
+                      name="yearOfMarriage"
+                      onChange={handleChange}
+                      className="input-field"
+                      value={formData.yearOfMarriage || ""}
+                    />
+                  </div>
+                  <div className="field-row">
+                    <label>How many kids?</label>
+                    <input
+                      className="input-field"
+                      type="number"
+                      onChange={handleChange}
+                      name="childrenCount"
+                      value={formData.childrenCount || ""}
+                    />
+                  </div>
                 </div>
-
-                <div className="field-row">
-                  <label>How many kids?</label>
-                  <input
-                    className="input-field"
-                    type="number"
-                    onChange={handleChange}
-                    name="childrenCount"
-                    value={formData.childrenCount || ""}
-                  />
+                <div className="flex-row-gap w-100">
+                  <div className="field-row">
+                    <label>Last Confinement</label>
+                    <input
+                      type="date"
+                      className="input-field"
+                      onChange={handleChange}
+                      name="lastConfinement"
+                      value={formData.lastConfinement || ""}
+                    />
+                  </div>
+                  <div className="field-row">
+                    <label>LMP</label>
+                    <input
+                      type="date"
+                      className="input-field"
+                      name="lastLMP"
+                      onChange={handleChange}
+                      value={formData.lastLMP || ""}
+                    />
+                  </div>
                 </div>
-              </div>
-
-              <div className="flex-row-gap w-100">
-                <div className="field-row">
-                  <label>Last Confinement</label>
-                  <input
-                    type="date"
-                    className="input-field"
-                    onChange={handleChange}
-                    name="lastConfinement"
-                    value={formData.lastConfinement || ""}
-                  />
+                <div className="radio-column">
+                  <span>
+                    Does your husband have any other children from another
+                    woman?
+                  </span>
+                  <label>
+                    <input
+                      type="radio"
+                      name="anotherchild"
+                      value="Yes"
+                      checked={formData.anotherchild === "Yes"}
+                      onChange={handleChange}
+                    />
+                    Yes
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="anotherchild"
+                      value="No"
+                      checked={formData.anotherchild === "No"}
+                      onChange={handleChange}
+                    />
+                    No
+                  </label>
                 </div>
-
-                <div className="field-row">
-                  <label>LMP</label>
-                  <input
-                    type="date"
-                    className="input-field"
-                    name="lastLMP"
-                    onChange={handleChange}
-                    value={formData.lastLMP || ""}
-                  />
+                <div className="radio-row">
+                  <span>Sexual Intercourse?</span>
+                  <label>
+                    <input
+                      type="radio"
+                      name="sexualIntercourse"
+                      value="Yes"
+                      checked={formData.sexualIntercourse === "Yes"}
+                      onChange={handleChange}
+                    />
+                    Yes
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="sexualIntercourse"
+                      value="No"
+                      checked={formData.sexualIntercourse === "No"}
+                      onChange={handleChange}
+                    />
+                    No
+                  </label>
                 </div>
-              </div>
-              <div className="radio-column">
-                <span>
-                  Does your husband have any other children from another woman?
-                </span>
-                <label>
-                  <input
-                    type="radio"
-                    name="anotherchild"
-                    value="Yes"
-                    checked={formData.anotherchild === "Yes"}
-                    onChange={handleChange}
-                  />
-                  Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="anotherchild"
-                    value="No"
-                    checked={formData.anotherchild === "No"}
-                    onChange={handleChange}
-                  />
-                  No
-                </label>
-              </div>
-
-              <div className="radio-row">
-                <span>Sexual Intercourse?</span>
-                <label>
-                  <input
-                    type="radio"
-                    name="sexualIntercourse"
-                    value="Yes"
-                    checked={formData.sexualIntercourse === "Yes"}
-                    onChange={handleChange}
-                  />
-                  Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="sexualIntercourse"
-                    value="No"
-                    checked={formData.sexualIntercourse === "No"}
-                    onChange={handleChange}
-                  />
-                  No
-                </label>
-              </div>
-
-              <div className="radio-row">
-                <span>Cohabiting?</span>
-                <label>
-                  <input
-                    type="radio"
-                    name="cohabiting"
-                    value="Yes"
-                    checked={formData.cohabiting === "Yes"}
-                    onChange={handleChange}
-                  />
-                  Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="cohabiting"
-                    value="No"
-                    checked={formData.cohabiting === "No"}
-                    onChange={handleChange}
-                  />
-                  No
-                </label>
-              </div>
-
-              <div className="radio-row">
-                <span>Previous Marriage?</span>
-                <label>
-                  <input
-                    type="radio"
-                    name="previousMarriage"
-                    value="Yes"
-                    checked={formData.previousMarriage === "Yes"}
-                    onChange={handleChange}
-                  />
-                  Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="previousMarriage"
-                    value="No"
-                    checked={formData.previousMarriage === "No"}
-                    onChange={handleChange}
-                  />
-                  No
-                </label>
-              </div>
-
-              <div className="radio-row">
-                <span>Any discharge from the breast?</span>
-                <label>
-                  <input
-                    type="radio"
-                    name="breastDischarge"
-                    value="Yes"
-                    checked={formData.breastDischarge === "Yes"}
-                    onChange={handleChange}
-                  />
-                  Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="breastDischarge"
-                    value="No"
-                    checked={formData.breastDischarge === "No"}
-                    onChange={handleChange}
-                  />
-                  No
-                </label>
-              </div>
-
-              <div className="radio-row">
-                <span>Any vagina discharge?</span>
-                <label>
-                  <input
-                    type="radio"
-                    name="vaginaDischarge"
-                    value="Yes"
-                    checked={formData.vaginaDischarge === "Yes"}
-                    onChange={handleChange}
-                  />
-                  Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="vaginaDischarge"
-                    value="No"
-                    checked={formData.vaginaDischarge === "No"}
-                    onChange={handleChange}
-                  />
-                  No
-                </label>
-              </div>
-
-              <div className="radio-row">
-                <span>Any abdominal swollen?</span>
-                <label>
-                  <input
-                    type="radio"
-                    name="abdominalSwollen"
-                    value="Yes"
-                    checked={formData.abdominalSwollen === "Yes"}
-                    onChange={handleChange}
-                  />
-                  Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="abdominalSwollen"
-                    value="No"
-                    checked={formData.abdominalSwollen === "No"}
-                    onChange={handleChange}
-                  />
-                  No
-                </label>
-              </div>
-
-              <div className="radio-row">
-                <span>Do you have fibroid?</span>
-                <label>
-                  <input
-                    type="radio"
-                    name="hasFibroid"
-                    value="Yes"
-                    checked={formData.hasFibroid === "Yes"}
-                    onChange={handleChange}
-                  />
-                  Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="hasFibroid"
-                    value="No"
-                    checked={formData.hasFibroid === "No"}
-                    onChange={handleChange}
-                  />
-                  No
-                </label>
-              </div>
-              <div className="radio-row">
-                <span>Any Previous Treatment?</span>
-                <label>
-                  <input
-                    type="radio"
-                    name="previousTreatment"
-                    value="Yes"
-                    checked={formData.previousTreatment === "Yes"}
-                    onChange={handleChange}
-                  />
-                  Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="previousTreatment"
-                    value="No"
-                    checked={formData.previousTreatment === "No"}
-                    onChange={handleChange}
-                  />
-                  No
-                </label>
-              </div>
-
-              {formData.previousTreatment === "Yes" &&
-                (treatmentId ? (
-                  <div className="field-column new">
-                    <label>Detail</label>
-
-                    <textarea
+                <div className="radio-row">
+                  <span>Cohabiting?</span>
+                  <label>
+                    <input
+                      type="radio"
+                      name="cohabiting"
+                      value="Yes"
+                      checked={formData.cohabiting === "Yes"}
+                      onChange={handleChange}
+                    />
+                    Yes
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="cohabiting"
+                      value="No"
+                      checked={formData.cohabiting === "No"}
+                      onChange={handleChange}
+                    />
+                    No
+                  </label>
+                </div>
+                <div className="radio-row">
+                  <span>Previous Marriage?</span>
+                  <label>
+                    <input
+                      type="radio"
+                      name="previousMarriage"
+                      value="Yes"
+                      checked={formData.previousMarriage === "Yes"}
+                      onChange={handleChange}
+                    />
+                    Yes
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="previousMarriage"
+                      value="No"
+                      checked={formData.previousMarriage === "No"}
+                      onChange={handleChange}
+                    />
+                    No
+                  </label>
+                </div>
+                <div className="radio-row">
+                  <span>Any discharge from the breast?</span>
+                  <label>
+                    <input
+                      type="radio"
+                      name="breastDischarge"
+                      value="Yes"
+                      checked={formData.breastDischarge === "Yes"}
+                      onChange={handleChange}
+                    />
+                    Yes
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="breastDischarge"
+                      value="No"
+                      checked={formData.breastDischarge === "No"}
+                      onChange={handleChange}
+                    />
+                    No
+                  </label>
+                </div>
+                <div className="radio-row">
+                  <span>Any vagina discharge?</span>
+                  <label>
+                    <input
+                      type="radio"
+                      name="vaginaDischarge"
+                      value="Yes"
+                      checked={formData.vaginaDischarge === "Yes"}
+                      onChange={handleChange}
+                    />
+                    Yes
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="vaginaDischarge"
+                      value="No"
+                      checked={formData.vaginaDischarge === "No"}
+                      onChange={handleChange}
+                    />
+                    No
+                  </label>
+                </div>
+                <div className="radio-row">
+                  <span>Any abdominal swollen?</span>
+                  <label>
+                    <input
+                      type="radio"
+                      name="abdominalSwollen"
+                      value="Yes"
+                      checked={formData.abdominalSwollen === "Yes"}
+                      onChange={handleChange}
+                    />
+                    Yes
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="abdominalSwollen"
+                      value="No"
+                      checked={formData.abdominalSwollen === "No"}
+                      onChange={handleChange}
+                    />
+                    No
+                  </label>
+                </div>
+                <div className="radio-row">
+                  <span>Do you have fibroid?</span>
+                  <label>
+                    <input
+                      type="radio"
+                      name="hasFibroid"
+                      value="Yes"
+                      checked={formData.hasFibroid === "Yes"}
+                      onChange={handleChange}
+                    />
+                    Yes
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="hasFibroid"
+                      value="No"
+                      checked={formData.hasFibroid === "No"}
+                      onChange={handleChange}
+                    />
+                    No
+                  </label>
+                </div>
+                <div className="radio-row">
+                  <span>Any Previous Treatment?</span>
+                  <label>
+                    <input
+                      type="radio"
+                      name="previousTreatment"
+                      value="Yes"
+                      checked={formData.previousTreatment === "Yes"}
+                      onChange={handleChange}
+                    />
+                    Yes
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="previousTreatment"
+                      value="No"
+                      checked={formData.previousTreatment === "No"}
+                      onChange={handleChange}
+                    />
+                    No
+                  </label>
+                </div>
+                {formData.previousTreatment === "Yes" &&
+                  (treatmentId ? (
+                    <div className="field-column new">
+                      <label>Detail</label>
+                      <textarea
+                        name="previousDetails"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={formData.previousDetails || ""}
+                      ></textarea>
+                    </div>
+                  ) : (
+                    <GhostTextCompletion
+                      // label="Patient Diagnosis"
                       name="previousDetails"
+                      value={formData.previousDetails}
+                      handleChange={handleChange}
+                      none={true}
+                    />
+                  ))}
+                <div className="radio-row">
+                  <span>Any previous Investigation</span>
+                  <label>
+                    <input
+                      type="radio"
+                      name="previousInvestigation"
+                      value="Yes"
+                      checked={formData.previousInvestigation === "Yes"}
                       onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={formData.previousDetails || ""}
-                    ></textarea>
-                  </div>
-                ) : (
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="previousDetails"
-                    value={formData.previousDetails}
-                    handleChange={handleChange}
-                    none={true}
-                  />
-                ))}
-              <div className="radio-row">
-                <span>Any previous Investigation</span>
-                <label>
-                  <input
-                    type="radio"
-                    name="previousInvestigation"
-                    value="Yes"
-                    checked={formData.previousInvestigation === "Yes"}
-                    onChange={handleChange}
-                  />
-                  Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="previousInvestigation"
-                    value="No"
-                    checked={formData.previousInvestigation === "No"}
-                    onChange={handleChange}
-                  />
-                  No
-                </label>
-              </div>
-              {formData.previousInvestigation === "Yes" &&
-                (treatmentId ? (
-                  <div className="field-column new">
-                    <label>Details</label>
-                    <textarea
+                    />
+                    Yes
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="previousInvestigation"
+                      value="No"
+                      checked={formData.previousInvestigation === "No"}
+                      onChange={handleChange}
+                    />
+                    No
+                  </label>
+                </div>
+                {formData.previousInvestigation === "Yes" &&
+                  (treatmentId ? (
+                    <div className="field-column new">
+                      <label>Details</label>
+                      <textarea
+                        name="previousInvestigationDetails"
+                        onChange={handleChange}
+                        className="input-field"
+                        rows={6}
+                        value={formData.previousInvestigationDetails || ""}
+                      ></textarea>
+                    </div>
+                  ) : (
+                    <GhostTextCompletion
+                      // label="Patient Diagnosis"
                       name="previousInvestigationDetails"
-                      onChange={handleChange}
-                      className="input-field"
-                      rows={6}
-                      value={formData.previousInvestigationDetails || ""}
-                    ></textarea>
-                  </div>
-                ) : (
-                  <GhostTextCompletion
-                    // label="Patient Diagnosis"
-                    name="previousDetails"
-                    value={formData.previousDetails}
-                    handleChange={handleChange}
-                    none={true}
-                  />
-                ))}
-              <div>
-                <div>
-                  <div className="radio-row">
-                    <span>Menstrual flow?</span>
-                    <label>
-                      <input
-                        type="radio"
-                        name="menstrualFlow"
-                        value="Regular"
-                        checked={formData.menstrualFlow === "Regular"}
-                        onChange={handleChange}
-                      />
-                      Regular
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="menstrualFlow"
-                        value="Irregular"
-                        checked={formData.menstrualFlow === "Irregular"}
-                        onChange={handleChange}
-                      />
-                      Irregular
-                    </label>
-                  </div>
-                </div>
-                <label className="normal-label">Menstrual Cycle</label>
-
-                <div class="flex-row-gap">
-                  <div className="field-row">
-                    <label>No. Of Days</label>
-                    <input
-                      name="noOfDays"
-                      onChange={handleChange}
-                      className="input-field"
-                      value={formData.noOfDays || ""}
+                      value={formData.previousInvestigationDetails}
+                      handleChange={handleChange}
+                      none={true}
                     />
-                  </div>
-                  <div className="field-row">
-                    <label>Intervals</label>
-                    <input
-                      name="intervals"
-                      onChange={handleChange}
-                      className="input-field"
-                      value={formData.intervals || ""}
-                    />
-                  </div>
-                </div>
-
+                  ))}
                 <div>
-                  <div className="field-column m-t-10">
-                    <label className="normal-label">IVF Treatment</label>
-
-                    <select
-                      className="input-field"
-                      onChange={handleChange}
-                      name="oG_IVFTreatmentId"
-                      value={formData.oG_IVFTreatmentId || ""}
-                    >
-                      <option value="Select a diagnosis">
-                        -- Select IVF Treatment --
-                      </option>
-                      {[...IVFTreatmentList]?.map((user) => (
-                        <option key={user.name} value={user.id}>
-                          {user.name}
+                  <div>
+                    <div className="radio-row">
+                      <span>Menstrual flow?</span>
+                      <label>
+                        <input
+                          type="radio"
+                          name="menstrualFlow"
+                          value="Regular"
+                          checked={formData.menstrualFlow === "Regular"}
+                          onChange={handleChange}
+                        />
+                        Regular
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="menstrualFlow"
+                          value="Irregular"
+                          checked={formData.menstrualFlow === "Irregular"}
+                          onChange={handleChange}
+                        />
+                        Irregular
+                      </label>
+                    </div>
+                  </div>
+                  <label className="normal-label">Menstrual Cycle</label>
+                  <div class="flex-row-gap">
+                    <div className="field-row">
+                      <label>No. Of Days</label>
+                      <input
+                        name="noOfDays"
+                        onChange={handleChange}
+                        className="input-field"
+                        value={formData.noOfDays || ""}
+                      />
+                    </div>
+                    <div className="field-row">
+                      <label>Intervals</label>
+                      <input
+                        name="intervals"
+                        onChange={handleChange}
+                        className="input-field"
+                        value={formData.intervals || ""}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="field-column m-t-10">
+                      <label className="normal-label">IVF Treatment</label>
+                      <select
+                        className="input-field"
+                        onChange={handleChange}
+                        name="oG_IVFTreatmentId"
+                        value={formData.oG_IVFTreatmentId || ""}
+                      >
+                        <option value="Select a diagnosis">
+                          -- Select IVF Treatment --
                         </option>
-                      ))}
-                    </select>
+                        {[...IVFTreatmentList]?.map((user) => (
+                          <option key={user.name} value={user.id}>
+                            {user.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="field-column m-t-10">
+                      <label className="normal-label">
+                        IVF Treatment Method
+                      </label>
+                      <select
+                        className="input-field"
+                        onChange={handleChange}
+                        name="oG_IVF_IVPMethodId"
+                        value={formData.oG_IVF_IVPMethodId || ""}
+                      >
+                        <option value="Select a diagnosis">
+                          -- Select OG IVF IVP Method--
+                        </option>
+                        {[...IVFTreatmentMethodList]?.map((user) => (
+                          <option key={user.name} value={user.id}>
+                            {user.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div className="field-column m-t-10">
-                    <label className="normal-label">IVF Treatment Method</label>
-
-                    <select
-                      className="input-field"
-                      onChange={handleChange}
-                      name="oG_IVF_IVPMethodId"
-                      value={formData.oG_IVF_IVPMethodId || ""}
-                    >
-                      <option value="Select a diagnosis">
-                        -- Select OG IVF IVP Method--
-                      </option>
-                      {[...IVFTreatmentMethodList]?.map((user) => (
-                        <option key={user.name} value={user.id}>
-                          {user.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div className="field-column new">
-                <label className="m-b-20">Partner's Profile</label>
                 <div className="field-column new">
-                  <label>Age</label>
-                  <input
-                    type="text"
-                    name="age"
-                    className="input-field"
-                    value={formData.age || ""}
+                  <label className="m-b-20">Partner's Profile</label>
+                  <div className="field-column new">
+                    <label>Age</label>
+                    <input
+                      type="text"
+                      name="age"
+                      className="input-field"
+                      value={formData.age || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="radio-column">
+                    <label>Previous Sperm Test?</label>
+                    <div class="flex-row-gap">
+                      <label className="w-100">
+                        <input
+                          type="radio"
+                          name="previousSpermTest"
+                          value="Yes"
+                          checked={formData.previousSpermTest === "Yes"}
+                          onChange={handleChange}
+                        />
+                        Yes
+                      </label>
+                      <label className="w-100">
+                        <input
+                          type="radio"
+                          name="previousSpermTest"
+                          value="No"
+                          checked={formData.previousSpermTest === "No"}
+                          onChange={handleChange}
+                        />
+                        No
+                      </label>
+                    </div>
+                  </div>
+                  <div className="radio-column">
+                    <label>Other Wives</label>
+                    <div class="flex-row-gap">
+                      <label className="w-100">
+                        <input
+                          type="radio"
+                          name="otherWives"
+                          value="Yes"
+                          checked={formData.otherWives === "Yes"}
+                          onChange={handleChange}
+                        />
+                        Yes
+                      </label>
+                      <label className="w-100">
+                        <input
+                          type="radio"
+                          name="otherWives"
+                          value="No"
+                          checked={formData.otherWives === "No"}
+                          onChange={handleChange}
+                        />
+                        No
+                      </label>
+                    </div>
+                  </div>
+                  <div className="radio-column">
+                    <label>Other Kids?</label>
+                    <div class="flex-row-gap">
+                      <label className="w-100">
+                        <input
+                          type="radio"
+                          name="otherkids"
+                          value="Yes"
+                          checked={formData.otherkids === "Yes"}
+                          onChange={handleChange}
+                        />
+                        Yes
+                      </label>
+                      <label className="w-100">
+                        <input
+                          type="radio"
+                          name="otherkids"
+                          value="No"
+                          checked={formData.otherkids === "No"}
+                          onChange={handleChange}
+                        />
+                        No
+                      </label>
+                    </div>
+                  </div>
+                  {/* <textarea
+                    rows={6}
+                    name="intimateProfile"
                     onChange={handleChange}
-                  />
+                    className="input-field"
+                    value={formData.intimateProfile || ""}
+                  ></textarea> */}
                 </div>
-                <div className="radio-column">
-                  <label>Previous Sperm Test?</label>
-                  <div class="flex-row-gap">
-                    <label className="w-100">
-                      <input
-                        type="radio"
-                        name="previousSpermTest"
-                        value="Yes"
-                        checked={formData.previousSpermTest === "Yes"}
-                        onChange={handleChange}
-                      />
-                      Yes
-                    </label>
-                    <label className="w-100">
-                      <input
-                        type="radio"
-                        name="previousSpermTest"
-                        value="No"
-                        checked={formData.previousSpermTest === "No"}
-                        onChange={handleChange}
-                      />
-                      No
-                    </label>
-                  </div>
-                </div>
-
-                <div className="radio-column">
-                  <label>Other Wives</label>
-                  <div class="flex-row-gap">
-                    <label className="w-100">
-                      <input
-                        type="radio"
-                        name="otherWives"
-                        value="Yes"
-                        checked={formData.otherWives === "Yes"}
-                        onChange={handleChange}
-                      />
-                      Yes
-                    </label>
-                    <label className="w-100">
-                      <input
-                        type="radio"
-                        name="otherWives"
-                        value="No"
-                        checked={formData.otherWives === "No"}
-                        onChange={handleChange}
-                      />
-                      No
-                    </label>
-                  </div>
-                </div>
-
-                <div className="radio-column">
-                  <label>Other Kids?</label>
-                  <div class="flex-row-gap">
-                    <label className="w-100">
-                      <input
-                        type="radio"
-                        name="otherkids"
-                        value="Yes"
-                        checked={formData.otherkids === "Yes"}
-                        onChange={handleChange}
-                      />
-                      Yes
-                    </label>
-                    <label className="w-100">
-                      <input
-                        type="radio"
-                        name="otherkids"
-                        value="No"
-                        checked={formData.otherkids === "No"}
-                        onChange={handleChange}
-                      />
-                      No
-                    </label>
-                  </div>
-                </div>
-                {/* <textarea
-                  rows={6}
-                  name="intimateProfile"
-                  onChange={handleChange}
-                  className="input-field"
-                  value={formData.intimateProfile || ""}
-                ></textarea> */}
-              </div>
-
-              {/* <div className="field-column new">
-                <label>Pelvic Scan</label>
-
-                <input
-                  type="file"
-                  name="pelvic"
-                  onChange={handleFileUploadPelvic}
-                />
-                <img
-                  style={{ height: "100px" }}
-                  src={`https://edogoverp.com/labapi/api/document/view-document/${displaydocPelvic}`}
-                />
-              </div>
-
-              <div className="field-column">
-                <label>Vaginal Scan</label>
-                <textarea
-                  name="vaginalScan"
-                  onChange={handleChange}
-                  className="input-field"
-                  rows={6}
-                  value={formData.vaginalScan || ""}
-                ></textarea>
-              </div>
-
-              <div className="field-column">
-                <label>Breast Scan</label>
-                <textarea
-                  rows={6}
-                  name="breastScan"
-                  onChange={handleChange}
-                  className="input-field"
-                  value={formData.breastScan || ""}
-                ></textarea>
-              </div>
-
-              <div className="field-column">
-                <label>Pelvic</label>
-                <textarea
-                  rows={6}
-                  name="pelvicScanPhysical"
-                  onChange={handleChange}
-                  className="input-field"
-                  value={formData.pelvicScanPhysical || ""}
-                ></textarea>
-              </div> */}
-            </div>
-            <div className="input-row w-30">
-              <VitalsRecords vitals={vitals} />
-
-              {/* <div className="field-column new">
-                <label>HSG</label>
-                <input type="file" name="hsg" onChange={handleFileUpload} />
-                <img
-                  style={{ height: "100px" }}
-                  src={`https://edogoverp.com/labapi/api/document/view-document/${displaydoc}`}
-                />
-              </div>
-
-              <div className="field-column new">
-                <label>AMF</label>
-                <input type="file" name="afm" onChange={handleFileUploadAfm} />
-                <img
-                  style={{ height: "100px" }}
-                  src={`https://edogoverp.com/labapi/api/document/view-document/${displaydocAfm}`}
-                />
-              </div> */}
-
-              {/* <div className="m-t-10">
-                <p>Investigations</p>
-                <div className="field-column">
+                {/* <div className="field-column new">
                   <label>Pelvic Scan</label>
                   <input
                     type="file"
-                    name="pelvicInvestigation"
-                    onChange={handleFileUploadPelvicInvestigation}
+                    name="pelvic"
+                    onChange={handleFileUploadPelvic}
                   />
                   <img
                     style={{ height: "100px" }}
-                    src={`https://edogoverp.com/labapi/api/document/view-document/${displaydocPelvicInvestigation}`}
+                    src={`https://edogoverp.com/labapi/api/document/view-document/${displaydocPelvic}`}
                   />
                 </div>
-
                 <div className="field-column">
-                  <label>Investigation Results</label>
+                  <label>Vaginal Scan</label>
                   <textarea
-                    rows={6}
-                    name="investigationResults"
+                    name="vaginalScan"
                     onChange={handleChange}
                     className="input-field"
-                    value={formData.investigationResults || ""}
+                    rows={6}
+                    value={formData.vaginalScan || ""}
                   ></textarea>
                 </div>
-              </div> */}
+                <div className="field-column">
+                  <label>Breast Scan</label>
+                  <textarea
+                    rows={6}
+                    name="breastScan"
+                    onChange={handleChange}
+                    className="input-field"
+                    value={formData.breastScan || ""}
+                  ></textarea>
+                </div>
+                <div className="field-column">
+                  <label>Pelvic</label>
+                  <textarea
+                    rows={6}
+                    name="pelvicScanPhysical"
+                    onChange={handleChange}
+                    className="input-field"
+                    value={formData.pelvicScanPhysical || ""}
+                  ></textarea>
+                </div> */}
+              </div>
+              <div className="input-row w-30">
+                <VitalsRecords vitals={vitals} />
+                {/* <div className="field-column new">
+                  <label>HSG</label>
+                  <input type="file" name="hsg" onChange={handleFileUpload} />
+                  <img
+                    style={{ height: "100px" }}
+                    src={`https://edogoverp.com/labapi/api/document/view-document/${displaydoc}`}
+                  />
+                </div>
+                <div className="field-column new">
+                  <label>AMF</label>
+                  <input type="file" name="afm" onChange={handleFileUploadAfm} />
+                  <img
+                    style={{ height: "100px" }}
+                    src={`https://edogoverp.com/labapi/api/document/view-document/${displaydocAfm}`}
+                  />
+                </div> */}
+                {/* <div className="m-t-10">
+                  <p>Investigations</p>
+                  <div className="field-column">
+                    <label>Pelvic Scan</label>
+                    <input
+                      type="file"
+                      name="pelvicInvestigation"
+                      onChange={handleFileUploadPelvicInvestigation}
+                    />
+                    <img
+                      style={{ height: "100px" }}
+                      src={`https://edogoverp.com/labapi/api/document/view-document/${displaydocPelvicInvestigation}`}
+                    />
+                  </div>
+                  <div className="field-column">
+                    <label>Investigation Results</label>
+                    <textarea
+                      rows={6}
+                      name="investigationResults"
+                      onChange={handleChange}
+                      className="input-field"
+                      value={formData.investigationResults || ""}
+                    ></textarea>
+                  </div>
+                </div> */}
+              </div>
             </div>
-          </div>
-          <div className="field-column new m-t-20">
-            {/* <label>Diagosis</label> */}
-
+            <div className="field-column new m-t-20">
+              {/* <label>Diagosis</label> */}
+              <div className="w-half">
+                <label className="normal-label">Diagnosis</label>
+                <div className="field-row">
+                  <select
+                    className="input-field"
+                    onChange={handleChange}
+                    name="diagnosis"
+                    value={formData.diagnosis || ""}
+                  >
+                    <option value="Select a diagnosis">
+                      -- Select a diagnosis --
+                    </option>
+                    {[
+                      { name: "Primary Infertility", id: 1 },
+                      { name: "Secondary Infertility", id: 2 },
+                    ]?.map((user) => (
+                      <option key={user.name} value={user.id}>
+                        {user.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              {/* <textarea
+                rows={6}
+                name="diagnosis"
+                onChange={handleChange}
+                className="input-field"
+                value={formData.diagnosis}
+              ></textarea> */}
+            </div>
+            <div className="gap w-100 w-half">
+              <div className="flex w-100">
+                <div class="m-t- w-half">
+                  {formData.diagnosis == "Primary Infertility" && (
+                    <div className="field-column new">
+                      <label>Primary Infertility</label>
+                      <textarea
+                        rows={6}
+                        name="primaryInfertility"
+                        onChange={handleChange}
+                        className="input-field"
+                        value={formData.primaryInfertility}
+                      ></textarea>
+                    </div>
+                  )}
+                  {formData.diagnosis == "Secondary Infertility" && (
+                    <div className="field-column new">
+                      <label>Secondary Infertility</label>
+                      <textarea
+                        rows={6}
+                        name="secondaryInfertility"
+                        onChange={handleChange}
+                        value={formData.secondaryInfertility}
+                        className="input-field"
+                      ></textarea>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="w-half">
+                <div class="m-t-10">
+                  <div className="field-column new">
+                    <label>Cause Of Infertility</label>
+                    {treatmentId ? (
+                      <textarea
+                        rows={6}
+                        name="causeOfInfertility"
+                        onChange={handleChange}
+                        value={formData.causeOfInfertility}
+                        className="input-field"
+                      ></textarea>
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="causeOfInfertility"
+                        value={formData.causeOfInfertility}
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      rows={6}
+                      name="causeOfInfertility"
+                      onChange={handleChange}
+                      value={formData.causeOfInfertility}
+                      className="input-field"
+                    ></textarea> */}
+                  </div>
+                  <div className="field-column new">
+                    <label>Type Of Infertility</label>
+                    {treatmentId ? (
+                      <textarea
+                        rows={6}
+                        name="typeOfInfertility"
+                        onChange={handleChange}
+                        value={formData.typeOfInfertility}
+                        className="input-field"
+                      ></textarea>
+                    ) : (
+                      <GhostTextCompletion
+                        // label="Patient Diagnosis"
+                        name="typeOfInfertility"
+                        value={formData.typeOfInfertility}
+                        handleChange={handleChange}
+                        none={true}
+                      />
+                    )}
+                    {/* <textarea
+                      rows={6}
+                      name="typeOfInfertility"
+                      onChange={handleChange}
+                      value={formData.typeOfInfertility}
+                      className="input-field"
+                    ></textarea> */}
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="w-half">
-              <label className="normal-label">Diagnosis</label>
-
+              <label className="normal-label">Investigations</label>
               <div className="field-row">
+                <label>Select Investigations</label>
                 <select
                   className="input-field"
-                  onChange={handleChange}
-                  name="diagnosis"
-                  value={formData.diagnosis || ""}
+                  onChange={handleIvestigationSelectChange}
+                  name="operationPerformedId"
+                  value={formData.operationPerformedId || ""}
                 >
-                  <option value="Select a diagnosis">
-                    -- Select a diagnosis --
-                  </option>
-                  {[
-                    { name: "Primary Infertility", id: 1 },
-                    { name: "Secondary Infertility", id: 2 },
-                  ]?.map((user) => (
-                    <option key={user.name} value={user.id}>
+                  <option value="">-- Select a user --</option>
+                  {investigationList?.map((user) => (
+                    <option key={user.name} value={user.name}>
                       {user.name}
                     </option>
                   ))}
                 </select>
               </div>
-            </div>
-
-            {/* <textarea
-              rows={6}
-              name="diagnosis"
-              onChange={handleChange}
-              className="input-field"
-              value={formData.diagnosis}
-            ></textarea> */}
-          </div>
-          <div className="gap w-100 w-half">
-            <div className="flex w-100">
-              <div class="m-t- w-half">
-                {formData.diagnosis == "Primary Infertility" && (
-                  <div className="field-column new">
-                    <label>Primary Infertility</label>
-                    <textarea
-                      rows={6}
-                      name="primaryInfertility"
-                      onChange={handleChange}
-                      className="input-field"
-                      value={formData.primaryInfertility}
-                    ></textarea>
-                  </div>
-                )}
-                {formData.diagnosis == "Secondary Infertility" && (
-                  <div className="field-column new">
-                    <label>Secondary Infertility</label>
-                    <textarea
-                      rows={6}
-                      name="secondaryInfertility"
-                      onChange={handleChange}
-                      value={formData.secondaryInfertility}
-                      className="input-field"
-                    ></textarea>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="w-half">
-              <div class="m-t-10">
-                <div className="field-column new">
-                  <label>Cause Of Infertility</label>
-                  {treatmentId ? (
-                    <textarea
-                      rows={6}
-                      name="causeOfInfertility"
-                      onChange={handleChange}
-                      value={formData.causeOfInfertility}
-                      className="input-field"
-                    ></textarea>
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="causeOfInfertility"
-                      value={formData.causeOfInfertility}
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* <textarea
-                    rows={6}
-                    name="causeOfInfertility"
-                    onChange={handleChange}
-                    value={formData.causeOfInfertility}
-                    className="input-field"
-                  ></textarea> */}
-                </div>
-                <div className="field-column new">
-                  <label>Type Of Infertility</label>
-                  {treatmentId ? (
-                    <textarea
-                      rows={6}
-                      name="typeOfInfertility"
-                      onChange={handleChange}
-                      value={formData.typeOfInfertility}
-                      className="input-field"
-                    ></textarea>
-                  ) : (
-                    <GhostTextCompletion
-                      // label="Patient Diagnosis"
-                      name="typeOfInfertility"
-                      value={formData.typeOfInfertility}
-                      handleChange={handleChange}
-                      none={true}
-                    />
-                  )}
-                  {/* <textarea
-                    rows={6}
-                    name="typeOfInfertility"
-                    onChange={handleChange}
-                    value={formData.typeOfInfertility}
-                    className="input-field"
-                  ></textarea> */}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="w-half">
-            <label className="normal-label">Investigations</label>
-
-            <div className="field-row">
-              <label>Select Investigations</label>
-              <select
-                className="input-field"
-                onChange={handleIvestigationSelectChange}
-                name="operationPerformedId"
-                value={formData.operationPerformedId || ""}
-              >
-                <option value="">-- Select a user --</option>
-                {investigationList?.map((user) => (
-                  <option key={user.name} value={user.name}>
-                    {user.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mt-4">
-              <ul>
-                {selectedInvestigations.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex-between normal-label justify-between"
-                  >
-                    <li>{item}</li>
-                    <button
-                      type="button"
-                      onClick={() => handleRemove(item)}
-                      style={{
-                        backgroundColor: "red",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "50%",
-                        width: "24px",
-                        height: "24px",
-                        fontSize: "14px",
-                        cursor: "pointer",
-                      }}
+              <div className="mt-4">
+                <ul>
+                  {selectedInvestigations.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex-between normal-label justify-between"
                     >
-                      &times;
-                    </button>
-                  </div>
-                ))}
-              </ul>
+                      <li>{item}</li>
+                      <button
+                        type="button"
+                        onClick={() => handleRemove(item)}
+                        style={{
+                          backgroundColor: "red",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "50%",
+                          width: "24px",
+                          height: "24px",
+                          fontSize: "14px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
-          {view && dataFromLab && (
-            <div className="field-column">
-              <label>Patient's Lab Results</label>
-              <LabRequestTable data={dataFromLab} isFamily={false} />
-            </div>
-          )}
-          {view && (
-            <MedicationTable
-              data={{ treatmentType: "OG_IVF", treatmentId: treatmentId }}
-            />
-          )}
-          <div className="field-column new">
-            <label>Treatment Schedule</label>
-            {treatmentId ? (
-              <textarea
+            {view && dataFromLab && (
+              <div className="field-column">
+                <label>Patient's Lab Results</label>
+                <LabRequestTable data={dataFromLab} isFamily={false} />
+              </div>
+            )}
+            {view && (
+              <MedicationTable
+                data={{ treatmentType: "OG_IVF", treatmentId: treatmentId }}
+              />
+            )}
+            <div className="field-column new">
+              <label>Treatment Schedule</label>
+              {treatmentId ? (
+                <textarea
+                  rows={6}
+                  name="treatmentSchedule"
+                  onChange={handleChange}
+                  value={formData.treatmentSchedule}
+                  className="input-field"
+                ></textarea>
+              ) : (
+                <GhostTextCompletion
+                  // label="Patient Diagnosis"
+                  name="treatmentSchedule"
+                  value={formData.treatmentSchedule}
+                  handleChange={handleChange}
+                  none={true}
+                />
+              )}
+              {/* <textarea
                 rows={6}
                 name="treatmentSchedule"
                 onChange={handleChange}
                 value={formData.treatmentSchedule}
                 className="input-field"
-              ></textarea>
-            ) : (
-              <GhostTextCompletion
-                // label="Patient Diagnosis"
-                name="treatmentSchedule"
-                value={formData.treatmentSchedule}
-                handleChange={handleChange}
-                none={true}
+              ></textarea> */}
+            </div>
+
+            {showModal && (
+              <ReferPatient
+                repeatedDiagnosis={repeatedDiagnosis}
+                setRepeatedDiagnosis={setRepeatedDiagnosis}
+                closeModal={toggleModal}
+                visit={lastVisit}
+                vital={vitals}
+                ivf={records.id || 0}
+                // vitalId = {vitals.id}
+                id={patientId}
+                // treatment={data[0] || null}
               />
             )}
-            {/* <textarea
-              rows={6}
-              name="treatmentSchedule"
-              onChange={handleChange}
-              value={formData.treatmentSchedule}
-              className="input-field"
-            ></textarea> */}
-          </div>
-
-          {!view && (
-            <button onClick={handleSubmit} className="submit-btn">
-              Submit
-            </button>
-          )}
-
-          {showModal && (
-            <ReferPatient
-              repeatedDiagnosis={repeatedDiagnosis}
-              setRepeatedDiagnosis={setRepeatedDiagnosis}
-              closeModal={toggleModal}
-              visit={lastVisit}
-              vital={vitals}
-              ivf={records.id || 0}
-              // vitalId = {vitals.id}
-              id={patientId}
-              // treatment={data[0] || null}
-            />
-          )}
-
-          {treatmentModal && (
-            <AddTreatmentOld
-              createTreatment={createTreatmet}
-              repeatedDiagnosis={repeatedDiagnosis}
-              setRepeatedDiagnosis={setRepeatedDiagnosis}
-              closeModal={toggleTreatmentModal}
-              visit={lastVisit}
-              // data={data}
-              id={patientId}
-              // fetchData={fetchData}
-            />
-          )}
-        </section>
-      </main>
+            {treatmentModal && (
+              <AddTreatmentOld
+                createTreatment={createTreatmet}
+                repeatedDiagnosis={repeatedDiagnosis}
+                setRepeatedDiagnosis={setRepeatedDiagnosis}
+                closeModal={toggleTreatmentModal}
+                visit={lastVisit}
+                // data={data}
+                id={patientId}
+                // fetchData={fetchData}
+              />
+            )}
+          </section>
+        </main>
+      </Accordion>
+      {!view && (
+        <button onClick={handleSubmit} className="submit-btn">
+          Submit
+        </button>
+      )}
     </div>
   );
 };
 
 export default IVFConsultation;
+const Accordion = ({ title, children }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="accordion-item">
+      <div
+        className={`accordion-header ${isOpen ? "open" : ""}`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {title}
+        <span className="arrow">{isOpen ? "▲" : "▼"}</span>
+      </div>
+      {isOpen && <div className="accordion-body">{children}</div>}
+    </div>
+  );
+};
