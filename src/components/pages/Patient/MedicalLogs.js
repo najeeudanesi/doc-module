@@ -289,7 +289,11 @@ const MedicalLog = ({ patient }) => {
     { key: "generalsurgery", label: "General Surgery", idz: 0 },
     { key: "generalPractice", label: "General Practice", idz: 0 },
     { key: "cardiology", label: "Cardiology", idz: 0 },
-    ...newSpecialists.map((spec) => ({ idz: spec.specialistService.toLowerCase().replace(/\s+/g, ''), label: spec.specialistService, key:spec.id })),
+    ...newSpecialists.map((spec) => ({ 
+      idz: spec?.specialistService ? spec.specialistService.toLowerCase().replace(/\s+/g, '') : '', 
+      label: spec?.specialistService || 'Unknown', 
+      key: spec?.id || 0 
+    })),
     // { key: "pediatrics", label: "Pediatrics" },
   ];
 

@@ -4,6 +4,7 @@ import { RiEdit2Fill } from "react-icons/ri";
 import notification from "../../../utility/notification";
 import axios from "axios";
 import DetailedNurseNotes from "../../modals/DetailedNurseNotes";
+import WardRoundNotes from "../../modals/WardRoundNotes";
 
 function AdmitCheck({
   data,
@@ -14,6 +15,7 @@ function AdmitCheck({
 }) {
   const [viewing, setViewing] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [wardRoundModal, setWardRoundModal] = useState(false);
   const [add, setAdd] = useState(false);
   const [combinedData, setCombinedData] = useState([]);
   const [patient, setPatient] = useState([]);
@@ -188,6 +190,7 @@ function AdmitCheck({
               <th className="center-text">Diagnosis</th>
               <th className="center-text">Patient</th>
               <th className="center-text">Bed Occupying</th>
+              <th className="center-text">Actions</th>
             </tr>
           </thead>
           <tbody className="white-bg view-det-pane">
@@ -197,11 +200,10 @@ function AdmitCheck({
               return (
                 <tr
                   className="hovers pointer"
-                  onClick={selectRecord(row)}
                   key={row?.id}
                 >
-                  <td>{new Date(row?.dateOfVisit).toLocaleDateString()}</td>
-                  <td>
+                  <td onClick={selectRecord(row)}>{new Date(row?.dateOfVisit).toLocaleDateString()}</td>
+                  <td onClick={selectRecord(row)}>
                     {new Date(row?.createdAt?.split(".")[0]).toLocaleTimeString(
                       "en-US",
                       {
@@ -212,14 +214,39 @@ function AdmitCheck({
                       }
                     )}
                   </td>
-                  <td>{row?.age} years</td>
-                  <td>{row?.diagnosis}</td>
-                  <td>
+                  <td onClick={selectRecord(row)}>{row?.age} years</td>
+                  <td onClick={selectRecord(row)}>{row?.diagnosis}</td>
+                  <td onClick={selectRecord(row)}>
                     {patientName
                       ? patientName
                       : row.patient.firstName + " " + row.patient.lastName}
                   </td>
-                  <td>{bed ? bed : ""}</td>
+                  <td onClick={selectRecord(row)}>{bed ? bed : ""}</td>
+                  <td className="center-text">
+                    <button
+                      className="submit-btn"
+                      style={{
+                        padding: "5px 10px",
+                        fontSize: "12px",
+                        backgroundColor: "#28a745",
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const patientRecord = patient?.find(
+                          (p) => p?.patientId === (row?.patient?.id || row?.patientId)
+                        );
+                        if (patientRecord) {
+                          setPatientName(`${patientRecord?.firstName} ${patientRecord?.lastName}`);
+                        } else if (row?.patient) {
+                          setPatientName(`${row.patient.firstName} ${row.patient.lastName}`);
+                        }
+                        setViewing(row);
+                        setWardRoundModal(true);
+                      }}
+                    >
+                      Ward Round
+                    </button>
+                  </td>
                 </tr>
               );
             })}
@@ -274,6 +301,15 @@ function AdmitCheck({
           treatment={viewing}
           patientName={patientName}
           patientId={viewing?.patientId}
+        />
+      )}
+
+      {wardRoundModal && (
+        <WardRoundNotes
+          getAllAdmittedPatients={getAllAdmittedPatients}
+          closeModal={() => setWardRoundModal(false)}
+          treatment={viewing}
+          patientName={patientName}
         />
       )}
     </div>

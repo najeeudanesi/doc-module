@@ -157,7 +157,10 @@ function DetailedNurseNotes({ closeModal, treatment, doctors, nurses, patientId,
     useEffect(() => {
         getPrescriptionLog();
         getVital();
-        setMeds([...treatment?.medications, ...treatment?.otherMedications]);
+        setMeds([
+            ...(treatment?.medications || []), 
+            ...(treatment?.otherMedications || [])
+        ]);
     }, []);
 
     const selectRecord = (record) => {

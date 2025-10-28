@@ -19,6 +19,7 @@ function Dashboard() {
   const [outPatients, setOutpatients] = useState(0);
   const [waiting, setWaiting] = useState(0);
   const [admitted, setAdmitted] = useState(0);
+  const [admittedPatients, setAdmittedPatients] = useState([]);
   const [hmoPatients, setHmoPatients] = useState(0);
   const [hmoPatientsList, setHmoPatientsList] = useState([]);
   const [gender, setGender] = useState({});
@@ -110,6 +111,18 @@ function Dashboard() {
     }
   };
 
+  const getAllAdmittedPatients = async (page = 1, pageSize = 100) => {
+    try {
+      const res = await get(
+        `/ServiceTreatment/list/paginate/true/admitted-patients?pageNumber=${page}&pageSize=${pageSize}`
+      );
+      setAdmittedPatients(res?.data?.recordList || []);
+    } catch (error) {
+      console.error("Error fetching admitted patients list:", error);
+      setAdmittedPatients([]);
+    }
+  };
+
   //done
   const getHmoPatients = async () => {
     try {
@@ -138,6 +151,7 @@ function Dashboard() {
     setLoading(true);
     await getAssigned();
     await getAdmitted();
+    await getAllAdmittedPatients();
     await getAllPatientCount();
     await getHmoPatients();
     await getHMOPatientsByClientId();
