@@ -199,7 +199,7 @@ const MedicalLog = ({ patient }) => {
 
     const filterChecker = visibleOptions.find((k) => k.key == temp.key);
     console.log(temp);
-    setSelectedNewSpecialists(temp)
+    setSelectedNewSpecialists(temp);
 
     if (filterChecker) {
       alert("Already on List");
@@ -246,7 +246,14 @@ const MedicalLog = ({ patient }) => {
         return <CardiologyTable patient={patient} />;
 
       default:
-        return selectedSection? <AllOtherPracticesTable selectedSpecialists={selectedSection} patient={patient} />:'';
+        return selectedSection ? (
+          <AllOtherPracticesTable
+            selectedSpecialists={selectedSection}
+            patient={patient}
+          />
+        ) : (
+          ""
+        );
     }
   };
 
@@ -272,7 +279,7 @@ const MedicalLog = ({ patient }) => {
               e.specialistService !== "Cardiology"
           );
 
-          setNewSpecialists(filtered);
+        setNewSpecialists(filtered);
         console.log(filtered);
       }
     } catch (error) {
@@ -289,7 +296,11 @@ const MedicalLog = ({ patient }) => {
     { key: "generalsurgery", label: "General Surgery", idz: 0 },
     { key: "generalPractice", label: "General Practice", idz: 0 },
     { key: "cardiology", label: "Cardiology", idz: 0 },
-    ...newSpecialists.map((spec) => ({ idz: spec.specialistService.toLowerCase().replace(/\s+/g, ''), label: spec.specialistService, key:spec.id })),
+    ...newSpecialists.map((spec) => ({
+      idz: spec?.specialistService?.toLowerCase().replace(/\s+/g, ""),
+      label: spec.specialistService,
+      key: spec.id,
+    })),
     // { key: "pediatrics", label: "Pediatrics" },
   ];
 
@@ -305,15 +316,18 @@ const MedicalLog = ({ patient }) => {
             <option value="" disabled>
               Add Specialty Type
             </option>
-            {sections.map((e) => (
-              <option value={e.key}>{e.label}</option>
-            ))}
-            {/* <option value="Orthopedic">Orthopedic</option>
-            <option value="GeneralSurgery">General Surgery</option>
-            <option value="Antenatal">Antenatal</option>
-            <option value="FamilyMedicine">Family Medicine</option>
-            <option value="GeneralPractice">General Practice</option>
-            <option value="Cardiology">Cardiology</option> */}
+            {sections
+              ?.slice() // copy so we don't mutate original array
+              ?.sort((a, b) =>
+                (a.label || "")?.localeCompare(b?.label || "", "en", {
+                  sensitivity: "base",
+                })
+              )
+              ?.map((e) => (
+                <option key={e.key ?? e.idz} value={e.key}>
+                  {e.label}
+                </option>
+              ))}
           </select>
 
           {/* <div className="mt-4">
@@ -330,7 +344,9 @@ const MedicalLog = ({ patient }) => {
               {visibleOptions?.map((section) => (
                 <li
                   key={section.key}
-                  className={selectedSection.key === section.key ? "active" : ""}
+                  className={
+                    selectedSection.key === section.key ? "active" : ""
+                  }
                   onClick={() => setSelectedSection(section)}
                 >
                   {section.label}

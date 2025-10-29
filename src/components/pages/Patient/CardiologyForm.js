@@ -27,7 +27,7 @@ const CardiologyForm = () => {
   const { patientId } = useParams();
   const [records, setRecords] = useState({});
   const [surgeonList, setsurgeonList] = useState([]);
-  const [anasList, setanasList] = useState([]);
+  const [vitalId, setVitalId] = useState();
   const [displaydoc, setDisplayDocuments] = useState({});
   const [displaydocPelvic, setDisplayDocumentsPelvic] = useState({});
   const [
@@ -165,6 +165,7 @@ const CardiologyForm = () => {
     try {
       const response = await post("/Cardiology", payload);
       if (response.isSuccess) {
+        fetchVisit();
         navigate(
           `/doctor/patients/cardiology/${patientId}/?treatmentId=${response?.data?.cardiologyId}`
         );
@@ -215,6 +216,7 @@ const CardiologyForm = () => {
   }, [patientId]);
 
   const toggleModal = () => {
+    console.log(lastVisit);
     if (lastVisit === null) {
       toast("A visit has to exist before you can refer patient");
       return;
@@ -244,7 +246,7 @@ const CardiologyForm = () => {
       );
       if (true) {
         setvitals(response.data);
-        console.log(response.data);
+        setVitalId(response.data[response.data.length - 1 ].vitalId);
         // console.log(response.data.recordList[0] || {});
         // setDiagnosis(response.data.recordList[0].diagnosis || 89);
         // setCarePlan(response.data.recordList[0].carePlan || 89);
@@ -278,7 +280,8 @@ const CardiologyForm = () => {
   };
 
   const toggleTreatmentModal = () => {
-    if (lastVisit === null) {
+    // if (lastVisit === null) {
+    if (vitalId === 0 || vitalId === undefined|| vitalId === null||!vitalId) {
       // alert("");
 
       toast("A visit has to exist before you can add treatment");
@@ -343,6 +346,7 @@ const CardiologyForm = () => {
       await post(`/ServiceTreatment`, payload);
       // await fetchData();
       toast.success("Treatment added successfully");
+      fetchVisit();
       // closeModal();
       toggleTreatmentModal();
     } catch (error) {

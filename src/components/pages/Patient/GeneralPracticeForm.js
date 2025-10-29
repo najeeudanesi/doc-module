@@ -189,7 +189,8 @@ const GeneralPracticeForm = ({ patient }) => {
     });
   };
   const toggleModal = () => {
-    if (lastVisit === null) {
+    console.log(lastVisit);
+    if (lastVisit.id === null|| lastVisit.id === undefined|| lastVisit.id === 0||!lastVisit.id) {
       toast("A visit has to exist before you can refer patient");
       return;
     }

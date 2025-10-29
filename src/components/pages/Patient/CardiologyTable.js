@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FiEdit3 } from "react-icons/fi";
-import { FiArrowLeft } from "react-icons/fi";
 
 import { get } from "../../../utility/fetch";
 import tvIcon from "../../../assets/images/tv-Ico.png";
@@ -26,23 +25,37 @@ const CardiologyTable = () => {
         `/cardiology/list/patient/${id}/${currentPage}/10`
       );
       if (response?.isSuccess) {
-        setRecords(response.data.recordList);
-        setTotalPages(response.data.metadata.totalPages || 1);
+        setRecords(response.data.recordList || []);
+        setTotalPages(response.data.metadata?.totalPages || 1);
+
+        // ensure current page is within bounds if metadata changed
+        const metaPage = response.data.metadata?.page || currentPage;
+        if (metaPage !== currentPage) {
+          setPage(metaPage);
+        }
+      } else {
+        setRecords([]);
+        setTotalPages(1);
       }
     } catch (error) {
       console.error("Failed to fetch records:", error);
+      setRecords([]);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
   };
 
   const handlePrev = () => {
-    if (page > 1) setPage(page - 1);
+    setPage((p) => Math.max(1, p - 1));
   };
 
   const handleNext = () => {
-    if (page < totalPages) setPage(page + 1);
+    setPage((p) => Math.min(totalPages, p + 1));
   };
+
+  const handleFirst = () => setPage(1);
+  const handleLast = () => setPage(totalPages);
 
   return (
     <div className="family-table-container">
@@ -121,16 +134,79 @@ const CardiologyTable = () => {
                 )}
               </tbody>
             </table>
-            <div className="pagination-controls">
-              {/* <button onClick={handlePrev} disabled={page === 1}>
-                Previous
-              </button>
-              <span>
-                Page {page} of {totalPages}
-              </span>
-              <button onClick={handleNext} disabled={page === totalPages}>
-                Next
-              </button> */}
+
+            {/* Pagination Controls */}
+            <div
+              className="pagination-controls"
+              style={{
+                marginTop: "16px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "8px",
+                flexWrap: "wrap",
+              }}
+            >
+              <div></div>
+              <div
+                style={{ display: "flex", gap: "8px", alignItems: "center" }}
+              >
+                <button
+                  className="btn"
+                  onClick={handleFirst}
+                  disabled={page === 1}
+                  style={{ padding: "6px 12px" }}
+                >
+                  First
+                </button>
+                <button
+                  className="btn"
+                  onClick={handlePrev}
+                  disabled={page === 1}
+                  style={{ padding: "6px 12px" }}
+                >
+                  Previous
+                </button>
+
+                <span>
+                  Page {page} of {totalPages}
+                </span>
+
+                <button
+                  className="btn"
+                  onClick={handleNext}
+                  disabled={page === totalPages}
+                  style={{ padding: "6px 12px" }}
+                >
+                  Next
+                </button>
+                <button
+                  className="btn"
+                  onClick={handleLast}
+                  disabled={page === totalPages}
+                  style={{ padding: "6px 12px" }}
+                >
+                  Last
+                </button>
+              </div>
+
+              {/* <div
+                style={{ display: "flex", gap: "8px", alignItems: "center" }}
+              >
+                <label style={{ fontSize: "14px" }}>Go to</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={totalPages}
+                  value={page}
+                  onChange={(e) => {
+                    const v = Number(e.target.value) || 1;
+                    const next = Math.min(Math.max(1, v), totalPages);
+                    setPage(next);
+                  }}
+                  style={{ width: "72px", padding: "6px" }}
+                />
+              </div> */}
             </div>
           </>
         )}

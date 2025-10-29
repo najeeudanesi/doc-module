@@ -62,7 +62,7 @@ function CustomerEngagement() {
     const logData = Object.entries(responseData) // Convert object to key-value pairs array
       .filter(([key]) => key !== "month") // Filter out the "month" key
       .map(([key, value]) => ({ // Transform each key-value pair to data object
-        name: key.replace(/([A-Z])/g, (match) => ` ${match.toLowerCase()}`), // Format key names (e.g., excellentPercentage -> 
+        name: key.replace(/([A-Z])/g, (match) => ` ${match?.toLowerCase()}`), // Format key names (e.g., excellentPercentage -> 
         value,
       }));
 

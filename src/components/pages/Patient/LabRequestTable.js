@@ -92,7 +92,7 @@ const LabRequestTable = ({ data, isFamily, treatmentId }) => {
                   </td>
                   <td className="border p-2">
                     {request?.testRequests?.map((e) => (
-                      <li>{e?.labTest?.name}</li>
+                      <li>{e?.internalLabService?.name || e?.labTest?.name}</li>
                     ))}
                   </td>
                   {/* <td className="border p-2">{request?.labTest}</td> */}

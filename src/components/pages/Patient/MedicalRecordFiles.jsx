@@ -150,7 +150,7 @@ function MedicalRecordFiles({ data, next, patientId, fetchData }) {
   }, [selectedTab]);
 
   function hasTIFFExtension(url) {
-    return url.toLowerCase().endsWith(".tif");
+    return url?.toLowerCase()?.endsWith(".tif");
   }
 
   return (

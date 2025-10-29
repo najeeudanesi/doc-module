@@ -67,14 +67,15 @@ function ReferPatient({
     setCategoryOptions(dummyLabCategories);
     fetchPatientHMO();
     getCategories();
+    getInternalLabServices();
   }, []);
 
-  useEffect(() => {
-    if (category) {
-      getCategoriesService();
-      console.log(vital);
-    }
-  }, [category, selectedLab]);
+  // useEffect(() => {
+  //   if (category) {
+  //     // getCategoriesService();
+  //     console.log(vital);
+  //   }
+  // }, [category, selectedLab]);
 
   useEffect(() => {
     setDiagnosis(repeatedDiagnosis);
@@ -131,39 +132,56 @@ function ReferPatient({
     }
   };
 
-  const getCategoriesService = async () => {
-    // const token = sessionStorage.getItem("token");
+  // const getCategoriesService = async () => {
+  //   // const token = sessionStorage.getItem("token");
 
-    // if (!token) {
-    //   console.error("Token not found in session storage");
-    //   return;
-    // }
+  //   // if (!token) {
+  //   //   console.error("Token not found in session storage");
+  //   //   return;
+  //   // }
 
-    // const options = {
-    //   method: "GET",
-    //   headers: {
-    //     Authorization: `${token}`,
-    //   },
-    // };
+  //   // const options = {
+  //   //   method: "GET",
+  //   //   headers: {
+  //   //     Authorization: `${token}`,
+  //   //   },
+  //   // };
 
+  //   try {
+  //     setService({});
+  //     setServices(null);
+  //     const res = await gets(
+  //       `/categoryitem/list/category/${category?.value}/1/1000`
+  //     );
+  //     console.log(res)
+
+  //     const tempServices = res?.resultList.map((service) => ({
+  //       label: service?.itemName,
+  //       value: parseFloat(service?.id),
+  //     }));
+
+  //     tempServices?.unshift({ label: "Select Service", value: "" });
+
+  //     setServices(tempServices);
+  //   } catch (error) {
+  //     console.error("Error fetching services:", error);
+  //   }
+  // };
+    const getInternalLabServices = async (pageNumber = 1, pageSize = 1000) => {
     try {
-      setService({});
-      setServices(null);
-      const res = await gets(
-        `/categoryitem/list/category/${category?.value}/1/1000`
+      const res = await get(`/internallabservice/list/${pageNumber}/${pageSize}`);
+      console.log("Internal lab services:", res);
+     
+      setServices(
+        res?.data?.recordList.map((service) => ({
+          label: service.name,
+          value: parseFloat(service.id),
+        }))
       );
-      console.log(res)
-
-      const tempServices = res?.resultList.map((service) => ({
-        label: service?.itemName,
-        value: parseFloat(service?.id),
-      }));
-
-      tempServices?.unshift({ label: "Select Service", value: "" });
-
-      setServices(tempServices);
+      // return res;
     } catch (error) {
-      console.error("Error fetching services:", error);
+      console.error("Error fetching internal lab services:", error);
+      return null;
     }
   };
 
@@ -172,7 +190,7 @@ function ReferPatient({
       setTestRequests([
         ...testRequests,
         {
-          categoryItemId: selectedCategory.value,
+          internalLabServiceId: selectedCategory.value,
           labCentre,
         },
       ]);
@@ -311,7 +329,7 @@ function ReferPatient({
               </div>
               {selectedLab?.value === 1 && (
                 <div className="m-t-20">
-                  <label>Service Category</label>
+                  {/* <label>Service Category</label>
                   <Select
                     options={categories}
                     value={category}
@@ -321,7 +339,7 @@ function ReferPatient({
                     }}
                     placeholder="Select a Lab Category"
                     isClearable
-                  />
+                  /> */}
 
                   <>
                     {Array.isArray(services) && (
@@ -395,7 +413,7 @@ function ReferPatient({
                       <td>
                         {
                           services?.find(
-                            (opt) => opt.value === request.categoryItemId
+                            (opt) => opt.value === request.internalLabServiceId
                           )?.label
                         }
                       </td>

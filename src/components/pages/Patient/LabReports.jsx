@@ -250,9 +250,9 @@ const checkRangeAndGetFlag = (resultStr, testDetails, selectedRangeType) => {
   }
 
   const cleanedRange = refRangeStr
-    .toLowerCase()
-    .replace(/mm\/hr|%|x ?10\^3\/ul|g\/dl|fl|pg|mg\/dl/g, "")
-    .trim();
+    ?.toLowerCase()
+    ?.replace(/mm\/hr|%|x ?10\^3\/ul|g\/dl|fl|pg|mg\/dl/g, "")
+    ?.trim();
 
   let lowerBound = -Infinity;
   let upperBound = Infinity;

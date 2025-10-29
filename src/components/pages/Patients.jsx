@@ -279,8 +279,8 @@ function Patients() {
     }
     const filteredResults = patientData.filter(
       (patient) =>
-        patient.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-        patient.lastName.toLowerCase().includes(searchText.toLowerCase())
+        patient?.firstName?.toLowerCase()?.includes(searchText?.toLowerCase()) ||
+        patient?.lastName?.toLowerCase()?.includes(searchText?.toLowerCase())
     );
 
     setFilteredData(filteredResults);

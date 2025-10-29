@@ -339,7 +339,7 @@ function AddTreatment({
       return;
     }
 
-    const dateOfVisit = new Date(visit?.appointDate).toISOString();
+    const dateOfVisit = new Date().toISOString();
     // setLoading(true);
 
     // Prepare the medications payload with pharmacyInventoryId
