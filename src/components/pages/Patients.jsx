@@ -232,11 +232,14 @@ function Patients() {
   };
 
   useEffect(() => {
-    getAllAdmittedPatients(currentPage);
-  }, [currentPage]);
+    if (admittedPatients.length > 10) {
+      getAllAdmittedPatients(currentPage);
+    }
+  }, [currentPage, admittedPatients]);
 
   useEffect(() => {
     fetchData();
+    getAllAdmittedPatients(currentPage);
   }, []);
 
   const fetchData = async () => {
@@ -258,8 +261,7 @@ function Patients() {
   useEffect(() => {
     setSummary([
       assignedPatients,
-      // admitted,
-      admittedPatients?.length,
+      admitted, // Use the count from API instead of array length
       hmoPatientsList?.length,
       allPatientCount,
     ]);
@@ -270,6 +272,7 @@ function Patients() {
     admitted,
     hmoPatients,
     admittedPatients,
+    hmoPatientsList,
   ]);
 
   useEffect(() => {
@@ -426,6 +429,8 @@ function Patients() {
                   cursor: "pointer",
                   alignItems: "center",
                   marginLeft: "18px",
+                  position: "relative",
+                  zIndex: "1"
                 }}
               >
                 {/* <p>Assigned Waiting Patients</p>| */}
@@ -455,7 +460,6 @@ function Patients() {
                   style={{
                     width: "20px",
                     height: "20px",
-                    zIndex: "5000",
                     cursor: "pointer",
                     // border: "1px solid #ccc",
                     borderRadius: "4px",

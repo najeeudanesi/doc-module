@@ -97,7 +97,8 @@ const MedicalHistory = ({ patientId, closeModal, data }) => {
               backgroundColor: "#fff",
             }}
           >
-            {patientDetails.map((item, index) => (
+            {patientDetails && patientDetails.length > 0 ? (
+              patientDetails.map((item, index) => (
               <div
                 key={index}
                 style={{
@@ -666,7 +667,12 @@ const MedicalHistory = ({ patientId, closeModal, data }) => {
                   </div>
                 </div>
               </div>
-            ))}
+            ))
+            ) : (
+              <div style={{ textAlign: "center", padding: "40px" }}>
+                <p>No medical history available for this patient.</p>
+              </div>
+            )}
           </div>
 
           <div className="button-container">
